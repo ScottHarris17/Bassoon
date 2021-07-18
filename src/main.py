@@ -206,7 +206,7 @@ class Bassoon:
             print('\n???Select a protocol with the left mouse button first. Then Hit the right button to update the index field.')
 
         # python is 0 indexed but Bassoon GUI isn't so add 1
-        self.protocolIndexField.insert(END, selectionIndex+1)
+        self.protocolIndexField.insert(END, str(selectionIndex+1))
 
 
     def addProtocol(self):
