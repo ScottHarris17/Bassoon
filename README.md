@@ -1,5 +1,5 @@
 # Bassoon
-Develop, organize, and deploy vision science experiments. Bassoon provides a python based GUI and API to easily manage and deploy visual stimuli. While the stimuli included with this project rely on <a href = 'www.psychopy.org'>Psychopy</a>, any backend stimulus framework can in theory be used with local copies of Bassoon.
+Develop, organize, and deploy vision science experiments. Bassoon is a lightweight, python based GUI and API to easily manage and deploy visual stimuli. While the stimuli included with this project rely on <a href = 'www.psychopy.org'>Psychopy</a>, any backend stimulus framework can in theory be used with local copies of Bassoon.
 
 <h2> Installation </h2>
 As currently packaged, Bassoon relies on python 3 and the Psychopy libraries. It is possible to launch Bassoon by simply cloning the Github repository and running /Bassoon/src/main.py as long as main.py can see psychopy on your local device. That said, other installation techniques are recommended for ease of use with developing custom stimuli.
