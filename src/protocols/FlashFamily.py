@@ -99,44 +99,39 @@ class FlashFamily(protocol):
             win.color = self.backgroundColor
             for f in range(self._interFamilyIntervalNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
+                if self.checkQuit():
                         return
             
             for stepNum in range(len(self.stepSizes)):
                 
                 self._stimulusStartLog.append(trialClock.getTime())
-                
+                self.sendTTL()
+                self._numberOfEpochsStarted += 1
                 #pretime... nothing happens
+                win.color = self.backgroundColor
                 for f in range(self._preTimeNumFrames):
                     win.flip()
-                    allKeys = event.getKeys() #check if user wants to quit early
-                    if len(allKeys)>0:
-                        if 'q' in allKeys:
-                            return
+                    if self.checkQuit():
+                        return
             
                 #stim time
                 win.color = intensityList[stepNum] #set flash intensity
                 for f in range(self._stimTimeNumFrames):
                     win.flip()
-                    allKeys = event.getKeys() #check if user wants to quit early
-                    if len(allKeys)>0:
-                        if 'q' in allKeys:
-                            return
+                    if self.checkQuit():
+                        return
                     
                 #tail time
                 win.color = self.backgroundColor
                 for f in range(self._tailTimeNumFrames):
                     win.flip()
-                    allKeys = event.getKeys() #check if user wants to quit early
-                    if len(allKeys)>0:
-                        if 'q' in allKeys:
-                            return
+                    if self.checkQuit():
+                        return
         
             
                 self._stimulusEndLog.append(trialClock.getTime())
-            
+                self.sendTTL()
+
                 self._numberOfEpochsCompleted += 1
                 
             

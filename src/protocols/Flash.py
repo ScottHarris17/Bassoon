@@ -73,40 +73,35 @@ class Flash(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
-                        return
+                if self.checkQuit():
+                    return
                     
             #pretime... nothing happens
             self._stimulusStartLog.append(trialClock.getTime())
+            self.sendTTL()
+            self._numberOfEpochsStarted += 1
             for f in range(self._preTimeNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
-                        return
+                if self.checkQuit():
+                    return
             
             #stim time - flash
             win.color = self.flashIntensity
             for f in range(self._stimTimeNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
-                        return
+                if self.checkQuit():
+                    return
             
             #tail time
             win.color = self.backgroundColor
             for f in range(self._tailTimeNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
-                        return
+                if self.checkQuit():
+                    return
         
             
             self._stimulusEndLog.append(trialClock.getTime())
+            self.sendTTL()
             
             self._numberOfEpochsCompleted += 1
                 

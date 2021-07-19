@@ -20,6 +20,7 @@ import tkinter.ttk as ttk
 import tkinter.filedialog as tkfd
 from psychopy import core, visual, gui, data, event, monitors
 from psychopy.tools.filetools import fromFile, toFile
+import serial.tools.list_ports as list_ports
 from datetime import datetime
 import pickle
 import json
@@ -274,7 +275,7 @@ class Bassoon:
 
         # stimulus monitor selection
         stimulusFrame = LabelFrame(
-            editFrame, text='Stimulus Monitor', bd=5, relief=RIDGE, pady=10)
+            editFrame, text='Stimulus Monitor', bd=5, pady=10)
         stimulusFrame.configure(font=("Helvetica", 12))
         stimulusFrame.pack()
 
@@ -310,7 +311,7 @@ class Bassoon:
 
         # information monitor selection
         informationFrame = LabelFrame(
-            editFrame, text='Information Monitor', bd=5, relief=RIDGE, pady=10)
+            editFrame, text='Information Monitor', bd=5, pady=10)
         informationFrame.configure(font=("Helvetica", 12))
         informationFrame.pack()
 
@@ -360,7 +361,7 @@ class Bassoon:
 
         # experiment options
         experimentFrame = LabelFrame(
-            editFrame, text='Experiment', bd=5, relief=RIDGE, pady=10)
+            editFrame, text='Experiment', bd=5, pady=10)
         experimentFrame.configure(font=("Helvetica", 12))
         experimentFrame.pack()
 
@@ -380,17 +381,29 @@ class Bassoon:
         self.writeTtlSelection = IntVar(root)
         self.writeTtlSelection.set(self.experiment.writeTTL)
         writeTtlChk = Checkbutton(experimentFrame, var=self.writeTtlSelection)
-        writeTtlChk.grid(row=1, column=3)
-
+        writeTtlChk.grid(row = 1, column=3)
+        
+        #choose ttl port
+        ttlPortLabel = Label(experimentFrame, text = 'TTL Port', padx = 10)
+        ttlPortLabel.grid(row = 2, column = 0, columnspan=2)
+        self.ttlPortSelection = StringVar()
+        self.ttlPortSelection.set(self.experiment.ttlPort)
+        availablePorts = list(list_ports.comports()) #get available com ports
+        if len(availablePorts) == 0:
+            availablePorts = ['No Available Ports']
+        
+        ttlPortDropDown = OptionMenu(experimentFrame, self.ttlPortSelection, *availablePorts)
+        ttlPortDropDown.grid(row = 2, column = 2, columnspan = 2)
+        
         # recompile during save
         recompileLabel = Label(
             experimentFrame, text='Recompile Experiment When Saving', padx=10)
-        recompileLabel.grid(row=2, column=0, columnspan=3)
+        recompileLabel.grid(row=3, column=0, columnspan=3)
         self.recompileSelection = IntVar(root)
         self.recompileSelection.set(self.recompileExperiment)
         recompileChk = Checkbutton(
             experimentFrame, var=self.recompileSelection)
-        recompileChk.grid(row=2, column=3)
+        recompileChk.grid(row=3, column=3)
 
         # add apply and close buttons
         buttonFrame = Frame(editFrame)
@@ -418,8 +431,17 @@ class Bassoon:
 
         # experiment
         self.experiment.userInitiated = self.userInitSelection.get() == 1
-        self.recompileExperiment = self.recompileSelection.get() == 1
         self.experiment.writeTTL = self.writeTtlSelection.get() == 1
+        portSelection = self.ttlPortSelection.get()
+        if portSelection in ['No Available Ports', '', None]:
+            self.experiment.writeTTL = 0
+            self.writeTtlSelection.set(0)
+            self.experiment.ttlPort = 'No Available Ports'
+        else:
+            self.experiment.ttlPort = self.ttlPortSelection.get()
+        
+        self.recompileExperiment = self.recompileSelection.get() == 1
+
 
         print('\n--> New experiment settings have been applied')
 

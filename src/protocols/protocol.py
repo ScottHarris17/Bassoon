@@ -22,6 +22,7 @@ class protocol():
         
         self._estimatedTime = 0.0 #estimated time in seconds that this stimulus will take. There should be a corresponding function self.estimateTime() that sets this number
         
+        self._numberOfEpochsStarted = 0
         self._numberOfEpochsCompleted = 0 #counts the number of epochs that have actually occured
         
         self._completed = -1 # -1 indicates stimulus never ran. 0 indicates stimulus started but ended early. 1 indicates stimulus ran to completion
@@ -78,4 +79,31 @@ class protocol():
 
         informationalText.draw()
         win.flip()
+
+    def checkQuit(self):
+        '''
+        Checks if user wants to quit early during a stimulus. Press 'q' key to quit early
+        '''
+        allKeys = event.getKeys() #check if user wants to quit early
+        if len(allKeys)>0:
+            if 'q' in allKeys:
+                self.stoppedEarly = 1
+                return 1
+        return 0
+            
+    
+    def sendTTL(self):
+        '''
+        sends ttl pulse during experiment if the setting is turned on
+        '''
+        if self.writeTTL:
+            try:
+                #try to send pulse at desired port
+                pass
+            except:
+                #print that you aren't sending ttl pulses if you can't send one
+                pass
+        
+        return
+
 

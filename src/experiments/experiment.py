@@ -35,6 +35,7 @@ class experiment():
         self.userInitiated = False #If True, the user will have to manually start each stimulus. Can also set this property manually for each stimulus
         
         self.writeTTL = False
+        self.ttlPort = ''
         
     def addProtocol(self, newProtocol):
         '''
@@ -82,6 +83,8 @@ class experiment():
         for i, p in enumerate(self.protocolList):
             print('!!! Running Protocol Number ' + str(i+1) + ' of ' +  str(len(self.protocolList)))
             p = p[1] #the protocol object is the second one in the tuple
+            p.writeTTL = self.writeTTL
+            p.ttlPort = self.ttlPort
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object
             
             #write down properties from previous stimulus

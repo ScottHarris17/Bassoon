@@ -126,19 +126,18 @@ class CheckerboardReceptiveField(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
+                if self.checkQuit():
                         return
             
             
             self._stimulusStartLog.append(trialClock.getTime())
+            self.sendTTL()
+            self._numberOfEpochsStarted += 1
             #pretime... nothing happens
             for f in range(self._preTimeNumFrames):
                 win.flip()
                 allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
+                if self.checkQuit():
                         return
         
             #stim time
@@ -150,22 +149,19 @@ class CheckerboardReceptiveField(protocol):
                 
                 noiseField.draw()
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
+                if self.checkQuit():
                         return
                 
             #tail time
             for f in range(self._tailTimeNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
+                if self.checkQuit():
                         return
     
         
             self._stimulusEndLog.append(trialClock.getTime())
-        
+            self.sendTTL()
+            
             self._numberOfEpochsCompleted += 1
             
             

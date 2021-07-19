@@ -54,44 +54,42 @@ class Pause(protocol):
             self.showInformationText(win, 'Stimulus Information: Pause\nPress any key to begin')
             event.waitKeys() #wait for key press  
         
-        trialClock = core.Clock() #this will reset every trial
+        
+        trialClock = core.Clock() #initiate clock
         
         #show information if necessary
         if self._informationWin[0]:
             self.showInformationText(win, 'Pausing for ' + str(self._estimatedTime) + 's')
         
-        #pause for inter stimulus interval
+
         win.color = self.backgroundColor
 
                 
         #pretime... nothing happens
         self._stimulusStartLog.append(trialClock.getTime())
+        self.sendTTL()
+        self._numberOfEpochsStarted += 1
         for f in range(self._preTimeNumFrames):
             win.flip()
-            allKeys = event.getKeys() #check if user wants to quit early
-            if len(allKeys)>0:
-                if 'q' in allKeys:
-                    return
+            if self.checkQuit():
+                return
         
         #stim time
         for f in range(self._stimTimeNumFrames):
             win.flip()
-            allKeys = event.getKeys() #check if user wants to quit early
-            if len(allKeys)>0:
-                if 'q' in allKeys:
-                    return
+            if self.checkQuit():
+                return
         
         #tail time
         win.color = self.backgroundColor
         for f in range(self._tailTimeNumFrames):
             win.flip()
-            allKeys = event.getKeys() #check if user wants to quit early
-            if len(allKeys)>0:
-                if 'q' in allKeys:
-                    return
+            if self.checkQuit():
+                return
     
         
         self._stimulusEndLog.append(trialClock.getTime())
+        self.sendTTL()
         
         self._numberOfEpochsCompleted += 1
             

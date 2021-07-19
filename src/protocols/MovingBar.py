@@ -118,8 +118,7 @@ class MovingBar(protocol):
             bar.pos = initialPosition
             bar.ori = -ori
             
-            self._stimulusStartLog.append(trialClock.getTime())
-            
+
             #show information if necessary
             if self._informationWin[0]:
                 self.showInformationText(win, 'Running Moving Bar. Current orientation = ' + \
@@ -127,13 +126,14 @@ class MovingBar(protocol):
             
             win.color = self.backgroundColor
             
+            self._stimulusStartLog.append(trialClock.getTime())
+            self.sendTTL()
+            self._numberOfEpochsStarted += 1
             #pretime... nothing happens
             for f in range(self._preTimeNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
-                        return
+                if self.checkQuit():
+                    return
             
             #move the bar during the stim time
             bar.opacity = 1
@@ -141,22 +141,20 @@ class MovingBar(protocol):
                 bar.pos += speedComponents
                 bar.draw()
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
-                        return
+                if self.checkQuit():
+                    return
                     
             #remove bar at the end of the stimulus and wait the post time
             bar.opacity = 0
             for f in range(self._tailTimeNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
-                if len(allKeys)>0:
-                    if 'q' in allKeys:
-                        return
+                if self.checkQuit():
+                    return
+                
         
             
             self._stimulusEndLog.append(trialClock.getTime())
+            self.sendTTL()
             
             self._numberOfEpochsCompleted += 1
                 
