@@ -98,12 +98,9 @@ class protocol():
         '''
         if self.writeTTL:
             try:
-                #try to send pulse at desired port
-                pass
+                self._portObj.write(0X4B) #self.port_Obj is initialized in the experiment.activate() method
             except:
-                #print that you aren't sending ttl pulses if you can't send one
-                pass
-        
+                print('***WARNING: TTL Pulse Failed***')
         return
 
 

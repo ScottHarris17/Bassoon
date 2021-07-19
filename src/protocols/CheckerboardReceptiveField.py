@@ -141,17 +141,34 @@ class CheckerboardReceptiveField(protocol):
                         return
         
             #stim time
-            for f in range(self._stimTimeNumFrames):
-                flipNum = f//self.frameDwell
-                if flipNum == f/self.frameDwell:
-                    colors = [[color, color, color] for color in colorLog[i, flipNum]]
-                    noiseField.colors = colors
-                
-                noiseField.draw()
-                win.flip()
-                if self.checkQuit():
-                        return
-                
+            #there are two stimulus options. If the user is writing TTL, then the first IF block executes. This writes a TTL pulse with every frame and because it's all in one code block it speeds up valuable computation time for each frame
+            if self.writeTTL:
+                for f in range(self._stimTimeNumFrames):
+                    flipNum = f//self.frameDwell
+                    if flipNum == f/self.frameDwell:
+                        colors = [[color, color, color] for color in colorLog[i, flipNum]]
+                        noiseField.colors = colors
+                    
+                    noiseField.draw()
+                    win.flip()
+                    self._portObj.write(0X4B) #write ttl for every frame flip for this stimulus
+                    if self.checkQuit():
+                            return
+                        
+            #if the user isn't sending a TTL pulse then execute the ELSE block. This is identical to the IF block without the ttl output
+            else:
+                for f in range(self._stimTimeNumFrames):
+                    flipNum = f//self.frameDwell
+                    if flipNum == f/self.frameDwell:
+                        colors = [[color, color, color] for color in colorLog[i, flipNum]]
+                        noiseField.colors = colors
+                    
+                    noiseField.draw()
+                    win.flip()
+                    if self.checkQuit():
+                            return
+                        
+            
             #tail time
             for f in range(self._tailTimeNumFrames):
                 win.flip()

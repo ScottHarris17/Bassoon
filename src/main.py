@@ -117,7 +117,11 @@ class Bassoon:
             self.buttonFrame, text='Run Experiment', command=lambda: self.runExperiment())
         self.runExperimentButton.grid(row=1, column=4)
         self.buttonFrame.pack()
-
+        
+        #load rig configuration
+        #self.loadRigPreferences()
+        
+        
         print("\n\n\n-------------------Bassoon App-------------------")
         print("--> Initialization Complete!")
         print("--> Bassoon is playing!")
