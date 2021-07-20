@@ -13,7 +13,7 @@ While it's not absolutely critical, it's also a good idea to have an IDE from wh
 <h3>Running Bassoon Using Anaconda</h3>
 To run Bassoon, first download it onto your local device. Then launch the Anaconda command line ('anaconda prompt'). Enter the command 'conda activate psychopy' and then 'CD' to /Bassoon/src in your file directory. Enter the command 'python main.py' to run Bassoon from the command line. Alternatively, you can view the Bassoon source files by entering the command 'spyder'. You can edit and/or run Bassoon from within Spyder (or your preferred IDE). The Bassoon GUI is launched by running the main.py file.
 
-<h1>Using the GUI</h1>
+<h2>Using the GUI</h2>
 To launch the Bassoon GUI, locate and run the main.py file inside /Bassoon/src. A welcome message should appear in the python console and the GUI should launch.
 
 <h3>Creating an Experiment</h3>
@@ -42,6 +42,45 @@ When you're ready to run your experiment, press the 'Run' button in the main win
 
 <h3>Exiting</h3>
 To exit Bassoon press the 'quit' option in the menu bar on the main window, or simply close the main window.
-<br><br>
+
+<h2>Using the API</h2>
+There are two primary classes in the Bassoon API: experiments and protocols. To show stimuli, you must first instantiate an experiment (make sure you're working directory is set to /Bassoon/src):
+<br><code>
+from experiments.experiment import experiment 
+</code>
+<br><code>
+e = experiment()
+</code>
+
+
+Protocols contain stimuli. Each stimulus is a subclass of the protocol superclass. To load a stimulus, say a flash, use:
+<br><code>
+from protocols.Flash import Flash
+</code>
+<br><code>
+f = Flash()
+</code>
+
+You can change the properties of a stimulus by directly assigning its attributes:
+<br><code>
+f.stimTime = 2
+</code>
+
+Load the stimulus into the experiment when you're done setting its attributes. Stimuli will be played in the order that they are added to the experiment:
+<br><code>
+e.addProtocol(f)
+</code>
+
+Experiment properties can be similarly adjusted:
+<br><code>
+e.useInformationMonitor = True
+</code>
+
+When you're ready, run the experiment:
+<br><code>
+e.activate()
+</code>
+
+<br><br><br>
 Bassoon is free to use and community development is encouraged. If used for published science, let us know and please consider including a reference so that others can find us.
 
