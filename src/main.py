@@ -9,7 +9,7 @@ www.psychopy.org
 
 Experiments can be managed through the GUI or via the API. See docs for more help
 
-@author: Scott Harris 
+@author: Scott Harris
 scott.harris@ucsf.edu
 
 Copyright 2021 under MIT open source license.
@@ -117,11 +117,11 @@ class Bassoon:
             self.buttonFrame, text='Run Experiment', command=lambda: self.runExperiment())
         self.runExperimentButton.grid(row=1, column=4)
         self.buttonFrame.pack()
-        
+
         #load rig configuration
         #self.loadRigPreferences()
-        
-        
+
+
         print("\n\n\n-------------------Bassoon App-------------------")
         print("--> Initialization Complete!")
         print("--> Bassoon is playing!")
@@ -142,15 +142,15 @@ class Bassoon:
             newExperimentTemplate = pickle.load(exp)
 
         self.experimentSketch = []  # clear experiment sketch if it was filled before this
-        
+
         newExperiment = experiment() #load a new experiment object to fill
         # iterate through the stored protocols and add them and their names to
         # the experiment sketch. Then, update
         for num, p in enumerate(newExperimentTemplate.protocolList):
             if type(p) != tuple:
                 print('***Error loading protocol', p, 'Not of type tuple')
-            
-            pname = p[0] #.json files will have 
+
+            pname = p[0] #.json files will have
             newObj = eval(pname+'()') #get a new object of the correct name
             newAttributes = list(vars(newObj).keys()) #list the attributes for this new obj
             for a in newAttributes: #cycle through the attributes
@@ -160,8 +160,8 @@ class Bassoon:
                         setattr(newObj, a, assignment)
                     except: #catch if the logged stimulus doesn't have the 'a' attribute or 'num' protocol
                         print('***Could not set properties for attribute ' + str(a) +' in protocol number ' + str(num) + ' with name ' + pname + ' because the loaded experiment was missing this attribute')
-                         
-                
+
+
             #build the display name
             pnameWithSpaces = ''
             for j, char in enumerate(pname):
@@ -386,7 +386,7 @@ class Bassoon:
         self.writeTtlSelection.set(self.experiment.writeTTL)
         writeTtlChk = Checkbutton(experimentFrame, var=self.writeTtlSelection)
         writeTtlChk.grid(row = 1, column=3)
-        
+
         #choose ttl port
         ttlPortLabel = Label(experimentFrame, text = 'TTL Port', padx = 10)
         ttlPortLabel.grid(row = 2, column = 0, columnspan=2)
@@ -395,10 +395,10 @@ class Bassoon:
         availablePorts = list(list_ports.comports()) #get available com ports
         if len(availablePorts) == 0:
             availablePorts = ['No Available Ports']
-        
+
         ttlPortDropDown = OptionMenu(experimentFrame, self.ttlPortSelection, *availablePorts)
         ttlPortDropDown.grid(row = 2, column = 2, columnspan = 2)
-        
+
         # recompile during save
         recompileLabel = Label(
             experimentFrame, text='Recompile Experiment When Saving', padx=10)
@@ -414,10 +414,13 @@ class Bassoon:
         buttonFrame.pack()
         applyButton = Button(buttonFrame, text='Apply Changes',
                              command=self.applyExperimentChanges)
-        applyButton.grid(row=0, column=0)
+        applyButton.grid(row=0, column=0, padx = 2)
+        saveButton = Button(buttonFrame, text='Save & Apply Changes',
+                             command=self.setConfigFile)
+        saveButton.grid(row=0, column=1, padx = 2)
         closeButton = Button(buttonFrame, text='Close Window',
                              command=lambda: monitorEditWindow.destroy())
-        closeButton.grid(row=0, column=1)
+        closeButton.grid(row=0, column=2)
 
 
     def applyExperimentChanges(self):
@@ -443,11 +446,49 @@ class Bassoon:
             self.experiment.ttlPort = 'No Available Ports'
         else:
             self.experiment.ttlPort = self.ttlPortSelection.get()
-        
+
         self.recompileExperiment = self.recompileSelection.get() == 1
 
 
         print('\n--> New experiment settings have been applied')
+
+    def setConfigFile(self):
+        '''
+        Saves applied experiment changes to JSON object that will be stored in src directory
+        '''
+
+        configDict = {
+            "stimWindow": {
+                "stimMonitor": self.stimMonitorSelection.get(),
+                "fullscr": self.stimFullScreenSelection.get() == 1,
+                "screen": self.stimScreenSelection.get()
+            },
+            "infoWindow": {
+                "useInformationMonitor": self.informationUseSelection.get() == 1,
+                "informationMonitor": self.informationMonitorSelection.get(),
+                "informationFullScreen": self.informationFullScreenSelection.get() == 1,
+                "informationScreen": self.informationScreenSelection.get()
+            },
+            "experiment": {
+                "userInitiated": self.userInitSelection.get() == 1,
+                "writeTTL": self.writeTtlSelection.get() == 1,
+                "ttlPort": self.ttlPortSelection.get(),
+                "recompileExperiment": self.recompileSelection.get() == 1
+            }
+        }
+
+        portSelection = configDict['experiment']['ttlPort']
+        if portSelection in ['No Available Ports', '', None]:
+            configDict['experiment']['writeTTL'] = False
+            configDict['experiment']['ttlPort'] = 'No Available Ports'
+
+        #Once Dictionary is filled with prefernces it can be converted to JSON and saved
+
+        with open("configOptions.json", 'w') as f:
+            json.dump(configDict,f, indent=4)
+
+        self.applyExperimentChanges()
+        print('\n--> Changes to experiment settings have been saved and applied.')
 
 
     def editProtocol(self, e=0):
@@ -761,7 +802,7 @@ def _from_rgb(rgb):
 
 def secondsToMinutesAndSeconds(seconds):
     '''
-    Given a number specifying a time in seconds, this function returns the 
+    Given a number specifying a time in seconds, this function returns the
     equivalent number of minutes and seconds
 
     Parameters
