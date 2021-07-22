@@ -51,7 +51,7 @@ from experiments.experiment import experiment
 <br><code>
 e = experiment()
 </code>
-<br>
+<br><br>
 Protocols contain stimuli. Each stimulus is a subclass of the protocol superclass. To load a stimulus, say a flash, use:
 <br><code>
 from protocols.Flash import Flash
@@ -59,22 +59,22 @@ from protocols.Flash import Flash
 <br><code>
 f = Flash()
 </code>
-<br>
+<br><br>
 You can change the properties of a stimulus by directly assigning its attributes:
 <br><code>
 f.stimTime = 2
 </code>
-
+<br><br>
 Load the stimulus into the experiment when you're done setting its attributes. Stimuli will be played in the order that they are added to the experiment:
 <br><code>
 e.addProtocol(f)
 </code>
-
+>br><br>
 Experiment properties can be similarly adjusted:
 <br><code>
 e.useInformationMonitor = True
 </code>
-
+<br><br>
 When you're ready, run the experiment:
 <br><code>
 e.activate()
