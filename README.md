@@ -43,7 +43,7 @@ When you're ready to run your experiment, press the 'Run' button in the main win
 <h3>Exiting</h3>
 To exit Bassoon press the 'quit' option in the menu bar on the main window, or simply close the main window.
 
-<h2>Using the API</h2>
+<h2>Building Experiments Programmatically</h2>
 There are two primary classes in Bassoon: experiments and protocols. To show stimuli, you must first instantiate an experiment (make sure you're working directory is set to Bassoon/src):
 <br><code>
 from experiments.experiment import experiment 
