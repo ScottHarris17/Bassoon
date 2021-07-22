@@ -75,7 +75,7 @@ class OscillatingGrating(protocol):
             print('oscillationPhaseShift parameter not within bounds, correcting to ', self.oscillationPhaseShift, 'degrees')
             
         def velocityOnFrameN(frameNum, A = A, framesPerCycle = framesPerCycle, phaseShift = self.oscillationPhaseShift):
-            return A*math.sin(2*frameNum*math.pi/framesPerCycle + math.radians(phaseShift)) #oscillation can start at the beginning or middle of a cycle: cosine will start it in the middle of a cycle, sin will start it at the beginning
+            return A*math.sin(2*frameNum*math.pi/framesPerCycle + math.radians(phaseShift)) 
         
         velocity_pixPerFrame = [velocityOnFrameN(f) for f in range(framesPerCycle)]
         return velocity_pixPerFrame 
@@ -147,7 +147,7 @@ class OscillatingGrating(protocol):
             
             #stim time - flash
             for f in range(self._stimTimeNumFrames):
-                grating.phase +=  self._numCyclesToShiftByFrame[f]
+                grating.phase += self._numCyclesToShiftByFrame[f]
                 grating.draw()
                 win.flip()
                 if self.checkQuit():
