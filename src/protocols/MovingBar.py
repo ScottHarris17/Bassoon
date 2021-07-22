@@ -116,7 +116,7 @@ class MovingBar(protocol):
             #move bar by the proper components given the current orientation
             bar.opacity = 0
             bar.pos = initialPosition
-            bar.ori = -ori
+            bar.ori = -ori #flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
             
 
             #show information if necessary
