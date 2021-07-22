@@ -35,7 +35,6 @@ from protocols.MovingBar import MovingBar
 from protocols.FlashFamily import FlashFamily
 from protocols.CheckerboardReceptiveField import CheckerboardReceptiveField
 from protocols.MovingGratingDirection import MovingGratingDirection
-from protocols.OscillatingGrating import OscillatingGrating
 
 
 class Bassoon:
@@ -489,11 +488,7 @@ class Bassoon:
             json.dump(configDict,f, indent=4)
 
         self.applyExperimentChanges()
-<<<<<<< HEAD
         print('\n--> Changes to experiment settings have been saved as well.')
-=======
-        print('\n--> Changes to experiment settings have been saved and applied.')
->>>>>>> da92172445f8217cd95e59b41f01a1026e34b1f6
 
 
     def editProtocol(self, e=0):
