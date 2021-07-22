@@ -19,7 +19,7 @@ class Flash(protocol):
         self.stimulusReps = 3
         self.preTime = 1.0 #s
         self.stimTime = 5.0 #s
-        self.tailTime = 1.0#s
+        self.tailTime = 1.0 #s
         self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
                 
         

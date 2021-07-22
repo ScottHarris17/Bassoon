@@ -35,6 +35,7 @@ from protocols.MovingBar import MovingBar
 from protocols.FlashFamily import FlashFamily
 from protocols.CheckerboardReceptiveField import CheckerboardReceptiveField
 from protocols.MovingGratingDirection import MovingGratingDirection
+from protocols.OscillatingGrating import OscillatingGrating
 
 
 class Bassoon:
