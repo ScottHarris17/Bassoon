@@ -11,7 +11,7 @@ Next, <a href = 'https://www.psychopy.org/download.html#conda'>install Psychopy 
 While it's not absolutely critical, it's also a good idea to have an IDE from which to launch, edit, and add to Bassoon. My preferred IDE is <a href = 'https://www.spyder-ide.org/'>Spyder,</a> but you can choose any. If you do choose Spyder, it is easy to install into your newly built Psychopy environment: launch the Anaconda Navigator app and select "environments" from the panel on the lefthand side. If you've successfully installed Psychopy as an Anaconda environment you should see it listed here. Click on it to load the environment. Next, find the panel for Spyder in the list of applications and click "install."
 
 <h3>Running Bassoon Using Anaconda</h3>
-To run Bassoon, first download it onto your local device. Then launch the Anaconda command line ('anaconda prompt'). Enter the command 'conda activate psychopy' and then 'CD' to /Bassoon/src in your file directory. Enter the command 'python main.py' to run Bassoon from the command line. Alternatively, you can view the Bassoon source files by entering the command 'spyder'. You can edit and/or run Bassoon from within Spyder (or your preferred IDE). The Bassoon GUI is launched by running the main.py file.
+To run Bassoon, first download it onto your local device. Then launch the Anaconda command line ('anaconda prompt'). Enter the command 'conda activate psychopy' and then 'CD' to Bassoon/src in your file directory. Enter the command 'python main.py' to run Bassoon from the command line. Alternatively, you can view the Bassoon source files by entering the command 'spyder'. You can edit and/or run Bassoon from within Spyder (or your preferred IDE). The Bassoon GUI is launched by running the main.py file.
 
 <h2>Using the GUI</h2>
 To launch the Bassoon GUI, locate and run the main.py file inside Bassoon/src. A welcome message should appear in the python console and the GUI should launch.
@@ -44,7 +44,7 @@ When you're ready to run your experiment, press the 'Run' button in the main win
 To exit Bassoon press the 'quit' option in the menu bar on the main window, or simply close the main window.
 
 <h2>Using the API</h2>
-There are two primary classes in the Bassoon API: experiments and protocols. To show stimuli, you must first instantiate an experiment (make sure you're working directory is set to /Bassoon/src):
+There are two primary classes in the Bassoon API: experiments and protocols. To show stimuli, you must first instantiate an experiment (make sure you're working directory is set to Bassoon/src):
 <br><code>
 from experiments.experiment import experiment 
 </code>
@@ -69,7 +69,7 @@ Load the stimulus into the experiment when you're done setting its attributes. S
 <br><code>
 e.addProtocol(f)
 </code>
->br><br>
+<br><br>
 Experiment properties can be similarly adjusted:
 <br><code>
 e.useInformationMonitor = True
