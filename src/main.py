@@ -488,7 +488,11 @@ class Bassoon:
             json.dump(configDict,f, indent=4)
 
         self.applyExperimentChanges()
+<<<<<<< HEAD
         print('\n--> Changes to experiment settings have been saved as well.')
+=======
+        print('\n--> Changes to experiment settings have been saved and applied.')
+>>>>>>> da92172445f8217cd95e59b41f01a1026e34b1f6
 
 
     def editProtocol(self, e=0):
