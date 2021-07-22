@@ -7,7 +7,7 @@ Welcome to Bassoon. Run this file to open the GUI.
 You must have psychopy libraries installed to use built in stimuli and to achieve the proper import.
 www.psychopy.org
 
-Experiments can be managed through the GUI or via the API. See docs for more help
+Experiments can be managed through the GUI or programmatically. See docs for more help
 
 @author: Scott Harris 
 scott.harris@ucsf.edu
@@ -744,8 +744,8 @@ class Bassoon:
             self.saveExperiment()
 
         except:
-            print('\n***NOTICE: THE PRECEEDING EXPERIMENT WAS NOT SAVED. MANUALLY SAVE BEFORE PROCEEDING OR LOSE THE EXPERIMENT WILL BE LOST.' +
-                  '\n--> Invoke app.saveExperiment(self.recompileExperiment = False) to save the experiment.' +
+            print('\n***NOTICE: THE PRECEEDING EXPERIMENT WAS NOT SAVED. MANUALLY SAVE BEFORE PROCEEDING OR THE EXPERIMENT WILL BE LOST.' +
+                  '\n--> Invoke app.recompileExperiment = False; app.saveExperiment() to save the experiment.' +
                   '\n--> Alternatively, the experiment object is located at app.experiment. However, this object may not be immediately pickalable without invoking \'app.experiment.win = None\' and \'app.experiment.informationWin = None\'')
 
         print('\n\nBassoon is ready to play again!')
