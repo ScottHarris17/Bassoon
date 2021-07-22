@@ -108,7 +108,7 @@ class OscillatingGrating(protocol):
         
         grating = visual.GratingStim(
             win,
-            size = win.size,
+            size = (win.size[0]*2, win.size[1]*2),
             ori = self.gratingOrientation+180,
             sf = (spatialFrequencyCyclesPerPixel, None),
             tex = self.gratingTexture
