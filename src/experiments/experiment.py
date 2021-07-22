@@ -6,6 +6,8 @@ Created on Fri Jul  9 17:24:12 2021
 """
 from psychopy import core, visual, gui, data, event, monitors
 import serial
+import json
+from pathlib import Path
 
 class experiment():
     def __init__(self):
