@@ -28,7 +28,7 @@ Like each stimulus, the experiment as a whole also has properties that can be ad
   <li><b>Manually Initiate Each Protocol:</b> If selected, the user must manually start each stimulus in the experiment via a key press. Protocols also have a manual initiation property. Changing this check box in the experiment options window will accordingly modify any stimulus you subsequently add to the experiment in the main window, but will not change the properties of previously loaded stimuli. To update these, edit their properties directly.</li>
   <li><b>Write TTL Pulses:</b> Outputs TTL pulses at the start and stop of each epoch when selected (note: TTL timing may vary on a stimulus by stimulus basis. E.g. Checkerboard Receptive Field sends a TTL pulse with each frame flip. See the specific protocol file for details). Choose the serial port to use in the subsequent dropdown window.</li>
     <li><b> TTL Port:</b> Select the serial port name to use during the experiment. If none are available the only dropdown option will read 'No Available Ports'. Uses python Serial library to identify serial ports. Will not impact the experiment if the "Write TTL Pulses" option is not checked.</li>
-  <li><b>Recompile When Saving:</b>When checked, saving the current experiment will cause each stimulus to be reloaded, effectively removing any properties that are changed or created when a stimulus is run. All changes that are made to the stimulus by the user in the current session (i.e. via the edit button or by double clicking on the stimulus name) will be kept. This setting is automatically turned OFF when an experiment is run such that saving after the experiment is run will not delete recently created properties. It is advised to turn this setting ON only when you are saving an experiment sketch, but not data from an experiment that has been run. If you aren't sure how to handle this setting, it is advised to simply turn it OFF.</li>
+  <li><b>Recompile When Saving:</b> When checked, saving the current experiment will cause each stimulus to be reloaded, effectively removing any properties that are changed or created when a stimulus is run. All changes that are made to the stimulus by the user in the current session (i.e. via the edit button or by double clicking on the stimulus name) will be kept. This setting is automatically turned off when an experiment is run such that saving after the experiment is run will not delete recently created properties. It is advised to turn this setting on only when you are saving an experiment sketch, but not data from an experiment that has been run. If you aren't sure how to handle this setting, it is safest to turn it off.</li>
 </ul>
 Once you have made all necessary changes to the experiment, press the 'Apply Changes' button. Then press 'Close Window' when ready.
 
@@ -51,8 +51,7 @@ from experiments.experiment import experiment
 <br><code>
 e = experiment()
 </code>
-
-
+<br>
 Protocols contain stimuli. Each stimulus is a subclass of the protocol superclass. To load a stimulus, say a flash, use:
 <br><code>
 from protocols.Flash import Flash
@@ -60,7 +59,7 @@ from protocols.Flash import Flash
 <br><code>
 f = Flash()
 </code>
-
+<br>
 You can change the properties of a stimulus by directly assigning its attributes:
 <br><code>
 f.stimTime = 2
