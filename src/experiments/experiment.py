@@ -38,10 +38,10 @@ class experiment():
 
         self.writeTTL = False
         self.ttlPort = ''
-        
-        self.warpFileName = None #must be .data
+
+        self.warpFileName = 'Warp File Location' #must be .data
         self.useFBO = False
-        
+
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
             with open('configOptions.json') as f:
@@ -59,6 +59,8 @@ class experiment():
                 self.userInitiated = configOptions['experiment']['userInitiated']
                 self.writeTTL = configOptions['experiment']['writeTTL']
                 self.ttlPort = configOptions['experiment']['ttlPort']
+                self.useFBO = configOptions['experiment']['useFBO']
+                self.warpFileName = configOptions['experiment']['warpFileName']
 
 
     def addProtocol(self, newProtocol):
@@ -95,7 +97,7 @@ class experiment():
                 self.win,
                 warpfile = self.warpFileName
                 )
-        
+
         #if the user would like to uise a second screen to display stimulus information then initialize that screen here
         #the flips to this second window must be called in the stimulus protocol itself
         if self.useInformationMonitor:
