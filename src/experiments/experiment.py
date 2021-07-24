@@ -38,7 +38,10 @@ class experiment():
 
         self.writeTTL = False
         self.ttlPort = ''
-
+        
+        self.warpFileName = None #must be .data
+        self.useFBO = False
+        
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
             with open('configOptions.json') as f:
@@ -84,8 +87,15 @@ class experiment():
                     fullscr = self.fullscr,
                     color = self.backgroundColor,
                     units = self.units,
+                    useFBO = self.useFBO,
                     allowStencil = self.allowStencil)
 
+        if self.useFBO:
+            warper = visual.windowwarp.Warper(
+                self.win,
+                warpfile = self.warpFileName
+                )
+        
         #if the user would like to uise a second screen to display stimulus information then initialize that screen here
         #the flips to this second window must be called in the stimulus protocol itself
         if self.useInformationMonitor:
