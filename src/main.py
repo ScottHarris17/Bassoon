@@ -174,6 +174,7 @@ class Bassoon:
 
         self.updateExperimentSketch()
 
+    #Used by options Warp File to find file path
 
     def listProtocols(self):
         '''
@@ -366,7 +367,7 @@ class Bassoon:
 
         # experiment options
         experimentFrame = LabelFrame(
-            editFrame, text='Experiment', bd=5, pady=10)
+            editFrame, text='Experiment', bd=6, pady=10)
         experimentFrame.configure(font=("Helvetica", 12))
         experimentFrame.pack()
 
@@ -400,15 +401,33 @@ class Bassoon:
         ttlPortDropDown = OptionMenu(experimentFrame, self.ttlPortSelection, *availablePorts)
         ttlPortDropDown.grid(row = 2, column = 2, columnspan = 2)
 
+        #Framebuffer object selection
+        FBOLabel = Label(experimentFrame, text = 'Use FBO?', padx = 10) # Check to see if case exists where user passes morph file, but FBO is false
+        FBOLabel.grid(row = 3, column = 0, columnspan=3)
+        self.FBObjectSelection = IntVar(root)
+        self.FBObjectSelection.set(self.experiment.useFBO)
+        writeFBOChk = Checkbutton(experimentFrame, var=self.FBObjectSelection)
+        writeFBOChk.grid(row = 3, column=3, pady = 10)
+
+        #Warp file location
+        #warpLabel = Label(experimentFrame, text = 'Warp File Location', padx = 10)
+        #warpLabel.grid(row = 4, column = 0, columnspan=2)
+        self.WarpSelection = StringVar(root)
+        self.WarpSelection.set(self.experiment.warpFileName)
+        warpFileEnt = Entry(experimentFrame, textvariable = self.WarpSelection, width = 30)
+        warpFileEnt.grid(row = 4, column=0, columnspan = 15)
+        warpFileSelectBtn = Button(experimentFrame, text = 'Browse', padx = 7, command = lambda: self.findWarpFiletoSave(monitorEditWindow,warpFileEnt))
+        warpFileSelectBtn.grid(row = 4, column = 3, columnspan = 2)
+
         # recompile during save
         recompileLabel = Label(
             experimentFrame, text='Recompile Experiment When Saving', padx=10)
-        recompileLabel.grid(row=3, column=0, columnspan=3)
+        recompileLabel.grid(row=5, column=0, columnspan=5)
         self.recompileSelection = IntVar(root)
         self.recompileSelection.set(self.recompileExperiment)
         recompileChk = Checkbutton(
             experimentFrame, var=self.recompileSelection)
-        recompileChk.grid(row=3, column=3)
+        recompileChk.grid(row=5, column=5)
 
         # add apply and close buttons
         buttonFrame = Frame(editFrame)
@@ -422,6 +441,13 @@ class Bassoon:
         closeButton = Button(buttonFrame, text='Close Window',
                              command=lambda: monitorEditWindow.destroy())
         closeButton.grid(row=0, column=2)
+
+    # A method to set the warp file from the 'Browse' button in the options menu above
+    def findWarpFiletoSave(self, window, entry):
+        self.experiment.warpFileName = tkfd.askopenfilename()
+        window.attributes('-topmost', True)
+        entry.delete(0,END)
+        entry.insert(0,self.experiment.warpFileName)
 
 
     def applyExperimentChanges(self):
@@ -447,7 +473,7 @@ class Bassoon:
             self.experiment.ttlPort = 'No Available Ports'
         else:
             self.experiment.ttlPort = self.ttlPortSelection.get()
-
+        self.experiment.useFBO = self.FBObjectSelection.get() == 1
         self.recompileExperiment = self.recompileSelection.get() == 1
 
 
@@ -474,7 +500,8 @@ class Bassoon:
                 "userInitiated": self.userInitSelection.get() == 1,
                 "writeTTL": self.writeTtlSelection.get() == 1,
                 "ttlPort": self.ttlPortSelection.get(),
-                "recompileExperiment": self.recompileSelection.get() == 1
+                "useFBO": self.FBObjectSelection.get() == 1,
+                "warpFileName": self.experiment.warpFileName
             }
         }
 
