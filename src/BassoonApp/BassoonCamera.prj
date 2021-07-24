@@ -1,0 +1,71 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="259169596" file="C:\Users\mrsco\Box\Code\stimuli\Bassoon\src\BassoonApp\BassoonCamera.prj" location="C:\Users\mrsco\Box\Code\stimuli\Bassoon\src\BassoonApp" name="BassoonCamera" target="target.mlapps" target-name="Package App">
+    <param.appname>BassoonCamera</param.appname>
+    <param.authnamewatermark />
+    <param.email />
+    <param.company />
+    <param.icon />
+    <param.icons />
+    <param.summary />
+    <param.description />
+    <param.screenshot>C:\Users\mrsco\AppData\Local\Temp\tpbf88765c_0a22_433d_a486_886d0c52971d.png</param.screenshot>
+    <param.version>1.0</param.version>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.output>${PROJECT_ROOT}</param.output>
+    <param.guid>c6ac9293-287e-480d-8e69-2a0088a0c67a</param.guid>
+    <unset>
+      <param.authnamewatermark />
+      <param.email />
+      <param.company />
+      <param.icon />
+      <param.icons />
+      <param.summary />
+      <param.description />
+      <param.version />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.output />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\Bassoon.mlapp</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>C:\ProgramData\MATLAB\SupportPackages\R2020b\toolbox\matlab\webcam\supportpackages\+matlab\+webcam\+internal\Utility.p</file>
+      <file>C:\ProgramData\MATLAB\SupportPackages\R2020b\toolbox\matlab\webcam\supportpackages\+matlab\+webcam\+internal\webcamDesktop.p</file>
+      <file>C:\ProgramData\MATLAB\SupportPackages\R2020b\toolbox\matlab\webcam\supportpackages\+matlab\+webcam\+internal\webcamOnline.p</file>
+      <file>C:\ProgramData\MATLAB\SupportPackages\R2020b\toolbox\matlab\webcam\supportpackages\@webcam\webcam.m</file>
+      <file>${PROJECT_ROOT}\icons\48px-Applications-multimedia.svg.png</file>
+      <file>${PROJECT_ROOT}\icons\48px-Dialog-STOP.svg.png</file>
+    </fileset.depfun>
+    <fileset.resources />
+    <fileset.package />
+    <build-deliverables>
+      <file location="C:\Users\mrsco\Box\Code\stimuli\Bassoon\src" name="BassoonApp" optional="false">C:\Users\mrsco\Box\Code\stimuli\Bassoon\src\BassoonApp</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2020b</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
