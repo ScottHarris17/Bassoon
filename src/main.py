@@ -4,10 +4,10 @@ Created on Fri Jul  9 17:23:23 2021
 
 Welcome to Bassoon. Run this file to open the GUI.
 
-You must have psychopy libraries installed to use built in stimuli and to achieve the proper import.
+You must have psychopy libraries installed to use built in stimuli and to achieve the necessary imports.
 www.psychopy.org
 
-Experiments can be managed through the GUI or programmatically. See docs for more help
+Experiments can be managed through the GUI or programmatically. See README.md for help.
 
 @author: Scott Harris
 scott.harris@ucsf.edu
@@ -383,31 +383,30 @@ class Bassoon:
         # write TTL pulses during stimulus
         writeTtlLabel = Label(
             experimentFrame, text='Write TTL Pulses', padx=10)
-        writeTtlLabel.grid(row=1, column=0, columnspan=3)
-        self.writeTtlSelection = IntVar(root)
+        writeTtlLabel.grid(row = 1, column = 0, columnspan = 2)
+        self.writeTtlSelection = StringVar(root)
         self.writeTtlSelection.set(self.experiment.writeTTL)
-        writeTtlChk = Checkbutton(experimentFrame, var=self.writeTtlSelection)
-        writeTtlChk.grid(row = 1, column=3)
+        writeTtlDropdown = OptionMenu(experimentFrame, self.writeTtlSelection, *['None', 'Pulse', 'Sustained'])
+        writeTtlDropdown.grid(row = 1, column = 2)
 
         #choose ttl port
         ttlPortLabel = Label(experimentFrame, text = 'TTL Port', padx = 10)
-        ttlPortLabel.grid(row = 2, column = 0, columnspan=2)
+        ttlPortLabel.grid(row = 1, column = 3)
         self.ttlPortSelection = StringVar()
         self.ttlPortSelection.set(self.experiment.ttlPort)
         availablePorts = list(list_ports.comports()) #get available com ports
         if len(availablePorts) == 0:
             availablePorts = ['No Available Ports']
-
         ttlPortDropDown = OptionMenu(experimentFrame, self.ttlPortSelection, *availablePorts)
-        ttlPortDropDown.grid(row = 2, column = 2, columnspan = 2)
+        ttlPortDropDown.grid(row = 1, column = 4)
 
         #Framebuffer object selection
         FBOLabel = Label(experimentFrame, text = 'Use FBO?', padx = 10) # Check to see if case exists where user passes morph file, but FBO is false
-        FBOLabel.grid(row = 3, column = 0, columnspan=3)
+        FBOLabel.grid(row = 3, column = 0)
         self.FBObjectSelection = IntVar(root)
         self.FBObjectSelection.set(self.experiment.useFBO)
         writeFBOChk = Checkbutton(experimentFrame, var=self.FBObjectSelection)
-        writeFBOChk.grid(row = 3, column=3, pady = 10)
+        writeFBOChk.grid(row = 3, column = 1, pady = 10)
 
         #Warp file location
         #warpLabel = Label(experimentFrame, text = 'Warp File Location', padx = 10)
@@ -415,19 +414,19 @@ class Bassoon:
         self.WarpSelection = StringVar(root)
         self.WarpSelection.set(self.experiment.warpFileName)
         warpFileEnt = Entry(experimentFrame, textvariable = self.WarpSelection, width = 30)
-        warpFileEnt.grid(row = 4, column=0, columnspan = 15)
+        warpFileEnt.grid(row = 3, column=2, columnspan = 2)
         warpFileSelectBtn = Button(experimentFrame, text = 'Browse', padx = 7, command = lambda: self.findWarpFiletoSave(monitorEditWindow,warpFileEnt))
-        warpFileSelectBtn.grid(row = 4, column = 3, columnspan = 2)
+        warpFileSelectBtn.grid(row = 3, column = 4)
 
-        # recompile during save
+        #Recompile during save
         recompileLabel = Label(
             experimentFrame, text='Recompile Experiment When Saving', padx=10)
-        recompileLabel.grid(row=5, column=0, columnspan=5)
+        recompileLabel.grid(row=4, column=0, columnspan=3)
         self.recompileSelection = IntVar(root)
         self.recompileSelection.set(self.recompileExperiment)
         recompileChk = Checkbutton(
             experimentFrame, var=self.recompileSelection)
-        recompileChk.grid(row=5, column=5)
+        recompileChk.grid(row=4, column=3)
 
         # add apply and close buttons
         buttonFrame = Frame(editFrame)
@@ -442,6 +441,7 @@ class Bassoon:
                              command=lambda: monitorEditWindow.destroy())
         closeButton.grid(row=0, column=2)
 
+
     # A method to set the warp file from the 'Browse' button in the options menu above
     def findWarpFiletoSave(self, window, entry):
         self.experiment.warpFileName = tkfd.askopenfilename()
@@ -451,7 +451,7 @@ class Bassoon:
 
 
     def applyExperimentChanges(self):
-
+        ''' Execute experiment changes when the apply or apply and save button is pressed'''
         # set stimulus window
         self.experiment.stimMonitor = self.stimMonitorSelection.get()
         self.experiment.fullscr = self.stimFullScreenSelection.get() == 1
@@ -465,11 +465,11 @@ class Bassoon:
 
         # experiment
         self.experiment.userInitiated = self.userInitSelection.get() == 1
-        self.experiment.writeTTL = self.writeTtlSelection.get() == 1
+        self.experiment.writeTTL = self.writeTtlSelection.get()
         portSelection = self.ttlPortSelection.get()
         if portSelection in ['No Available Ports', '', None]:
-            self.experiment.writeTTL = 0
-            self.writeTtlSelection.set(0)
+            self.experiment.writeTTL = 'None'
+            self.writeTtlSelection.set('None')
             self.experiment.ttlPort = 'No Available Ports'
         else:
             self.experiment.ttlPort = self.ttlPortSelection.get()
@@ -478,6 +478,7 @@ class Bassoon:
 
 
         print('\n--> New experiment settings have been applied')
+
 
     def setConfigFile(self):
         '''
@@ -516,7 +517,7 @@ class Bassoon:
             json.dump(configDict,f, indent=4)
 
         self.applyExperimentChanges()
-        print('\n--> Changes to experiment settings have been saved as well.')
+        print('\n--> Changes to experiment settings have also been saved.')
 
 
     def editProtocol(self, e=0):
