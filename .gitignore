@@ -2,3 +2,4 @@
 *.json
 *.experiment
 *.pyc
+*.cpython-36.pyc
