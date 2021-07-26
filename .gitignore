@@ -1,0 +1,4 @@
+#Do not track json data, pycaches, or experiments
+*.json
+*.experiment
+*.pyc

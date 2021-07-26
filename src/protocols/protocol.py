@@ -96,11 +96,14 @@ class protocol():
         '''
         sends ttl pulse during experiment if the setting is turned on
         '''
-        if self.writeTTL:
-            try:
-                self._portObj.write(0X4B) #self.port_Obj is initialized in the experiment.activate() method
-            except:
-                print('***WARNING: TTL Pulse Failed***')
+        if self.writeTTL == 'Pulse':
+                try:
+                    self._portObj.write(0X4B) #self.port_Obj is initialized in the experiment.activate() method
+                except:
+                    print('***WARNING: TTL Pulse Failed***')
+        elif self.writeTTL == 'Sustained':
+                #ENTER CODE FROM BEHAVIOR RIG FOR SUSTAINED TTL PULSES
+                pass
         return
 
 

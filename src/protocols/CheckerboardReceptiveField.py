@@ -151,7 +151,7 @@ class CheckerboardReceptiveField(protocol):
                     
                     noiseField.draw()
                     win.flip()
-                    self._portObj.write(0X4B) #write ttl for every frame flip for this stimulus
+                    self.sendTTL()  #write ttl for every frame flip for this stimulus
                     if self.checkQuit():
                             return
                         

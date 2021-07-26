@@ -2,11 +2,10 @@
 """
 Created on Wed Jul 21 17:18:20 2021
 
-@author: mrsco
-"""
+Grating oscillates back and forth across the screen. The oscillation is sinusoidal.
+oscillationAmplitude is the total distance covered by 1/2 oscillation cycle (in visuakl degrees).
+oscillationPeriod is the amount of time it takes to complete one full oscillation cycle (total distance covered = amplitude * 2)
 
-"""
-Created on Fri Jul 16 12:09:17 2021
 
 @author: mrsco
 """

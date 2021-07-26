@@ -2,7 +2,8 @@
 """
 Created on Mon Jul 12 16:17:29 2021
 
-
+Grating moves across the screen in directions specified in orientations parameter.
+Order is random.
 
 @author: mrsco
 """
