@@ -36,8 +36,10 @@ class experiment():
 
         self.userInitiated = False #If True, the user will have to manually start each stimulus. Can also set this property manually for each stimulus
 
-        self.writeTTL = False
+        self.writeTTL = 'None' #can be 'None', 'Pulse', 'Sustained'
         self.ttlPort = ''
+        self.ttlPulses = True
+        self.ttlSustained = False
 
         self.warpFileName = 'Warp File Location' #must be .data
         self.useFBO = False
@@ -117,8 +119,8 @@ class experiment():
             print('!!! Running Protocol Number ' + str(i+1) + ' of ' +  str(len(self.protocolList)))
             p = p[1] #the protocol object is the second one in the tuple
             p.writeTTL = self.writeTTL
-
-            if self.writeTTL:
+            
+            if self.writeTTL != 'None':
                 p._portObj = serial.Serial(self.ttlPort, 1000000) #initialize port_Obj for sending TTL pulses
 
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object
