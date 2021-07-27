@@ -18,7 +18,7 @@ import os
 from tkinter import *
 import tkinter.ttk as ttk
 import tkinter.filedialog as tkfd
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual, data, event, monitors
 from psychopy.tools.filetools import fromFile, toFile
 import serial.tools.list_ports as list_ports
 from datetime import datetime
@@ -472,7 +472,9 @@ class Bassoon:
             self.writeTtlSelection.set('None')
             self.experiment.ttlPort = 'No Available Ports'
         else:
-            self.experiment.ttlPort = self.ttlPortSelection.get()
+            portName = self.ttlPortSelection.get()
+            
+            
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
         self.recompileExperiment = self.recompileSelection.get() == 1
 
@@ -499,7 +501,7 @@ class Bassoon:
             },
             "experiment": {
                 "userInitiated": self.userInitSelection.get() == 1,
-                "writeTTL": self.writeTtlSelection.get() == 1,
+                "writeTTL": self.writeTtlSelection.get(),
                 "ttlPort": self.ttlPortSelection.get(),
                 "useFBO": self.FBObjectSelection.get() == 1,
                 "warpFileName": self.experiment.warpFileName

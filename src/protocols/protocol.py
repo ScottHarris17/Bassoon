@@ -4,7 +4,7 @@ Created on Fri Jul  9 17:24:45 2021
 
 @author: mrsco
 """
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual, data, event, monitors
 import random, math
 
 class protocol():
@@ -95,15 +95,21 @@ class protocol():
     def sendTTL(self):
         '''
         sends ttl pulse during experiment if the setting is turned on
+        TTL pulses or sustained can be selected
         '''
         if self.writeTTL == 'Pulse':
                 try:
-                    self._portObj.write(0X4B) #self.port_Obj is initialized in the experiment.activate() method
+                    self._portObj.write(0X4B) #self._portObj is initialized in the experiment.activate() method
                 except:
                     print('***WARNING: TTL Pulse Failed***')
+        
         elif self.writeTTL == 'Sustained':
-                #ENTER CODE FROM BEHAVIOR RIG FOR SUSTAINED TTL PULSES
-                pass
+            if self._TTLON: #IF TTL is ON, turn it OFF
+                self._portObj.setRTS(True) #'True' turns TTL off on picolo
+                self._TTLON = False
+            else: # If TTL is OFF, turn it ON
+                self._portObj.setRTS(False) #'False' turns TTL ON on picolo
+                self._TTLON = True
         return
 
 

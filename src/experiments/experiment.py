@@ -4,7 +4,7 @@ Created on Fri Jul  9 17:24:12 2021
 
 @author: mrsco
 """
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual, data, event, monitors
 import serial
 import json
 from pathlib import Path
@@ -38,8 +38,6 @@ class experiment():
 
         self.writeTTL = 'None' #can be 'None', 'Pulse', 'Sustained'
         self.ttlPort = ''
-        self.ttlPulses = True
-        self.ttlSustained = False
 
         self.warpFileName = 'Warp File Location' #must be .data
         self.useFBO = False
@@ -120,9 +118,14 @@ class experiment():
             p = p[1] #the protocol object is the second one in the tuple
             p.writeTTL = self.writeTTL
             
-            if self.writeTTL != 'None':
-                p._portObj = serial.Serial(self.ttlPort, 1000000) #initialize port_Obj for sending TTL pulses
-
+            if self.writeTTL == 'Pulse':
+                portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
+                p._portObj = serial.Serial(portNameSerial, 1000000) #initialize port_Obj for sending TTL pulses
+            elif self.writeTTL == 'Sustained':
+                portNameSerial = self.ttlPort[:self.ttlPort.find(' ')]
+                p._portObj = serial.Serial(portNameSerial)
+                p._TTLON = False #used to track state of sustained TTL pulses
+                
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object
 
             #write down properties from previous stimulus
