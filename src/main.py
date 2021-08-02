@@ -37,6 +37,7 @@ from protocols.FlashFamily import FlashFamily
 from protocols.CheckerboardReceptiveField import CheckerboardReceptiveField
 from protocols.MovingGratingDirection import MovingGratingDirection
 from protocols.OscillatingGrating import OscillatingGrating
+from protocols.PupilCalibration import PupilCalibration
 
 class Bassoon:
     def __init__(self, master):
@@ -48,8 +49,7 @@ class Bassoon:
         self.frame = Frame(master)
         self.frame.pack(fill="both", expand=True)
         self.menubar = Menu(root)
-        self.menubar.add_command(
-            label="Load Experiment", command=self.loadExperiment)
+        self.menubar.add_command(label="Load Experiment", command=self.loadExperiment)
         self.optionsMenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_command(label="Options", command=self.editExperiment)
         self.menubar.add_command(label="Quit", command=self.frame.quit)
