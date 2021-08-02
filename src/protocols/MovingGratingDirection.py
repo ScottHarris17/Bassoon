@@ -81,7 +81,7 @@ class MovingGratingDirection(protocol):
                 
         #Pause for keystroke if the user wants to manually initiate
         if self.userInitiated:
-            self.showInformationText(win, 'Stimulus Information: Oscillating Grating\nPress any key to begin')
+            self.showInformationText(win, 'Stimulus Information: Moving Grating\nPress any key to begin')
             event.waitKeys() #wait for key press  
         
         spatialFrequencyCyclesPerPixel = self.spatialFrequency * (1/pixPerDeg)
@@ -104,7 +104,6 @@ class MovingGratingDirection(protocol):
         for ori in self.orientationLog:
             grating.ori = -ori #flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
             epochNum += 1
-            print(ori)
             #show information if necessary
             if self._informationWin[0]:
                 self.showInformationText(win, 'Running Moving Grating Direction. Current orientation = ' + \
