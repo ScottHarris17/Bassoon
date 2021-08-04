@@ -5,6 +5,7 @@ Created on Fri Jul  9 17:24:12 2021
 @author: mrsco
 """
 from psychopy import core, visual, data, event, monitors
+from psychopy.visual.windowwarp import Warper
 import serial
 import json
 from pathlib import Path
@@ -93,8 +94,9 @@ class experiment():
                     allowStencil = self.allowStencil)
 
         if self.useFBO:
-            warper = visual.windowwarp.Warper(
+            warper = Warper(
                 self.win,
+                warp = 'warpfile',
                 warpfile = self.warpFileName
                 )
 
