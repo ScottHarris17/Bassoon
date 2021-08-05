@@ -39,6 +39,8 @@ from protocols.MovingGratingDirection import MovingGratingDirection
 from protocols.OscillatingGrating import OscillatingGrating
 from protocols.PupilCalibration import PupilCalibration
 
+
+
 class Bassoon:
     def __init__(self, master):
         master.title('Bassoon App')

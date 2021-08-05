@@ -128,8 +128,15 @@ class experiment():
                 p._portObj = serial.Serial(portNameSerial)
                 p._TTLON = False #used to track state of sustained TTL pulses
                 
+            
+            #run the protocol
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object
-
+            
+            #Make sure TTL port is turned OFF if running in sustained mode (it's often left on if the user quits a stimulus early)
+            if self.writeTTL == 'Sustained':
+                p._portObj.setRTS(True)
+                p._TTLON = False
+            
             #write down properties from previous stimulus
             protocolProperties = vars(p)
             protocolProperties.pop('_informationWin', None) #can't save ongoing psychopy win so remove it
@@ -138,8 +145,7 @@ class experiment():
             #reset the stimulus window
             self.win.color = self.backgroundColor
             self.win.flip()
-
-            #check if user wants to quit
+            
 
         #clean up
         self.win.close()
