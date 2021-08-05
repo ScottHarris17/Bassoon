@@ -33,4 +33,16 @@ def pixelsWide(pixelsMeasured, cordMeasured, domeRadius = 30.48, screenWidth = 1
     return pixelsWide
 
 
-p = pixelsWide(50, 6)
+#20210805 
+pixMeasured = 140
+cordCM = 24.765
+horizPix = pixelsWide(pixMeasured, cordCM)
+
+
+#set the monitor
+from psychopy.monitors import Monitor
+m = Monitor('projector_405')
+m.setSizePix([horizPix, 100])
+m.setDistance(100)
+m.setWidth(100)
+m.save()

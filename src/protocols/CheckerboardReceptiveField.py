@@ -7,7 +7,7 @@ Created on Thu Jul 15 15:23:17 2021
 
 from protocols.protocol import protocol
 import random
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual, data, event, monitors
 import math
 import numpy as np
 import serial

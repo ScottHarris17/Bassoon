@@ -6,7 +6,7 @@ Created on Fri Jul 16 12:43:47 2021
 """
 
 from protocols.protocol import protocol
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual,data, event, monitors
 import numpy
 import serial
 

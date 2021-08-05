@@ -11,7 +11,7 @@ oscillationPeriod is the amount of time it takes to complete one full oscillatio
 """
 
 from protocols.protocol import protocol
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual, data, event, monitors
 import numpy, math
 import serial
 

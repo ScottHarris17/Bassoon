@@ -8,7 +8,7 @@ Order is random.
 @author: mrsco
 """
 from protocols.protocol import protocol
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual, data, event, monitors
 import serial, random, math
 
 class MovingGratingDirection(protocol):

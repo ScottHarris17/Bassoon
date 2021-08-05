@@ -5,7 +5,7 @@ Created on Mon Aug  2 15:46:55 2021
 @author: mrsco
 """
 from protocols.protocol import protocol
-from psychopy import core, visual, gui, data, event, monitors
+from psychopy import core, visual, data, event, monitors
 import serial, random, numpy, time
 
 class PupilCalibration(protocol):
