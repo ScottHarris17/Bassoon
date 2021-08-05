@@ -39,7 +39,7 @@ class PupilCalibration(protocol):
       
     
     
-    def createIntensityLog(self):
+    def createLightLevelLog(self):
         '''
         Generate a random sequence of orientations given the desired orientations
         
@@ -49,11 +49,11 @@ class PupilCalibration(protocol):
         to use for each epoch
         '''
         lightLevels = list(numpy.linspace(-1, 1, self.numberOfLightLevels))
-        self.lightLevelLog = []
+        self._lightLevelLog = []
         random.seed(self.randomSeed) #reinitialize the random seed
         
         for n in range(self.repititionsPerLightLevel):
-            self.lightLevelLog += random.sample(lightLevels, len(lightLevels))
+            self._lightLevelLog += random.sample(lightLevels, len(lightLevels))
             
     
     def run(self, win, informationWin):
@@ -74,13 +74,13 @@ class PupilCalibration(protocol):
             event.waitKeys() #wait for key press  
         
                 
-        self.createIntensityLog()
+        self.createLightLevelLog()
 
-        totalEpochs = len(self.lightLevelLog)
+        totalEpochs = len(self._lightLevelLog)
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
         
-        for level in self.lightLevelLog:
+        for level in self._lightLevelLog:
             print(level)
             win.color = [level, level, level];
             epochNum += 1

@@ -34,7 +34,7 @@ class OscillatingGrating(protocol):
         self.stimTime = 10.0 #s
         self.tailTime = 1.0 #s
         self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
-                
+        self._angleOffset = 0.0 #reassigned by experiment in most cases
         
     def estimateTime(self):
         '''
@@ -108,7 +108,7 @@ class OscillatingGrating(protocol):
         grating = visual.GratingStim(
             win,
             size = (win.size[0]*2, win.size[1]*2),
-            ori = self.gratingOrientation+180,
+            ori = self.gratingOrientation + 180 - self._angleOffset,
             sf = (spatialFrequencyCyclesPerPixel, None),
             tex = self.gratingTexture
             )
@@ -125,7 +125,7 @@ class OscillatingGrating(protocol):
         
             #show information if necessary
             if self._informationWin[0]:
-                self.showInformationText(win, 'Running Flash\n Epoch ' + str(epochNum) + ' of ' + str(self.stimulusReps))
+                self.showInformationText(win, 'Running Oscillating Grating\n Epoch ' + str(epochNum) + ' of ' + str(self.stimulusReps))
             
             #pause for inter stimulus interval
             win.color = self.backgroundColor

@@ -36,7 +36,8 @@ class experiment():
         self.loggedStimuli = []
 
         self.userInitiated = False #If True, the user will have to manually start each stimulus. Can also set this property manually for each stimulus
-
+        self.angleOffset = 0.0 #deg - offset for directional stimuli
+        
         self.writeTTL = 'None' #can be 'None', 'Pulse', 'Sustained'
         self.ttlPort = ''
 
@@ -58,6 +59,7 @@ class experiment():
                 self.informationScreen = configOptions['infoWindow']['informationScreen']
                 #experiment
                 self.userInitiated = configOptions['experiment']['userInitiated']
+                self.angleOffset = configOptions['experiment']['angleOffset']
                 self.writeTTL = configOptions['experiment']['writeTTL']
                 self.ttlPort = configOptions['experiment']['ttlPort']
                 self.useFBO = configOptions['experiment']['useFBO']
@@ -118,6 +120,11 @@ class experiment():
         for i, p in enumerate(self.protocolList):
             print('!!! Running Protocol Number ' + str(i+1) + ' of ' +  str(len(self.protocolList)))
             p = p[1] #the protocol object is the second one in the tuple
+            
+            #assign relevant experiment properties to the protocol
+            if hasattr(p, '_angleOffset'):
+                p._angleOffset = self.angleOffset
+            
             p.writeTTL = self.writeTTL
             
             if self.writeTTL == 'Pulse':

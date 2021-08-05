@@ -268,7 +268,7 @@ class Bassoon:
 
     def editExperiment(self):
         '''
-        Edit monitor options and save preferences
+        Edit monitor options, save preferences, and more
         '''
         monitorEditWindow = Toplevel(root)
         monitorEditWindow.title('Edit Experiment')
@@ -376,11 +376,20 @@ class Bassoon:
         # user initiates protocols
         userInitLabel = Label(
             experimentFrame, text='Manually Initiate Each Protol', padx=10)
-        userInitLabel.grid(row=0, column=0, columnspan=3)
+        userInitLabel.grid(row=0, column=0, columnspan=2)
         self.userInitSelection = IntVar(root)
         self.userInitSelection.set(self.experiment.userInitiated)
         userInitChk = Checkbutton(experimentFrame, var=self.userInitSelection)
-        userInitChk.grid(row=0, column=3)
+        userInitChk.grid(row=0, column=2)
+        
+        #Angle offset value for directional stimuli
+        angleOffsetLabel = Label(
+            experimentFrame, text = 'Angle Offset', padx = 10)
+        angleOffsetLabel.grid(row=0, column=3)
+        self.angleOffsetSelection = StringVar(root)
+        self.angleOffsetSelection.set(str(self.experiment.angleOffset))
+        angleOffsetEntry = Entry(experimentFrame, textvariable = self.angleOffsetSelection, width = 6)
+        angleOffsetEntry.grid(row=0, column=4)
 
         # write TTL pulses during stimulus
         writeTtlLabel = Label(
@@ -394,7 +403,7 @@ class Bassoon:
         #choose ttl port
         ttlPortLabel = Label(experimentFrame, text = 'TTL Port', padx = 10)
         ttlPortLabel.grid(row = 1, column = 3)
-        self.ttlPortSelection = StringVar()
+        self.ttlPortSelection = StringVar(root)
         self.ttlPortSelection.set(self.experiment.ttlPort)
         availablePorts = list(list_ports.comports()) #get available com ports
         if len(availablePorts) == 0:
@@ -419,7 +428,7 @@ class Bassoon:
         warpFileEnt.grid(row = 3, column=2, columnspan = 2)
         warpFileSelectBtn = Button(experimentFrame, text = 'Browse', padx = 7, command = lambda: self.findWarpFiletoSave(monitorEditWindow,warpFileEnt))
         warpFileSelectBtn.grid(row = 3, column = 4)
-
+                
         #Recompile during save
         recompileLabel = Label(
             experimentFrame, text='Recompile Experiment When Saving', padx=10)
@@ -467,6 +476,11 @@ class Bassoon:
 
         # experiment
         self.experiment.userInitiated = self.userInitSelection.get() == 1
+        try:
+            self.experiment.angleOffset = float(self.angleOffsetSelection.get());
+        except:
+            print('***Could not update Angle Offset value. Input type was probably not convertible to a float')
+            
         self.experiment.writeTTL = self.writeTtlSelection.get()
         portSelection = self.ttlPortSelection.get()
         if portSelection in ['No Available Ports', '', None]:
@@ -503,6 +517,7 @@ class Bassoon:
             },
             "experiment": {
                 "userInitiated": self.userInitSelection.get() == 1,
+                "angleOffset": self.angleOffsetSelection.get(),
                 "writeTTL": self.writeTtlSelection.get(),
                 "ttlPort": self.ttlPortSelection.get(),
                 "useFBO": self.FBObjectSelection.get() == 1,
@@ -554,7 +569,7 @@ class Bassoon:
         entries = []
         for i, prop in enumerate(propNames):
             if prop.startswith('_'):
-                # private properties that are set by the object itself
+                # skip private properties that are set by the object itself
                 # AS A RULE, THE ONLY DATA TYPES THAT SHOULD BE EDITABLE ARE LISTS,
                 # NUMBERS (e.g. float, int), AND STRINGS
                 continue

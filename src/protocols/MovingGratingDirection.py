@@ -27,7 +27,7 @@ class MovingGratingDirection(protocol):
         self.preTime = 1.0 #s
         self.stimTime = 10.0 #s
         self.tailTime = 1.0 #s
-                
+        self._angleOffset = 0.0 # reassigned by the experiment in most cases
         
     def estimateTime(self):
         '''
@@ -53,15 +53,15 @@ class MovingGratingDirection(protocol):
         
         Desired orientations are specified as a list in self.orientations
         
-        creates self.orientationLog, a list, which specifies the orienation 
+        creates self._orientationLog, a list, which specifies the orienation 
         to use for each epoch
         '''
         orientations = self.orientations
-        self.orientationLog = []
+        self._orientationLog = []
         random.seed(self.randomSeed) #reinitialize the random seed
         
         for n in range(self.stimulusReps):
-            self.orientationLog += random.sample(orientations, len(orientations))
+            self._orientationLog += random.sample(orientations, len(orientations))
             
     
     def run(self, win, informationWin):
@@ -97,12 +97,12 @@ class MovingGratingDirection(protocol):
         
         self.createOrientationLog()
 
-        totalEpochs = len(self.orientationLog)
+        totalEpochs = len(self._orientationLog)
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
         
-        for ori in self.orientationLog:
-            grating.ori = -ori #flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
+        for ori in self._orientationLog:
+            grating.ori = -ori - self._angleOffset #flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
             epochNum += 1
             #show information if necessary
             if self._informationWin[0]:

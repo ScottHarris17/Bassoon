@@ -27,7 +27,7 @@ class MovingBar(protocol):
         self.preTime = 1.0 #s
         self.stimTime = 5.0 #s
         self.tailTime = 1.0#s
-        self.angleOffset = 0.0 #deg
+        self._angleOffset = 0.0 #deg - reassigned by the experiment in most cases
                 
         
     def estimateTime(self):
@@ -53,15 +53,15 @@ class MovingBar(protocol):
         
         Desired orientations are specified as a list in self.orientations
         
-        creates self.orientationLog, a list, which specifies the orienation 
+        creates self._orientationLog, a list, which specifies the orienation 
         to use for each epoch
         '''
         orientations = self.orientations
-        self.orientationLog = []
+        self._orientationLog = []
         random.seed(self.randomSeed) #reinitialize the random seed
         
         for n in range(self.stimulusReps):
-            self.orientationLog += random.sample(orientations, len(orientations))
+            self._orientationLog += random.sample(orientations, len(orientations))
             
             
             
@@ -102,11 +102,12 @@ class MovingBar(protocol):
                 fillColor = self.barColor,
                 )
         
-        totalEpochs = len(self.orientationLog)
+        totalEpochs = len(self._orientationLog)
         epochNum = 0
         
         trialClock = core.Clock() #this will reset every trial
-        for ori in self.orientationLog:
+        for ori in self._orientationLog:
+            
             epochNum += 1
             #set initial bar position
             radiansOri = math.radians(ori)
@@ -116,7 +117,7 @@ class MovingBar(protocol):
             #move bar by the proper components given the current orientation
             bar.opacity = 0
             bar.pos = initialPosition
-            bar.ori = -ori #flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
+            bar.ori = -ori - self._angleOffset#flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
             
 
             #show information if necessary
