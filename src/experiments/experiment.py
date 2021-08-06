@@ -47,23 +47,26 @@ class experiment():
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
             with open('configOptions.json') as f:
-                configOptions = json.load(f)
-                #stimWindow
-                self.screen = configOptions['stimWindow']['screen']
-                self.fullscr = configOptions['stimWindow']['fullscr']
-                self.stimMonitor = configOptions['stimWindow']['stimMonitor']
-                #infoWindow
-                self.useInformationMonitor = configOptions['infoWindow']['useInformationMonitor']
-                self.informationMonitor = configOptions['infoWindow']['informationMonitor']
-                self.informationFullScreen = configOptions['infoWindow']['informationFullScreen']
-                self.informationScreen = configOptions['infoWindow']['informationScreen']
-                #experiment
-                self.userInitiated = configOptions['experiment']['userInitiated']
-                self.angleOffset = configOptions['experiment']['angleOffset']
-                self.writeTTL = configOptions['experiment']['writeTTL']
-                self.ttlPort = configOptions['experiment']['ttlPort']
-                self.useFBO = configOptions['experiment']['useFBO']
-                self.warpFileName = configOptions['experiment']['warpFileName']
+                try:
+                    configOptions = json.load(f)
+                    #stimWindow
+                    self.screen = configOptions['stimWindow']['screen']
+                    self.fullscr = configOptions['stimWindow']['fullscr']
+                    self.stimMonitor = configOptions['stimWindow']['stimMonitor']
+                    #infoWindow
+                    self.useInformationMonitor = configOptions['infoWindow']['useInformationMonitor']
+                    self.informationMonitor = configOptions['infoWindow']['informationMonitor']
+                    self.informationFullScreen = configOptions['infoWindow']['informationFullScreen']
+                    self.informationScreen = configOptions['infoWindow']['informationScreen']
+                    #experiment
+                    self.userInitiated = configOptions['experiment']['userInitiated']
+                    self.angleOffset = float(configOptions['experiment']['angleOffset'])
+                    self.writeTTL = configOptions['experiment']['writeTTL']
+                    self.ttlPort = configOptions['experiment']['ttlPort']
+                    self.useFBO = configOptions['experiment']['useFBO']
+                    self.warpFileName = configOptions['experiment']['warpFileName']
+                except:
+                    print('*** Could not load all configuration settings from src/configOptions.json. Manually apply settings in the Options menu')
 
 
     def addProtocol(self, newProtocol):
@@ -130,9 +133,11 @@ class experiment():
             if self.writeTTL == 'Pulse':
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
                 p._portObj = serial.Serial(portNameSerial, 1000000) #initialize port_Obj for sending TTL pulses
+                p._portObj.setRTS(True) #ensure TTL is OFF to begin
             elif self.writeTTL == 'Sustained':
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')]
                 p._portObj = serial.Serial(portNameSerial)
+                p._portObj.setRTS(True) #ensure TTL is OFF to begin
                 p._TTLON = False #used to track state of sustained TTL pulses
                 
             

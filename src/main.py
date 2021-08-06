@@ -477,7 +477,7 @@ class Bassoon:
         # experiment
         self.experiment.userInitiated = self.userInitSelection.get() == 1
         try:
-            self.experiment.angleOffset = float(self.angleOffsetSelection.get());
+            self.experiment.angleOffset = float(self.angleOffsetSelection.get())
         except:
             print('***Could not update Angle Offset value. Input type was probably not convertible to a float')
             
