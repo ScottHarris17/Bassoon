@@ -2,4 +2,4 @@
 *.json
 *.experiment
 *.pyc
-*.cpython-??.pyc
+*.cpython-36.pyc
