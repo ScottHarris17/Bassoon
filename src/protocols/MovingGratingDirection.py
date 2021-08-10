@@ -40,7 +40,7 @@ class MovingGratingDirection(protocol):
         returns: estimated time in seconds
         '''
         timePerEpoch = self.preTime + self.stimTime + self.tailTime
-        numberOfEpochs = self.stimulusReps
+        numberOfEpochs = self.stimulusReps * len(self.orientations)
         self._estimatedTime = timePerEpoch * numberOfEpochs #return estimated time for the total stimulus in seconds
         
         return self._estimatedTime
