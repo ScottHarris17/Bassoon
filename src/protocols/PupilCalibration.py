@@ -81,7 +81,6 @@ class PupilCalibration(protocol):
         trialClock = core.Clock() #this will reset every trial
         
         for level in self._lightLevelLog:
-            print(level)
             win.color = [level, level, level];
             epochNum += 1
             win.flip()
