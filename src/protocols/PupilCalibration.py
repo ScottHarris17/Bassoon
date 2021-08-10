@@ -14,7 +14,7 @@ class PupilCalibration(protocol):
         self.protocolName = 'PupilCalibration'
         self.numberOfLightLevels = 5
         self.repititionsPerLightLevel = 5
-        self.angle = 10 #degrees - angkle that the camera is rotated by
+        self.angle = 10.0 #degrees - angkle that the camera is rotated by
 
         self.preTime = 1.0 #s - unimportant for this stimulus
         self.stimTime = 1.0 #s - unimportant for this stimulus
