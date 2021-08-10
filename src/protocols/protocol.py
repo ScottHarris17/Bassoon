@@ -87,7 +87,7 @@ class protocol():
         allKeys = event.getKeys() #check if user wants to quit early
         if len(allKeys)>0:
             if 'q' in allKeys:
-                self.stoppedEarly = 1
+                self._stoppedEarly = 1
                 return 1
         return 0
             
