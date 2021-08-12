@@ -16,9 +16,9 @@ class PupilCalibration(protocol):
         self.repititionsPerLightLevel = 5
         self.angle = 10.0 #degrees - angkle that the camera is rotated by
 
-        self.preTime = 1.0 #s - unimportant for this stimulus
-        self.stimTime = 1.0 #s - unimportant for this stimulus
-        self.tailTime = 1.0 #s - unimportant for this stimulus
+        self.preTime = 1.0 #s - unused for this stimulus
+        self.stimTime = 1.0 #s - unused for this stimulus
+        self.tailTime = 1.0 #s - unused for this stimulus
                 
         
     def estimateTime(self):
