@@ -25,7 +25,7 @@ class FlashFamily(protocol):
         self.stimTime = 0.5 #s
         self.tailTime = 0.5#s
         self.interFamilyInterval = 5 #s - wait time between each flash family. backGround color is displayed during this time
-                
+        self.interFlashInterval = 0.5 #s - wait time between each flash within a family (should be nonzero to ensure TTL writing)
         
     def estimateTime(self):
         '''
@@ -37,7 +37,7 @@ class FlashFamily(protocol):
         
         returns: estimated time in seconds
         '''
-        timePerEpoch = self.preTime + self.stimTime + self.tailTime
+        timePerEpoch = self.preTime + self.stimTime + self.tailTime + self.interFlashInterval
         numberOfEpochs = len(self.stepSizes) * self.stimulusReps
         interFamilyTime = self.interFamilyInterval * len(self.stepSizes)
         
@@ -62,7 +62,8 @@ class FlashFamily(protocol):
         self.getFR(win)
         self._interFamilyIntervalNumFrames = round(self._FR * self.interFamilyInterval)
         self._actualInterFamilyInterval = self._interFamilyIntervalNumFrames * 1/self._FR
-        
+        self._interFlashIntervalNumFrames = round(self._FR * self.interFlashInterval)
+        self._actualInterFlashInterval = self._interFlashIntervalNumFrames * 1/self._FR
 
         #Pause for keystroke if the user wants to manually initiate
         if self.userInitiated:
@@ -103,6 +104,13 @@ class FlashFamily(protocol):
                         return
             
             for stepNum in range(len(self.stepSizes)):
+                
+                #pause for inter stimulus interval
+                win.color = self.backgroundColor
+                for f in range(self._interFlashIntervalNumFrames):
+                    win.flip()
+                    if self.checkQuit():
+                        return
                 
                 self._stimulusStartLog.append(trialClock.getTime())
                 self.sendTTL()

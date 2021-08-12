@@ -27,6 +27,8 @@ class MovingBar(protocol):
         self.preTime = 1.0 #s
         self.stimTime = 5.0 #s
         self.tailTime = 1.0#s
+        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
+
         self._angleOffset = 0.0 #deg - reassigned by the experiment in most cases
                 
         
@@ -40,7 +42,7 @@ class MovingBar(protocol):
         
         returns: estimated time in seconds
         '''
-        timePerEpoch = self.preTime + self.stimTime + self.tailTime
+        timePerEpoch = self.preTime + self.stimTime + self.tailTime + self.interStimulusInterval
         numberOfEpochs = len(self.orientations) * self.stimulusReps
         self._estimatedTime = timePerEpoch * numberOfEpochs #return estimated time for the total stimulus in seconds
         
@@ -77,6 +79,8 @@ class MovingBar(protocol):
         stimMonitor = win.monitor
         pixPerDeg = self.getPixPerDeg(stimMonitor)
         self.getFR(win)
+        self._interStimulusIntervalNumFrames = round(self._FR * self.interStimulusInterval)
+        self._actualInterStimulusInterval = self._interStimulusIntervalNumFrames * 1/self._FR
         
         barHeightPix = pixPerDeg *self.barHeight
         barWidthPix = pixPerDeg * self.barWidth
@@ -125,7 +129,14 @@ class MovingBar(protocol):
                 self.showInformationText(win, 'Running Moving Bar. Current orientation = ' + \
                                          str(ori) + '\n Epoch ' + str(epochNum) + ' of ' + str(totalEpochs))
             
+            
+            #pause for inter stimulus interval
             win.color = self.backgroundColor
+            for f in range(self._interStimulusIntervalNumFrames):
+                win.flip()
+                if self.checkQuit():
+                    return
+                
             
             self._stimulusStartLog.append(trialClock.getTime())
             self.sendTTL()
@@ -156,6 +167,7 @@ class MovingBar(protocol):
             
             self._stimulusEndLog.append(trialClock.getTime())
             self.sendTTL()
+            
             
             self._numberOfEpochsCompleted += 1
                 
