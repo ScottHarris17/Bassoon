@@ -4,3 +4,12 @@
 *.pyc
 *.cpython-36.pyc
 *.pyc
+src/protocols/__pycache__/protocol.cpython-36.pyc
+src/protocols/__pycache__/Pause.cpython-36.pyc
+src/protocols/__pycache__/OscillatingGrating.cpython-36.pyc
+src/protocols/__pycache__/MovingGratingDirection.cpython-36.pyc
+src/protocols/__pycache__/MovingBar.cpython-36.pyc
+src/protocols/__pycache__/FlashFamily.cpython-36.pyc
+src/protocols/__pycache__/Flash.cpython-36.pyc
+src/protocols/__pycache__/CheckerboardReceptiveField.cpython-36.pyc
+src/experiments/__pycache__/experiment.cpython-36.pyc
