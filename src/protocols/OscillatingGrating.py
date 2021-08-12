@@ -12,7 +12,7 @@ oscillationPeriod is the amount of time it takes to complete one full oscillatio
 
 from protocols.protocol import protocol
 from psychopy import core, visual, data, event, monitors
-import numpy, math
+import numpy, math, random
 import serial
 
 class OscillatingGrating(protocol):
@@ -23,7 +23,7 @@ class OscillatingGrating(protocol):
         self.gratingContrast = 1.0 #multiplied by the color
         self.spatialFrequency = 0.1 #cycles per degree
         self.gratingAmplitude = 1.0
-        self.gratingOrientation = 0.0 #degrees
+        self.gratingOrientations = [0.0, 90.0] #degrees
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
         self.oscillationPeriod = 10.0 #seconds
         self.oscillationAmplitude = 10.0 #visual degrees - distance that the grating moves over the course of one oscillation
@@ -47,13 +47,29 @@ class OscillatingGrating(protocol):
         returns: estimated time in seconds
         '''
         timePerEpoch = self.preTime + self.stimTime + self.tailTime + self.interStimulusInterval
-        numberOfEpochs = self.stimulusReps
+        numberOfEpochs = self.stimulusReps * len(self.gratingOrientations)
         self._estimatedTime = timePerEpoch * numberOfEpochs #return estimated time for the total stimulus in seconds
         
         return self._estimatedTime
       
-    
-    
+        
+    def createOrientationLog(self):
+        '''
+        Generate a random sequence of orientations given the desired orientations
+        
+        Desired orientations are specified as a list in self.orientations
+        
+        creates self._orientationLog, a list, which specifies the orienation 
+        to use for each epoch
+        '''
+        orientations = self.gratingOrientations
+        self._orientationLog = []
+        random.seed(self.randomSeed) #reinitialize the random seed
+        
+        for n in range(self.stimulusReps):
+            self._orientationLog += random.sample(orientations, len(orientations))
+            
+            
     def determineVelocityByFrame(self, pixPerDeg):
         '''
         Determine the phase shift to move the grating on each frame
@@ -79,6 +95,7 @@ class OscillatingGrating(protocol):
         velocity_pixPerFrame = [velocityOnFrameN(f) for f in range(framesPerCycle)]
         return velocity_pixPerFrame 
         
+    
     
     
     def run(self, win, informationWin):
@@ -108,11 +125,12 @@ class OscillatingGrating(protocol):
         grating = visual.GratingStim(
             win,
             size = (win.size[0]*2, win.size[1]*2),
-            ori = self.gratingOrientation + 180 - self._angleOffset,
+            ori = 0, #self.gratingOrientation + 180 - self._angleOffset,
             sf = (spatialFrequencyCyclesPerPixel, None),
             tex = self.gratingTexture
             )
         
+        self.createOrientationLog()
         pixPerFrame = self.determineVelocityByFrame(pixPerDeg)
         cyclesPerFrame = [speed*spatialFrequencyCyclesPerPixel for speed in pixPerFrame] #the number of cycles to move per frame
         #number of cycles to shift the grating by on each frame. In other words phase += numCyclesToShift for each frame
@@ -120,12 +138,14 @@ class OscillatingGrating(protocol):
 
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
-        for stim in range(self.stimulusReps):
+        for ori in self._orientationLog:
             epochNum += 1
-        
+            
+            grating.ori = -ori - self._angleOffset
+            
             #show information if necessary
             if self._informationWin[0]:
-                self.showInformationText(win, 'Running Oscillating Grating\n Epoch ' + str(epochNum) + ' of ' + str(self.stimulusReps))
+                self.showInformationText(win, 'Running Oscillating Grating. Orientation = ' +  str(ori) + '\n Epoch ' + str(epochNum) + ' of ' + str(len(self._orientationLog)))
             
             #pause for inter stimulus interval
             win.color = self.backgroundColor
@@ -163,6 +183,7 @@ class OscillatingGrating(protocol):
             
             self._stimulusEndLog.append(trialClock.getTime())
             self.sendTTL()
+            win.flip();win.flip() #two flips in to allow for a pause for TTL writing
             
             self._numberOfEpochsCompleted += 1
                 
