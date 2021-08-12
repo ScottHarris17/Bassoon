@@ -786,6 +786,10 @@ class Bassoon:
         jsonfname = expfname[0:-11] + '.json'
         jsonDict = vars(self.experiment)
         jsonDict['protocolList'] = [p[0] for p in jsonDict['protocolList']]
+        for p in jsonDict['loggedStimuli']:
+            p.pop('_portObj', None)
+            
+            
         try:  # LOOK INTO WHY THESE COMMANDS THROW AN ERROR SOMETIMES... MIGHT HAVE TO DO WITH WHEN AN EXPERIMENT IS RELOADED AFTER BEING RUN ONCE
             jsonDict['experimentStartTime'] = jsonDict['experimentStartTime'].strftime(
                 "%D %H:%M:%S")
