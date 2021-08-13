@@ -111,5 +111,23 @@ class protocol():
                 self._portObj.setRTS(False) #'False' turns TTL ON on picolo
                 self._TTLON = True
         return
-
-
+    
+    
+    def burstTTL(self, win):
+        '''
+        sends a burst of TTL pulses at the start of each stimulus when the the TTL port is in pulse mode
+        '''
+        if self.writeTTL != 'Pulse':
+            return
+        
+        for i in range(20):
+            self._portObj.write(0X4B)
+            win.flip()
+            
+        core.wait(0.2)
+        
+        for i in range(20):
+            self._portObj.write(0X4B)
+            win.flip()
+        
+        return

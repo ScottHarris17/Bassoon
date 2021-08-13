@@ -134,12 +134,13 @@ class experiment():
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
                 p._portObj = serial.Serial(portNameSerial, 1000000) #initialize port_Obj for sending TTL pulses
                 p._portObj.setRTS(True) #ensure TTL is OFF to begin
+                p.burstTTL(self.win) #execute a stereotyped burst to mark the start of the stimulus in pulse mode
             elif self.writeTTL == 'Sustained':
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')]
                 p._portObj = serial.Serial(portNameSerial)
                 p._portObj.setRTS(True) #ensure TTL is OFF to begin
                 p._TTLON = False #used to track state of sustained TTL pulses
-                
+            
             
             #run the protocol
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object

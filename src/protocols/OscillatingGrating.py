@@ -135,7 +135,7 @@ class OscillatingGrating(protocol):
         cyclesPerFrame = [speed*spatialFrequencyCyclesPerPixel for speed in pixPerFrame] #the number of cycles to move per frame
         #number of cycles to shift the grating by on each frame. In other words phase += numCyclesToShift for each frame
         self._numCyclesToShiftByFrame = [cyclesPerFrame[f%len(cyclesPerFrame)] for f in range(self._stimTimeNumFrames)]
-
+        
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
         for ori in self._orientationLog:
