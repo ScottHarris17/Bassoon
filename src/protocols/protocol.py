@@ -116,18 +116,20 @@ class protocol():
     def burstTTL(self, win):
         '''
         sends a burst of TTL pulses at the start of each stimulus when the the TTL port is in pulse mode
+        
+        The stereotyped busrt is 20 TTL pulses at frame rate, wait 0.2 seconds, and 20 more TTL pulses at frame rate
         '''
         if self.writeTTL != 'Pulse':
             return
         
         for i in range(20):
-            self._portObj.write(0X4B)
+            self.sendTTL()
             win.flip()
             
         core.wait(0.2)
         
         for i in range(20):
-            self._portObj.write(0X4B)
+            self.sendTTL()
             win.flip()
         
         return
