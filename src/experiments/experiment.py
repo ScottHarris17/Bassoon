@@ -20,7 +20,7 @@ class experiment():
         self.allowGUI = True
         self.screen = 0
         self.fullscr = False
-        self.backgroundColor = [-1, -1, -1]
+        self.backgroundColor = [-1, -1, -1] #doesn't do much, more or less obselete because it's hardly seen
         self.units = 'pix'
         self.allowStencil = True
         self.stimMonitor = 'testMonitor'
@@ -43,7 +43,9 @@ class experiment():
 
         self.warpFileName = 'Warp File Location' #must be .data
         self.useFBO = False
-
+        
+        self.FR = 0 #frame rate of the stimulus window
+        
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
             with open('configOptions.json') as f:
@@ -97,7 +99,10 @@ class experiment():
                     units = self.units,
                     useFBO = self.useFBO,
                     allowStencil = self.allowStencil)
+        
+        self.FR = self.win.getActualFrameRate() #log the frame rate of the stimulus window
 
+        #set a warper if you want to morph the stimulus
         if self.useFBO:
             warper = Warper(
                 self.win,
@@ -105,7 +110,7 @@ class experiment():
                 warpfile = self.warpFileName
                 )
 
-        #if the user would like to uise a second screen to display stimulus information then initialize that screen here
+        #if the user would like to use a second screen to display stimulus information then initialize that screen here
         #the flips to this second window must be called in the stimulus protocol itself
         if self.useInformationMonitor:
             self.informationWin = visual.Window(
@@ -128,8 +133,9 @@ class experiment():
             if hasattr(p, '_angleOffset'):
                 p._angleOffset = self.angleOffset
             
-            p.writeTTL = self.writeTTL
+            p.writeTTL = self.writeTTL #set the TTL write mode (inherits from the experiment)
             
+            #set up the TTL ports based on the mode.
             if self.writeTTL == 'Pulse':
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
                 p._portObj = serial.Serial(portNameSerial, 1000000) #initialize port_Obj for sending TTL pulses
@@ -155,12 +161,9 @@ class experiment():
             protocolProperties.pop('_informationWin', None) #can't save ongoing psychopy win so remove it
             self.loggedStimuli.append(protocolProperties)
 
-            #reset the stimulus window
-            self.win.color = self.backgroundColor
-            self.win.flip()
-            
 
-        #clean up
+
+        #clean up after the activation loop
         self.win.close()
 
         if self.useInformationMonitor:
