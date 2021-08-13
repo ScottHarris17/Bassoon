@@ -77,13 +77,13 @@ class FlashFamily(protocol):
         self.flashHeight_deg = winHeight/pixPerDeg
         
         
-        self.flashLog = [] #holds the single value intensity for each flash to be played, in the order that they will be played
+        self._flashLog = [] #holds the single value intensity for each flash to be played, in the order that they will be played
         for fam in range(self.stimulusReps):
             for step in self.stepSizes:
-                self.flashLog.append(self.backgroundColor[0] + step)
+                self._flashLog.append(self.backgroundColor[0] + step)
         
 
-        intensityList = [[size, size, size] for size in self.flashLog[0:len(self.stepSizes)]] #List of list corresponding to color to assign to win object for each flash in one family
+        intensityList = [[size, size, size] for size in self._flashLog[0:len(self.stepSizes)]] #List of list corresponding to color to assign to win object for each flash in one family
         epochNum = 0
         
         trialClock = core.Clock() #this will reset every trial
