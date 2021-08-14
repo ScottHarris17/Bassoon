@@ -138,7 +138,7 @@ class experiment():
             #set up the TTL ports based on the mode.
             if self.writeTTL == 'Pulse':
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
-                p._portObj = serial.Serial(portNameSerial, 1000000) #initialize port_Obj for sending TTL pulses
+                p._portObj = serial.Serial(portNameSerial, 4000000) #initialize port_Obj for sending TTL pulses
                 p._portObj.setRTS(True) #ensure TTL is OFF to begin
                 p.burstTTL(self.win) #execute a stereotyped burst to mark the start of the stimulus in pulse mode
             elif self.writeTTL == 'Sustained':
