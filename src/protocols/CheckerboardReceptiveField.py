@@ -62,7 +62,7 @@ class CheckerboardReceptiveField(protocol):
     
     def run(self, win, informationWin):
         '''
-        Executes the FlashFamily stimulus
+        Executes the Checkerboard Receptive Field stimulus
         '''
         self._completed = 0
         
