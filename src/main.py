@@ -488,7 +488,7 @@ class Bassoon:
             self.writeTtlSelection.set('None')
             self.experiment.ttlPort = 'No Available Ports'
         else:
-            portName = self.ttlPortSelection.get()
+            self.experiment.ttlPort = portSelection
             
             
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
