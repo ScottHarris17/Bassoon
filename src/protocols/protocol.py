@@ -95,7 +95,8 @@ class protocol():
     def sendTTL(self):
         '''
         sends ttl pulse during experiment if the setting is turned on
-        TTL pulses or sustained can be selected
+        TTL pulses or sustained can be selected. If pulses are turned on, this
+        only executes during a protocol, but not before.
         '''
         if self.writeTTL == 'Pulse':
                 try:
