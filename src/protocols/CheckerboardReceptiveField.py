@@ -114,7 +114,7 @@ class CheckerboardReceptiveField(protocol):
             )
 
         
-        self.burstTTL() #burst to mark onset of the stimulus
+        self.burstTTL(win) #burst to mark onset of the stimulus
         
         trialClock = core.Clock() #this will reset every trial       
         for i in range(self.stimulusReps):
