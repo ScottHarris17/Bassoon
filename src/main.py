@@ -673,7 +673,7 @@ class Bassoon:
                 setattr(selectedProtocol, propName, convertedValue)
             except:
                 print('***Update Failure for property with name ' + updateNames[i]
-                      + 'Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
+                      + ' Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
 
         # put the object back into the experiment sketch
         self.experimentSketch[selectedIndex] = (
