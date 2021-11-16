@@ -18,7 +18,6 @@ class MovingGratingDirection(protocol):
         self.gratingColor = [1.0, 1.0, 1.0]
         self.gratingContrast = 1.0 #multiplied by the color
         self.spatialFrequency = 0.1 #cycles per degree
-        self.gratingAmplitude = 1.0
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
         self.speed = 10.0 #deg/s
         self.orientations = [float(x*45) for x in range(8)] #list of floats - degrees
@@ -93,7 +92,9 @@ class MovingGratingDirection(protocol):
             win,
             size = (win.size[0]*2, win.size[1]*2),
             sf = (spatialFrequencyCyclesPerPixel, None),
-            tex = self.gratingTexture
+            tex = self.gratingTexture,
+            contrast = self.gratingContrast,
+            color = self.gratingColor
             )
         
         self._numCyclesToShiftByFrame = self.speed*self.spatialFrequency*(1/self._FR)
