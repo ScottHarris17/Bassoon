@@ -114,7 +114,9 @@ class CheckerboardReceptiveField(protocol):
             )
 
         
-        trialClock = core.Clock() #this will reset every trial        
+        self.burstTTL(win) #burst to mark onset of the stimulus
+        
+        trialClock = core.Clock() #this will reset every trial       
         for i in range(self.stimulusReps):
         
             #show information if necessary
@@ -143,6 +145,11 @@ class CheckerboardReceptiveField(protocol):
             #stim time
             #there are two stimulus options. If the user is writing TTL, then the first IF block executes. This writes a TTL pulse with every frame and because it's all in one code block it speeds up valuable computation time for each frame
             if self.writeTTL:
+                
+                #decrease baudrate for speed during frame flips
+                if self.writeTTL == 'Pulse':
+                    self._portObj.baudrate = 1000000
+                    
                 for f in range(self._stimTimeNumFrames):
                     flipNum = f//self.frameDwell
                     if flipNum == f/self.frameDwell:
@@ -154,8 +161,12 @@ class CheckerboardReceptiveField(protocol):
                     self.sendTTL()  #write ttl for every frame flip for this stimulus
                     if self.checkQuit():
                             return
+                
+                #return baudrate to high value
+                if self.writeTTL == 'Pulse':
+                    self._portObj.baudrate = 4000000
                         
-            #if the user isn't sending a TTL pulse then execute the ELSE block. This is identical to the IF block without the ttl output
+            #if the user isn't sending a TTL pulse then execute the ELSE block. This is identical to the IF block without the TTL output
             else:
                 for f in range(self._stimTimeNumFrames):
                     flipNum = f//self.frameDwell

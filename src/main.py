@@ -484,11 +484,11 @@ class Bassoon:
         self.experiment.writeTTL = self.writeTtlSelection.get()
         portSelection = self.ttlPortSelection.get()
         if portSelection in ['No Available Ports', '', None]:
-            self.experiment.writeTTL = 'None'
-            self.writeTtlSelection.set('None')
-            self.experiment.ttlPort = 'No Available Ports'
+            self.experiment.writeTTL = 'None' #reset write ttl feature to not active
+            self.writeTtlSelection.set('None') #reset option box to reflect that you're not writing
+            self.experiment.ttlPort = 'No Available Ports' #set the name of the port
         else:
-            self.experiment.ttlPort = portSelection
+            self.experiment.ttlPort = portSelection #set the name of the port
             
             
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
