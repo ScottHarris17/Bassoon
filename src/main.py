@@ -876,6 +876,7 @@ def secondsToMinutesAndSeconds(seconds):
 ##############################################################################
 root = Tk()  # full function = tk.Tk()
 root.geometry('400x600')
+root.iconbitmap(r'images\bassoonIcon.ico')
 app = Bassoon(root)
 
 root.mainloop()
