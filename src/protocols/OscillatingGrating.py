@@ -21,9 +21,9 @@ class OscillatingGrating(protocol):
         self.protocolName = 'OscillatingGrating'
         self.gratingColor = [1.0, 1.0, 1.0]
         self.gratingContrast = 1.0 #multiplied by the color
+        self.meanIntensity = 0.0; #mean intensity of the grating
         self.spatialFrequency = 0.1 #cycles per degree
-        self.gratingAmplitude = 1.0
-        self.gratingOrientations = [0.0, 90.0] #degrees
+        self.gratingOrientations = [90.0, 270.0] #degrees
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
         self.oscillationPeriod = 10.0 #seconds
         self.oscillationAmplitude = 10.0 #visual degrees - distance that the grating moves over the course of one oscillation
@@ -94,9 +94,8 @@ class OscillatingGrating(protocol):
         
         velocity_pixPerFrame = [velocityOnFrameN(f) for f in range(framesPerCycle)]
         return velocity_pixPerFrame 
-        
     
-    
+      
     
     def run(self, win, informationWin):
         '''
@@ -127,9 +126,30 @@ class OscillatingGrating(protocol):
             size = (win.size[0]*2, win.size[1]*2),
             ori = 0, #self.gratingOrientation + 180 - self._angleOffset,
             sf = (spatialFrequencyCyclesPerPixel, None),
-            tex = self.gratingTexture
+            tex = self.gratingTexture,
+            contrast = self.gratingContrast,
+            color = self.gratingColor
             )
         
+        
+        #The cover rectangle is drawn on top of the primary grating. It is used
+        #to change the mean intensity of the grating when the user desires. 
+        #If the mean intensity is set to 0, then the cover rectangle is still
+        #drawn but with an opacity of 0
+        coverRectangle = visual.Rect(
+            win,
+            size = (win.size[0]*2, win.size[1]*2),
+            opacity = 0
+            )
+        
+        if self.meanIntensity > 0:
+            coverRectangle.fillColor = [1, 1, 1]
+            coverRectangle.opacity = self.meanIntensity
+        elif self.meanIntensity < 0:
+            coverRectangle.fillColor = [-1, -1, -1]
+            coverRectangle.opacity = -1*self.meanIntensity
+            
+            
         self.createOrientationLog()
         pixPerFrame = self.determineVelocityByFrame(pixPerDeg)
         cyclesPerFrame = [speed*spatialFrequencyCyclesPerPixel for speed in pixPerFrame] #the number of cycles to move per frame
@@ -160,6 +180,7 @@ class OscillatingGrating(protocol):
             self._numberOfEpochsStarted += 1
             for f in range(self._preTimeNumFrames):
                 grating.draw()
+                coverRectangle.draw()
                 win.flip()
                 if self.checkQuit():
                     return
@@ -168,6 +189,7 @@ class OscillatingGrating(protocol):
             for f in range(self._stimTimeNumFrames):
                 grating.phase += self._numCyclesToShiftByFrame[f]
                 grating.draw()
+                coverRectangle.draw()
                 win.flip()
                 if self.checkQuit():
                     return
@@ -176,6 +198,7 @@ class OscillatingGrating(protocol):
             win.color = self.backgroundColor
             for f in range(self._tailTimeNumFrames):
                 grating.draw()
+                coverRectangle.draw()
                 win.flip()
                 if self.checkQuit():
                     return
