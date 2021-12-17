@@ -646,11 +646,11 @@ class Bassoon:
         self.experiment.writeTTL = self.writeTtlSelection.get()
         portSelection = self.ttlPortSelection.get()
         if portSelection in ['No Available Ports', '', None]:
-            self.experiment.writeTTL = 'None'
-            self.writeTtlSelection.set('None')
-            self.experiment.ttlPort = 'No Available Ports'
+            self.experiment.writeTTL = 'None' #reset write ttl feature to not active
+            self.writeTtlSelection.set('None') #reset option box to reflect that you're not writing
+            self.experiment.ttlPort = 'No Available Ports' #set the name of the port
         else:
-            self.experiment.ttlPort = portSelection
+            self.experiment.ttlPort = portSelection #set the name of the port
 
 
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
@@ -836,7 +836,7 @@ class Bassoon:
                 setattr(selectedProtocol, propName, convertedValue)
             except:
                 print('***Update Failure for property with name ' + updateNames[i]
-                      + 'Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
+                      + ' Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
 
         # put the object back into the experiment sketch
         self.experimentSketch[selectedIndex] = (
@@ -1039,6 +1039,7 @@ def secondsToMinutesAndSeconds(seconds):
 ##############################################################################
 root = Tk()  # full function = tk.Tk()
 root.geometry('400x600')
+root.iconbitmap(r'images\bassoonIcon.ico')
 app = Bassoon(root)
 
 root.mainloop()

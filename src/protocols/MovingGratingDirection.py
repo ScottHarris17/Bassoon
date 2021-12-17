@@ -17,6 +17,7 @@ class MovingGratingDirection(protocol):
         self.protocolName = 'MovingGratingDirection'
         self.gratingColor = [1.0, 1.0, 1.0]
         self.gratingContrast = 1.0 #multiplied by the color
+        self.meanIntensity = 0.0; #mean intensity of the grating
         self.spatialFrequency = 0.1 #cycles per degree
         self.gratingAmplitude = 1.0
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
@@ -94,7 +95,28 @@ class MovingGratingDirection(protocol):
             size = (win.size[0]*2, win.size[1]*2),
             sf = (spatialFrequencyCyclesPerPixel, None),
             tex = self.gratingTexture
+            tex = self.gratingTexture,
+            contrast = self.gratingContrast,
+            color = self.gratingColor
             )
+        
+        
+        #The cover rectangle is drawn on top of the primary grating. It is used
+        #to change the mean intensity of the grating when the user desires. 
+        #If the mean intensity is set to 0, then the cover rectangle is still
+        #drawn but with an opacity of 0
+        coverRectangle = visual.Rect(
+            win,
+            size = (win.size[0]*2, win.size[1]*2),
+            opacity = 0
+            )
+        
+        if self.meanIntensity > 0:
+            coverRectangle.fillColor = [1, 1, 1]
+            coverRectangle.opacity = self.meanIntensity
+        elif self.meanIntensity < 0:
+            coverRectangle.fillColor = [-1, -1, -1]
+            coverRectangle.opacity = -1*self.meanIntensity
         
         self._numCyclesToShiftByFrame = self.speed*self.spatialFrequency*(1/self._FR)
         
@@ -104,6 +126,7 @@ class MovingGratingDirection(protocol):
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
         
+        #stimulus loop
         for ori in self._orientationLog:
             grating.ori = -ori - self._angleOffset #flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
             epochNum += 1
@@ -126,6 +149,7 @@ class MovingGratingDirection(protocol):
             self._numberOfEpochsStarted += 1
             for f in range(self._preTimeNumFrames):
                 grating.draw()
+                coverRectangle.draw()
                 win.flip()
                 if self.checkQuit():
                     return
@@ -134,6 +158,7 @@ class MovingGratingDirection(protocol):
             for f in range(self._stimTimeNumFrames):
                 grating.phase += self._numCyclesToShiftByFrame
                 grating.draw()
+                coverRectangle.draw()
                 win.flip()
                 if self.checkQuit():
                     return
@@ -141,6 +166,7 @@ class MovingGratingDirection(protocol):
             #tail time
             for f in range(self._tailTimeNumFrames):
                 grating.draw()
+                coverRectangle.draw()
                 win.flip()
                 if self.checkQuit():
                     return
