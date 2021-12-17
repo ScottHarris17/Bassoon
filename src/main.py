@@ -25,7 +25,7 @@ from datetime import datetime
 import pickle
 import json
 import math
-
+import time
 
 # Each protocol subclass must be imported here:
 from experiments.experiment import experiment
@@ -317,6 +317,13 @@ class Bassoon:
             stimulusFrame, self.stimScreenSelection, *[0, 1, 2, 3])
         stimScreenNumberDropdown.grid(row=2, column=6)
 
+        # stimulus monitor gamma calibration
+        self.calGamma = 2.0
+        stimCalibrationLabel = Label(stimulusFrame, text='Calibrate gamma', padx=7)
+        stimCalibrationLabel.grid(row=3, column=1)
+        self.stimCalibrationBtn = Button(stimulusFrame, text='\u03B3 is {g}'.format(g=round(self.experiment.gamma,5)), padx=7, command= lambda: self.calibrateGammaMenu())
+        self.stimCalibrationBtn.grid(row=3, column=2)
+
         # information monitor selection
         informationFrame = LabelFrame(
             editFrame, text='Information Monitor', bd=5, pady=10)
@@ -381,7 +388,7 @@ class Bassoon:
         self.userInitSelection.set(self.experiment.userInitiated)
         userInitChk = Checkbutton(experimentFrame, var=self.userInitSelection)
         userInitChk.grid(row=0, column=2)
-        
+
         #Angle offset value for directional stimuli
         angleOffsetLabel = Label(
             experimentFrame, text = 'Angle Offset', padx = 10)
@@ -428,7 +435,7 @@ class Bassoon:
         warpFileEnt.grid(row = 3, column=2, columnspan = 2)
         warpFileSelectBtn = Button(experimentFrame, text = 'Browse', padx = 7, command = lambda: self.findWarpFiletoSave(monitorEditWindow,warpFileEnt))
         warpFileSelectBtn.grid(row = 3, column = 4)
-                
+
         #Recompile during save
         recompileLabel = Label(
             experimentFrame, text='Recompile Experiment When Saving', padx=10)
@@ -452,6 +459,158 @@ class Bassoon:
                              command=lambda: monitorEditWindow.destroy())
         closeButton.grid(row=0, column=2)
 
+    # Gamma calibration of monitor
+    def calibrateGammaMenu(self):
+        '''Calibrate gamma value of stimulus monitor'''
+        # create subwindow for calibration
+        calibWindow = Toplevel(root)
+        calibWindow.title('Calibration')
+        calibWindow.geometry('550x250')
+
+        calibFrame = Frame(calibWindow, padx=20)
+        calibFrame.pack(fill="both", expand=True)
+
+        # 'enter values for gamma calibration' section
+        gammaFrame = LabelFrame(calibFrame, text='Gamma Calibration', bd=3, pady=10)
+        gammaFrame.configure(font=("Helvetica", 14))
+        gammaFrame.pack()
+
+        stepsLabel = Label(gammaFrame,text='Luminance step size', padx=10)
+        stepsLabel.grid(row=1,column=1)
+        steps = DoubleVar(root)
+        steps.set(0.1)
+        stepsDropdown = OptionMenu(gammaFrame, steps, *[0.1 , 0.2, 0.4])
+        stepsDropdown.grid(row=1,column=2)
+
+        pixelEntLabel = Label(gammaFrame,text='Current Pixel Value',padx=10)
+        pixelEntLabel.grid(row=2,column=1)
+        pVal = DoubleVar()
+        pixelEntry = Entry(gammaFrame,textvariable=pVal,bg='#FFFDD0')
+        pixelEntry.grid(row=3,column=1)
+        lumEntLabel = Label(gammaFrame,text='Measure Luminance',padx=10)
+        lumEntLabel.grid(row=2,column=2)
+
+        lVal = DoubleVar()
+        lumEntry = Entry(gammaFrame,textvariable=lVal, validate='key', bg='#FFFDD0')
+        lumEntry.grid(row=3,column=2)
+
+
+        units = StringVar()
+        units.set('nm')
+        unitsDropdown = OptionMenu(gammaFrame, units, *['\u00B5'+'m','nm','pm'])
+        unitsDropdown.grid(row=3, column=3)
+        # Press this button to create psychopy window and record luminance values
+        dataLabel = Button(gammaFrame,text="Begin calibration",padx=10, command= lambda: beginCal())
+        dataLabel.grid(row=3,column=4)
+
+        #Press this button to change gamma without calibration
+        gammaLbl = Label(gammaFrame,text='Gamma for {monitor}'.format(monitor=self.stimMonitorSelection.get()), padx=10)
+        gammaLbl.grid(row=5, column=1)
+        gVal = DoubleVar()
+        gVal.set(self.experiment.gamma)
+        gammaEntry = Entry(gammaFrame,textvariable=gVal,bg='#FEC47F')
+        gammaEntry.grid(row=5,column=2)
+        gammaButton = Button(gammaFrame,text='Set gamma', padx=4, command= lambda: monitors.Monitor(self.stimMonitorSelection.get()).setGamma(gVal.get()))
+        gammaButton.grid(row=5, column=3)
+
+        self.luminanceValues = []
+        def beginCal():
+            # Initiate monitor window and GUI for collection of luminance values
+            gammaLbl.grid_remove()
+            gammaEntry.grid_remove()
+            gammaButton.grid_remove()
+
+            def gcloser():
+                self.gammaWin.close()
+                calibWindow.destroy()
+
+            lumEntry.delete(0,END)
+            pixelEntry.delete(0,END)
+            pixelEntry.insert(0,-1)
+            currPix = -1
+            self.pixVals = []
+            step_size = steps.get()
+            self.gammaWin = visual.Window(screen = self.stimScreenSelection.get(), size=[500,500],fullscr=False, color = (-1, -1, -1), monitor = monitors.Monitor(self.stimMonitorSelection.get()))
+            calibWindow.protocol('WM_DELETE_WINDOW',gcloser)
+            # Set up iterator of pixel values list
+            for i in range(int(2/step_size)):
+                currPix+=step_size
+                currPix = round(currPix,2)
+                if self.pixVals.count(currPix) == 0:
+                    self.pixVals.append(currPix)
+            # Button to iterate through pixel values on each press
+            self.pixValsIter = iter(self.pixVals)
+            nextButton = Button(gammaFrame,text='Next Pixel Value',padx=10,command= lambda: nextLum())
+            nextButton.grid(row=4, column=4)
+
+            def nextLum():
+                # Iterate through pixel values to set monitor Window
+                lumVal = lVal.get()
+                #check if input is number to avoid goofs
+                def is_number(str):
+                    try:
+                        float(str)
+                    except Exception as e:
+                        return False
+                    else:
+                        return True
+
+                if lumVal == '' or !(is_number(lumVal)):
+                    return
+                counts = [0,0,0]
+                try:
+
+                    if units.get() == '\u00B5'+'m':
+                        lumVal *= 10**-6
+                        counts[0] += 1
+                    elif units.get() == 'nm':
+                        lumVal *= 10**-9
+                        counts[1] += 1
+                    elif units.get() == 'pm':
+                        lumVal *= 10**-12
+                        counts[2] += 1
+
+                    self.luminanceValues.append(lumVal)
+                    pixVal = next(self.pixValsIter)
+                    lumEntry.delete(0,END)
+                    pixelEntry.delete(0,END)
+                    pixelEntry.insert(0,pixVal)
+                    self.gammaWin.color = (pixVal, pixVal, pixVal)
+                    self.gammaWin.flip()
+                except Exception as e:
+                    self.gammaWin.close()
+                    nextButton.destroy()
+                    self.pixVals.insert(0,-1)
+
+                    #Bring back gamma setter
+                    gammaLbl.grid()
+                    gammaEntry.grid()
+                    gammaButton.grid()
+
+                    # Normalize pixVals
+                    normalize = lambda arr: [(x-min(arr))/(max(arr)-min(arr)) for x in arr]
+                    reduce = lambda arr,m: [x/(10**-m) for x in arr]
+                    pix_inputs = normalize(self.pixVals)
+                    # Reduce luminances by most common magnitude. This is because GammaCalculator is more tuned to candela/m^2, and not wattage, like our photometer. Perhaps gamma is not as accurate?
+                    count_index = counts.index(max(counts))
+                    if count_index == 0:
+                        self.luminanceValues = reduce(self.luminanceValues,6)
+                    elif count_index == 1:
+                        self.luminanceValues = reduce(self.luminanceValues,9)
+                    else:
+                        self.luminanceValues = reduce(self.luminanceValues,12)
+
+                    # Calculate gamma with normalzed pixels and measured luminances
+                    gcalc = monitors.GammaCalculator(inputs=pix_inputs,lums=self.luminanceValues,eq=1)
+                    print('---> Done with luminance value collection. Gamma of {gamma} will be set for {monitor}'.format(gamma=gcalc.gamma,monitor=self.stimMonitorSelection.get()))
+                    # Set gamma to monitor
+                    self.calGamma = gcalc.gamma
+                    monitors.Monitor(self.stimMonitorSelection.get()).setGamma(gcalc.gamma)
+                    gVal.set(self.calGamma)
+                    gammaEntry.delete(0,END)
+                    gammaEntry.insert(0,gcalc.gamma)
+                    self.stimCalibrationBtn.config(text= '\u03B3 is {g}'.format(g=round(gcalc.gamma,5)))
+                    self.setConfigFile()
 
     # A method to set the warp file from the 'Browse' button in the options menu above
     def findWarpFiletoSave(self, window, entry):
@@ -467,6 +626,9 @@ class Bassoon:
         self.experiment.stimMonitor = self.stimMonitorSelection.get()
         self.experiment.fullscr = self.stimFullScreenSelection.get() == 1
         self.experiment.screen = self.stimScreenSelection.get()
+        self.experiment.gamma = self.calGamma
+        if self.calGamma == 2.0:
+            print('***Gamma for monitor set to default value (2.0). Run gamma calibration to load true gamma.')
 
         # information window
         self.experiment.useInformationMonitor = self.informationUseSelection.get() == 1
@@ -480,17 +642,17 @@ class Bassoon:
             self.experiment.angleOffset = float(self.angleOffsetSelection.get())
         except:
             print('***Could not update Angle Offset value. Input type was probably not convertible to a float')
-            
+
         self.experiment.writeTTL = self.writeTtlSelection.get()
         portSelection = self.ttlPortSelection.get()
         if portSelection in ['No Available Ports', '', None]:
-            self.experiment.writeTTL = 'None' #reset write ttl feature to not active
-            self.writeTtlSelection.set('None') #reset option box to reflect that you're not writing
-            self.experiment.ttlPort = 'No Available Ports' #set the name of the port
+            self.experiment.writeTTL = 'None'
+            self.writeTtlSelection.set('None')
+            self.experiment.ttlPort = 'No Available Ports'
         else:
-            self.experiment.ttlPort = portSelection #set the name of the port
-            
-            
+            self.experiment.ttlPort = portSelection
+
+
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
         self.recompileExperiment = self.recompileSelection.get() == 1
 
@@ -507,7 +669,8 @@ class Bassoon:
             "stimWindow": {
                 "stimMonitor": self.stimMonitorSelection.get(),
                 "fullscr": self.stimFullScreenSelection.get() == 1,
-                "screen": self.stimScreenSelection.get()
+                "screen": self.stimScreenSelection.get(),
+                "gamma": self.calGamma
             },
             "infoWindow": {
                 "useInformationMonitor": self.informationUseSelection.get() == 1,
@@ -673,7 +836,7 @@ class Bassoon:
                 setattr(selectedProtocol, propName, convertedValue)
             except:
                 print('***Update Failure for property with name ' + updateNames[i]
-                      + ' Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
+                      + 'Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
 
         # put the object back into the experiment sketch
         self.experimentSketch[selectedIndex] = (
@@ -788,8 +951,8 @@ class Bassoon:
         jsonDict['protocolList'] = [p[0] for p in jsonDict['protocolList']]
         for p in jsonDict['loggedStimuli']:
             p.pop('_portObj', None)
-            
-            
+
+
         try:  # LOOK INTO WHY THESE COMMANDS THROW AN ERROR SOMETIMES... MIGHT HAVE TO DO WITH WHEN AN EXPERIMENT IS RELOADED AFTER BEING RUN ONCE
             jsonDict['experimentStartTime'] = jsonDict['experimentStartTime'].strftime(
                 "%D %H:%M:%S")
@@ -876,7 +1039,6 @@ def secondsToMinutesAndSeconds(seconds):
 ##############################################################################
 root = Tk()  # full function = tk.Tk()
 root.geometry('400x600')
-root.iconbitmap(r'images\bassoonIcon.ico')
 app = Bassoon(root)
 
 root.mainloop()
