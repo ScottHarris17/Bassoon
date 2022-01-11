@@ -530,7 +530,7 @@ class Bassoon:
             currPix = -1
             self.pixVals = []
             step_size = steps.get()
-            self.gammaWin = visual.Window(screen = self.stimScreenSelection.get(), size=[500,500],fullscr=False, color = (-1, -1, -1), monitor = monitors.Monitor(self.stimMonitorSelection.get()))
+            self.gammaWin = visual.Window(screen = self.stimScreenSelection.get(),fullscr=True, color = (-1, -1, -1), monitor = monitors.Monitor(self.stimMonitorSelection.get()))
             calibWindow.protocol('WM_DELETE_WINDOW',gcloser)
             # Set up iterator of pixel values list
             for i in range(int(2/step_size)):
