@@ -24,6 +24,7 @@ class experiment():
         self.units = 'pix'
         self.allowStencil = True
         self.stimMonitor = 'testMonitor'
+        self.gamma = 2.0 #Default gamma value, will be updated from calibration.
 
         self.useInformationMonitor = False
         self.informationMonitor = 'testMonitor'
@@ -37,15 +38,15 @@ class experiment():
 
         self.userInitiated = False #If True, the user will have to manually start each stimulus. Can also set this property manually for each stimulus
         self.angleOffset = 0.0 #deg - offset for directional stimuli
-        
+
         self.writeTTL = 'None' #can be 'None', 'Pulse', 'Sustained'
         self.ttlPort = ''
 
         self.warpFileName = 'Warp File Location' #must be .data
         self.useFBO = False
-        
+
         self.FR = 0 #frame rate of the stimulus window
-        
+
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
             with open('configOptions.json') as f:
@@ -55,6 +56,10 @@ class experiment():
                     self.screen = configOptions['stimWindow']['screen']
                     self.fullscr = configOptions['stimWindow']['fullscr']
                     self.stimMonitor = configOptions['stimWindow']['stimMonitor']
+                    try:
+                        self.gamma = configOptions['stimWindow']['gamma']
+                    except Exception as e:
+                        print('*** Could not load gamma from config. Please calibrate to set new gamma.')
                     #infoWindow
                     self.useInformationMonitor = configOptions['infoWindow']['useInformationMonitor']
                     self.informationMonitor = configOptions['infoWindow']['informationMonitor']
@@ -99,7 +104,7 @@ class experiment():
                     units = self.units,
                     useFBO = self.useFBO,
                     allowStencil = self.allowStencil)
-        
+
         self.FR = self.win.getActualFrameRate() #log the frame rate of the stimulus window
 
         #set a warper if you want to morph the stimulus
@@ -128,13 +133,13 @@ class experiment():
         for i, p in enumerate(self.protocolList):
             print('!!! Running Protocol Number ' + str(i+1) + ' of ' +  str(len(self.protocolList)))
             p = p[1] #the protocol object is the second one in the tuple
-            
+
             #assign relevant experiment properties to the protocol
             if hasattr(p, '_angleOffset'):
                 p._angleOffset = self.angleOffset
-            
+
             p.writeTTL = self.writeTTL #set the TTL write mode (inherits from the experiment)
-            
+
             #set up the TTL ports based on the mode.
             if self.writeTTL == 'Pulse':
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
@@ -146,16 +151,16 @@ class experiment():
                 p._portObj = serial.Serial(portNameSerial)
                 p._portObj.setRTS(True) #ensure TTL is OFF to begin
                 p._TTLON = False #used to track state of sustained TTL pulses
-            
-            
+
+
             #run the protocol
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object
-            
+
             #Make sure TTL port is turned OFF if running in sustained mode (it's often left on if the user quits a stimulus early)
             if self.writeTTL == 'Sustained':
                 p._portObj.setRTS(True)
                 p._TTLON = False
-            
+
             #write down properties from previous stimulus
             protocolProperties = vars(p)
             protocolProperties.pop('_informationWin', None) #can't save ongoing psychopy win so remove it
