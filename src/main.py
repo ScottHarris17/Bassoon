@@ -496,7 +496,7 @@ class Bassoon:
 
 
         units = StringVar()
-        units.set('nm')
+        units.set('nw')
         unitsDropdown = OptionMenu(gammaFrame, units, *['\u00B5'+'w','nw','pw'])
         unitsDropdown.grid(row=3, column=3)
         # Press this button to create psychopy window and record luminance values
@@ -560,13 +560,13 @@ class Bassoon:
                 counts = [0,0,0]
                 try:
 
-                    if units.get() == '\u00B5'+'m':
+                    if units.get() == '\u00B5'+'w':
                         lumVal *= 10**-6
                         counts[0] += 1
-                    elif units.get() == 'nm':
+                    elif units.get() == 'nw':
                         lumVal *= 10**-9
                         counts[1] += 1
-                    elif units.get() == 'pm':
+                    elif units.get() == 'pw':
                         lumVal *= 10**-12
                         counts[2] += 1
 
