@@ -497,7 +497,7 @@ class Bassoon:
 
         units = StringVar()
         units.set('nm')
-        unitsDropdown = OptionMenu(gammaFrame, units, *['\u00B5'+'m','nm','pm'])
+        unitsDropdown = OptionMenu(gammaFrame, units, *['\u00B5'+'w','nw','pw'])
         unitsDropdown.grid(row=3, column=3)
         # Press this button to create psychopy window and record luminance values
         dataLabel = Button(gammaFrame,text="Begin calibration",padx=10, command= lambda: beginCal())
@@ -555,7 +555,7 @@ class Bassoon:
                     else:
                         return True
 
-                if lumVal == '' or !(is_number(lumVal)):
+                if lumVal == '' or not(is_number(lumVal)):
                     return
                 counts = [0,0,0]
                 try:
