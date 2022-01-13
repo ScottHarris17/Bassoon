@@ -94,6 +94,8 @@ class PupilCalibration(protocol):
             self._stimulusStartLog.append(trialClock.getTime())
             event.waitKeys() #wait for key press to signal moving on to the next epoch
             self.sendTTL() #mark left side snap
+            time.sleep(0.5)
+            self.sendTTL()
             self.checkQuit
             
             #RIGHT SIDE SNAP SECOND
@@ -102,9 +104,25 @@ class PupilCalibration(protocol):
                                           '\n Epoch ' + str(epochNum) + ' of ' + str(totalEpochs))
             event.waitKeys() #wait for key press to signal moving on to the next epoch
             self.sendTTL() #mark right side snap
+            time.sleep(0.5)
+            self.sendTTL()
+            
             self.checkQuit
             self._stimulusEndLog.append(trialClock.getTime())
             self._numberOfEpochsCompleted += 1
                 
+        
+        #mark primary and secondary LEDs
+        self.showInformationText(win, 'ALMOST DONE \n Move the camera to the LEFT and turn on the TOP LED, then press enter')
+        event.waitKeys() #wait for key press to signal moving on to the next epoch
+        self.sendTTL() #mark right side snap
+        time.sleep(0.5)
+        self.sendTTL()
+        
+        self.showInformationText(win, 'ALMOST DONE \n Move the camera to the LEFT and turn on the SIDE LED, then press enter')
+        event.waitKeys() #wait for key press to signal moving on to the next epoch
+        self.sendTTL() #mark right side snap
+        time.sleep(0.5)
+        self.sendTTL()
             
         self._completed = 1
