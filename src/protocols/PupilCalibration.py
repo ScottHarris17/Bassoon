@@ -20,6 +20,15 @@ class PupilCalibration(protocol):
         self.stimTime = 1.0 #s - unused for this stimulus
         self.tailTime = 1.0 #s - unused for this stimulus
                 
+        self._versionNumber = 1.2 #Version of the stimulus -
+                                        #1.1 - this attribute didn't exist yet. There was a bug with win.flip() where the screen color wouldn't change
+                                        #until after the second screen flip. This means that in version 1.0 the light level log is off by an index of 1.0
+                                        #relative to what the actual stimulus was. In other words, the true self._lightLevelLog that was used in the experiment
+                                        #was equal to [-1] + self._lightLevelLog[0:-1] (noninclusive of the last value). First value was always -1 b/c the stimulus
+                                        #screen started at this value by default
+                                        
+                                        #1.2 - 1/17/2022 - Now the self._lightLevelLog reflects the actual stimulus that was used in the experiment. (added a double win.flip)
+                                        # during the stimulus loop
         
     def estimateTime(self):
         '''
@@ -84,6 +93,7 @@ class PupilCalibration(protocol):
             win.color = [level, level, level];
             epochNum += 1
             win.flip()
+            win.flip()
 
             #LEFT SIDE SNAP FIRST
             if self._informationWin[0]:
@@ -92,6 +102,7 @@ class PupilCalibration(protocol):
             
             self._numberOfEpochsStarted += 1
             self._stimulusStartLog.append(trialClock.getTime())
+            
             event.waitKeys() #wait for key press to signal moving on to the next epoch
             self.sendTTL() #mark left side snap
             time.sleep(0.5)
@@ -102,6 +113,8 @@ class PupilCalibration(protocol):
             if self._informationWin[0]:
                 self.showInformationText(win, 'Move the camera to the RIGHT, then press enter ' + \
                                           '\n Epoch ' + str(epochNum) + ' of ' + str(totalEpochs))
+           
+
             event.waitKeys() #wait for key press to signal moving on to the next epoch
             self.sendTTL() #mark right side snap
             time.sleep(0.5)
