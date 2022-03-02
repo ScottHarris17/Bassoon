@@ -46,7 +46,7 @@ class experiment():
         self.useFBO = False
 
         self.FR = 0 #frame rate of the stimulus window
-
+                
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
             with open('configOptions.json') as f:
@@ -94,7 +94,6 @@ class experiment():
         '''
         Begin the experiment
         '''
-
         self.win = visual.Window(
                     allowGUI=self.allowGUI,
                     monitor = self.stimMonitor,
@@ -173,3 +172,4 @@ class experiment():
 
         if self.useInformationMonitor:
             self.informationWin.close()
+            

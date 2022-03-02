@@ -38,7 +38,7 @@ from protocols.CheckerboardReceptiveField import CheckerboardReceptiveField
 from protocols.MovingGratingDirection import MovingGratingDirection
 from protocols.OscillatingGrating import OscillatingGrating
 from protocols.PupilCalibration import PupilCalibration
-
+from protocols.StaticGrating import StaticGrating
 
 
 class Bassoon:
@@ -971,7 +971,7 @@ class Bassoon:
             self.saveExperimentButton.configure(bg=_from_rgb((100, 200, 100)))
         except:
             print('It looks like the Bassoon GUI is not accessable... if it has already closed then you can ignore this message')
-
+            
 
     def runExperiment(self):
         '''
