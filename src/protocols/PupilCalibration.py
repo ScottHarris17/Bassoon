@@ -67,7 +67,7 @@ class PupilCalibration(protocol):
     
     def run(self, win, informationWin):
         '''
-        Executes the MovingBar stimulus
+        Executes the PupilCalibration stimulus
         '''
         self._completed = 0 #started but not completed
         

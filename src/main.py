@@ -39,6 +39,7 @@ from protocols.MovingGratingDirection import MovingGratingDirection
 from protocols.OscillatingGrating import OscillatingGrating
 from protocols.PupilCalibration import PupilCalibration
 from protocols.StaticGrating import StaticGrating
+from protocols.SnellenShapes import SnellenShapes
 
 
 class Bassoon:
