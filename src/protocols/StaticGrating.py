@@ -21,7 +21,7 @@ import serial, random, math
 class StaticGrating(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'MovingGratingDirection'
+        self.protocolName = 'StaticGrating'
         self.gratingColor = [1.0, 1.0, 1.0]
         self.gratingContrast = 1.0 #multiplied by the color
         self.meanIntensity = 0.0; #mean intensity of the grating
