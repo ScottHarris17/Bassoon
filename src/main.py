@@ -281,6 +281,7 @@ class Bassoon:
                 return
             else:
                 portName = self.experiment.ttlPort
+                portNameSerial = portName[:portName.find(' ')]
                 portObj = serial.Serial(portNameSerial)
                 if direction == 'Off':
                     portObj.setRTS(True) #turns OFF ttl
@@ -1087,7 +1088,7 @@ def secondsToMinutesAndSeconds(seconds):
 ##############################################################################
 root = Tk()  # full function = tk.Tk()
 root.geometry('400x600')
-root.iconbitmap(r'images\bassoonIcon.ico')
+#root.iconbitmap(r'images\bassoonIcon.ico')
 app = Bassoon(root)
 
 root.mainloop()
