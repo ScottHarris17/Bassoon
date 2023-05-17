@@ -10,7 +10,7 @@ import random, math
 class protocol():
     def __init__(self):
         self.suffix = '_' #suffix for the protocol name, begin with _
-        self.userInitiated = False #determines whether a key stroke is needed to initiate the protocol. Will be set to the corresponding experiment value of the experiment if not updated by the user
+        self.userInitiated = False #determines whether a key stroke is needed to initiate the protocol. Will be set to the corresponding experiment value if not updated by the user
         
         self._stimulusStartLog = []
         self._stimulusEndLog = []
@@ -56,7 +56,7 @@ class protocol():
         '''
         determine the pixels per degree for the stimulus monitor
         '''
-        
+
         mon = monitors.Monitor(stimMonitor.name)
         eyeDistance = mon.getDistance()
         numPixelsWide = mon.currentCalib['sizePix'][0]
@@ -95,7 +95,7 @@ class protocol():
     def sendTTL(self):
         '''
         sends ttl pulse during experiment if the setting is turned on
-        TTL pulses or sustained can be selected. If pulses are turned on, this
+        TTL pulse or sustained can be selected. If pulse is turned on, this
         only executes during a protocol, but not before.
         '''
         if self.writeTTL == 'Pulse':

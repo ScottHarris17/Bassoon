@@ -3,7 +3,7 @@
 Created on Wed Jul 21 17:18:20 2021
 
 Grating oscillates back and forth across the screen. The oscillation is sinusoidal.
-oscillationAmplitude is the total distance covered by 1/2 oscillation cycle (in visuakl degrees).
+oscillationAmplitude is the total distance covered by 1/2 oscillation cycle (in visual degrees).
 oscillationPeriod is the amount of time it takes to complete one full oscillation cycle (total distance covered = amplitude * 2)
 
 
@@ -22,11 +22,11 @@ class OscillatingGrating(protocol):
         self.gratingColor = [1.0, 1.0, 1.0]
         self.gratingContrast = 1.0 #multiplied by the color
         self.meanIntensity = 0.0; #mean intensity of the grating
-        self.spatialFrequency = 0.1 #cycles per degree
+        self.spatialFrequency = 0.15 #cycles per visual degree
         self.gratingOrientations = [90.0, 270.0] #degrees
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
-        self.oscillationPeriod = 10.0 #seconds
-        self.oscillationAmplitude = 10.0 #visual degrees - distance that the grating moves over the course of one half oscillation
+        self.oscillationPeriod = 15.0 #seconds
+        self.oscillationAmplitude = 20.0 #visual degrees - distance that the grating moves over the course of one half oscillation
         self.oscillationPhaseShift = 0.0 #degrees - between 0 and 90 - 90 will start the oscillation in the middle of it's cycle. 0 will start it all the way on one side
         self.backgroundColor = [0.0, 0.0, 0.0]
         self.stimulusReps = 3

@@ -20,6 +20,7 @@ import tkinter.ttk as ttk
 import tkinter.filedialog as tkfd
 from psychopy import core, visual, data, event, monitors
 from psychopy.tools.filetools import fromFile, toFile
+import serial
 import serial.tools.list_ports as list_ports
 from datetime import datetime
 import pickle
@@ -39,6 +40,7 @@ from protocols.MovingGratingDirection import MovingGratingDirection
 from protocols.OscillatingGrating import OscillatingGrating
 from protocols.PupilCalibration import PupilCalibration
 from protocols.StaticGrating import StaticGrating
+from protocols.SnellenShapes import SnellenShapes
 
 
 class Bassoon:
@@ -54,6 +56,7 @@ class Bassoon:
         self.menubar.add_command(label="Load Experiment", command=self.loadExperiment)
         self.optionsMenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_command(label="Options", command=self.editExperiment)
+        self.menubar.add_command(label ="Quick Actions", command=self.quickActionsWin)
         self.menubar.add_command(label="Quit", command=self.frame.quit)
         master.config(menu=self.menubar)
 
@@ -265,6 +268,51 @@ class Bassoon:
         # update the list box to reflect the new stimulus
         self.updateExperimentSketch()
 
+    def quickActionsWin(self):
+        '''
+        Buttons for quickly executing commands on the spot
+        '''
+        
+        #Quick action functions
+        def FlipTTL(self, direction):
+            '''Code change the TTL pulse if it exists'''
+            if self.experiment.ttlPort == 'No Available Ports':
+                print('Could not flip TTL because no port has been selected for this experiment')
+                return
+            else:
+                portName = self.experiment.ttlPort
+                portObj = serial.Serial(portNameSerial)
+                if direction == 'Off':
+                    portObj.setRTS(True) #turns OFF ttl
+                    print('TTL set to OFF')
+                elif direction == 'On':
+                    portObj.setRTS(False) #turns OFF ttl
+                    print('TTL set to ON')
+            return
+        
+        actionsWindow = Toplevel(root)
+        actionsWindow.title('Quick Actions')
+        
+        actionFrame = Frame(actionsWindow, padx=20)
+        actionFrame.pack(fill = "both", expand = True)
+        
+        actionLabel = Label(actionFrame, text = 'Quick Actions')
+        actionLabel.config(font=("Helvetica, 14"))
+        actionLabel.pack()
+        
+        comFrame = LabelFrame(actionFrame, text='Communications', bd=5, padx = 5, pady=10)
+        comFrame.configure(font=("Helvetica", 12))
+        comFrame.pack()
+        
+        #turn off the TTL channel
+        flipTTLBtn = Button(comFrame, text = 'TTL Off', padx = 7, command = lambda: FlipTTL(self, 'Off'))
+        flipTTLBtn.grid(row=2, column = 1)
+        
+        #turn on the TTL channel
+        flipTTLBtn = Button(comFrame, text = 'TTL On', padx = 7, command = lambda: FlipTTL(self, 'On'))
+        flipTTLBtn.grid(row=2, column = 3)
+        
+ 
 
     def editExperiment(self):
         '''
