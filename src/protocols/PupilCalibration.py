@@ -126,13 +126,13 @@ class PupilCalibration(protocol):
                 
         
         #mark primary and secondary LEDs
-        self.showInformationText(win, 'ALMOST DONE \n Move the camera to the LEFT and turn on the TOP LED, then press enter')
+        self.showInformationText(win, 'ALMOST DONE \n Move the camera to the RECORDING POSITION and turn on the TOP LED, then press enter')
         event.waitKeys() #wait for key press to signal moving on to the next epoch
         self.sendTTL() #mark right side snap
         time.sleep(0.5)
         self.sendTTL()
         
-        self.showInformationText(win, 'ALMOST DONE \n Move the camera to the LEFT and turn on the SIDE LED, then press enter')
+        self.showInformationText(win, 'ALMOST DONE \n Move the camera to the RECORDING POSITION and turn on the SIDE LED, then press enter')
         event.waitKeys() #wait for key press to signal moving on to the next epoch
         self.sendTTL() #mark right side snap
         time.sleep(0.5)
