@@ -123,7 +123,7 @@ class MovingGratingDirection(protocol):
         totalEpochs = len(self._orientationLog)
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
-
+                
         #stimulus loop
         for ori in self._orientationLog:
             grating.ori = -ori - self._angleOffset #flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south

@@ -116,7 +116,9 @@ class protocol():
     
     def burstTTL(self, win):
         '''
-        sends a burst of TTL pulses at the start of each stimulus when the the TTL port is in pulse mode
+        sends a burst of TTL pulses at the start of a stimulus when the the TTL port is in pulse mode
+        
+        As of 10/29/2023 this appears to only be implemented for checkerboard receptive field and flash grid
         
         The stereotyped busrt is 20 TTL pulses at frame rate, wait 0.2 seconds, and 20 more TTL pulses at frame rate
         '''

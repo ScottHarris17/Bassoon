@@ -42,7 +42,7 @@ from protocols.PupilCalibration import PupilCalibration
 from protocols.StaticGrating import StaticGrating
 from protocols.SnellenShapes import SnellenShapes
 from protocols.DriftingNoise import DriftingNoise
-
+from protocols.FlashGrid import FlashGrid
 
 class Bassoon:
     def __init__(self, master):
