@@ -3,6 +3,7 @@
 *.experiment
 *.pyc
 *.cpython-36.pyc
+*.cpython-38.pyc
 *.pyc
 src/protocols/__pycache__/protocol.cpython-36.pyc
 src/protocols/__pycache__/Pause.cpython-36.pyc
@@ -13,3 +14,5 @@ src/protocols/__pycache__/FlashFamily.cpython-36.pyc
 src/protocols/__pycache__/Flash.cpython-36.pyc
 src/protocols/__pycache__/CheckerboardReceptiveField.cpython-36.pyc
 src/experiments/__pycache__/experiment.cpython-36.pyc
+src/images/stimulusImages/cd23A
+!src/images/stimulusImages/imageData.json
