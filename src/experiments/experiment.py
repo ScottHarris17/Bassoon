@@ -95,7 +95,7 @@ class experiment():
         Begin the experiment
         '''
         self.win = visual.Window(
-                    allowGUI=self.allowGUI,
+                    allowGUI = self.allowGUI,
                     monitor = self.stimMonitor,
                     screen = self.screen,
                     fullscr = self.fullscr,
