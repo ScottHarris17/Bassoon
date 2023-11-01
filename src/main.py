@@ -43,6 +43,7 @@ from protocols.StaticGrating import StaticGrating
 from protocols.SnellenShapes import SnellenShapes
 from protocols.DriftingNoise import DriftingNoise
 from protocols.FlashGrid import FlashGrid
+from protocols.ImageJitter import ImageJitter
 
 class Bassoon:
     def __init__(self, master):
@@ -754,7 +755,7 @@ class Bassoon:
 
     def editProtocol(self, e=0):
         '''
-        Opens a new window in which the user can edit cedrtain 'editable' properties
+        Opens a new window in which the user can edit certain 'editable' properties
         of the selected protocol
 
         e is a placehold in case this function is called by a double left click

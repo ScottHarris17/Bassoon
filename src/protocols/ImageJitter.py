@@ -41,7 +41,7 @@ class ImageJitter(protocol):
         scriptDir = os.path.dirname(__file__)
         bassoonIndex = scriptDir.index('Bassoon')
         pathThroughBassoon = scriptDir[:bassoonIndex+len("Bassoon")]
-        pathToImagesFromBassoon = 'src/images/naturalScenes_UPENN/cd23A'
+        pathToImagesFromBassoon = 'src/images/stimulusImages/example'
         
         self.imageFileExtension = '*.jpg' #string can use glob.glob style pattern matching
         self.imageFolderPath = os.path.join(pathThroughBassoon, pathToImagesFromBassoon) #string can include glob style pattern matching
