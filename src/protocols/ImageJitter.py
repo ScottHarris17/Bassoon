@@ -264,6 +264,9 @@ class ImageJitter(protocol):
 
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
+        
+        self.burstTTL(win) #burst to mark onset of the stimulus
+
         #stimulus loop
         for img in self._imageSequence:
             image.image = img

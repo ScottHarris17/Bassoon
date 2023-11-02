@@ -46,11 +46,33 @@ class FlashGrid(protocol):
 
         returns: estimated time in seconds
         '''
-        
+
         timePerEpoch = self.preTime + self.estimatedNumberOfChecks * (self.flashDuration + self.interFlashInterval) * self.repsPerCheck + self.tailTime
         numberOfEpochs = self.stimulusReps
         self._estimatedTime = timePerEpoch * numberOfEpochs #return estimated time for the total stimulus in seconds
         return self._estimatedTime
+    
+    def secondsToMinutesAndSeconds(self, seconds):
+        '''
+        Given a number specifying a time in seconds, this function returns the
+        equivalent number of minutes and seconds
+
+        Parameters
+        ----------
+        seconds : Number. Specifies time in seconds
+
+        Returns
+        -------
+        roundedMinutes : integer of total minutes
+        remainingSeconds: integer of remaining seconds in addition to roundedMinutes
+        '''
+        minutes = seconds/60
+        rounded_minutes = math.floor(minutes)
+        remainingSeconds = int((minutes-rounded_minutes)*60)
+
+        return rounded_minutes, remainingSeconds
+
+
 
     def setFlashSequence(self, numChecks):
         '''
@@ -69,8 +91,8 @@ class FlashGrid(protocol):
                 thisEpoch += [random.sample(range(numChecks), numChecks)]
             
             self._flashSequence += thisEpoch
-
-
+        
+            
     def run(self, win, informationWin):
         '''
         Executes the MovingBar stimulus
@@ -109,10 +131,10 @@ class FlashGrid(protocol):
         yCoordinates = [y - win.size[1]/2 for y in range(-checkHeightPix,win.size[1]+checkHeightPix,checkHeightPix)]
         numChecks = len(xCoordinates)*len(yCoordinates)
 
-        self.checkCoordinates = []
+        self._checkCoordinates = []
         for i in range(len(xCoordinates)):
             for j in range(len(yCoordinates)):
-                self.checkCoordinates.append([xCoordinates[i], yCoordinates[j]])
+                self._checkCoordinates.append([xCoordinates[i], yCoordinates[j]])
 
         sizes = [(checkWidthPix, checkHeightPix) for i in range(numChecks)]
         colors = [self.backgroundColor for i in range(numChecks)]
@@ -122,12 +144,19 @@ class FlashGrid(protocol):
             nElements = numChecks,
             elementMask="None",
             elementTex = None,
-            xys = self.checkCoordinates,
+            xys = self._checkCoordinates,
             sizes = sizes,
             colors = colors
             )
         
         self.setFlashSequence(numChecks)
+        
+        self.estimatedNumberOfChecks = numChecks
+        totalS = self.estimateTime()
+        m, s = self.secondsToMinutesAndSeconds(totalS)
+        print("--> Time Estimate Update: There are " + str(numChecks) + " checks to present. \
+              this stimulus is now estimated to take " + str(m) + " minutes and " \
+                  + str(s) + " seconds")
         
         self.burstTTL(win) #burst to mark onset of the stimulus
 
@@ -141,8 +170,8 @@ class FlashGrid(protocol):
             
             #show information if necessary
             if self._informationWin[0]:
-                self.showInformationText(win, 'Running Checkerboard Receptive Field. Epoch ' + \
-                                         str(i+1) + ' of ' + str(self.stimulusReps))
+                self.showInformationText(win, 'Running Flash Grid. Epoch ' + \
+                                         str(epochNum) + ' of ' + str(self.stimulusReps))
 
             #pause for inter stimulus interval
             win.color = self.backgroundColor
@@ -163,11 +192,9 @@ class FlashGrid(protocol):
                 if self.checkQuit():
                         return
 
-            #there are two stimulus options. If the user is writing TTL, then it is sent at the onset of each individual flash
-            if self.writeTTL: 
-                #decrease baudrate for speed during frame flips
-                if self.writeTTL == 'Pulse':
-                    self._portObj.baudrate = 1000000
+            #decrease baudrate for speed during frame flips
+            if self.writeTTL == 'Pulse':
+                self._portObj.baudrate = 1000000
         
             #stim time
             for check in sequence:
