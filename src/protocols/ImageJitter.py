@@ -114,7 +114,7 @@ class ImageJitter(protocol):
         remaining = self.stimulusReps - 0 #hacky way to get a new pointer
         for i in range(timesLarger):
             if remaining > self.stimulusReps:
-                numToAdd = self.stimulusReps
+                numToAdd = len(self._allImgs)
             else:
                 numToAdd = remaining - 0 #new pointer again
             
