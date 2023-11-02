@@ -39,7 +39,7 @@ class ImageJitter(protocol):
         
         #guess the file directory
         scriptDir = os.path.dirname(__file__)
-        bassoonIndex = scriptDir.index('Bassoon')
+        bassoonIndex = scriptDir.rfind('Bassoon')
         pathThroughBassoon = scriptDir[:bassoonIndex+len("Bassoon")]
         pathToImagesFromBassoon = 'src/images/stimulusImages/example'
         

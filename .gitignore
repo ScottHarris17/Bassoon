@@ -16,3 +16,4 @@ src/protocols/__pycache__/CheckerboardReceptiveField.cpython-36.pyc
 src/experiments/__pycache__/experiment.cpython-36.pyc
 src/images/stimulusImages/cd23A
 !src/images/stimulusImages/imageData.json
+src/protocols/__pycache__/FlashGrid.cpython-38.pyc.2781252890672
