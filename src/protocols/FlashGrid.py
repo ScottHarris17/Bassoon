@@ -199,7 +199,11 @@ class FlashGrid(protocol):
             #stim time
             for check in sequence:
                 
-                flashField.colors[check] = flashColor #set just the check of interest to have full opacity
+                #use this weird work around to change flash color
+                #   because there is a problem with indexing directly to flashField.colors on some computers
+                cs = flashField.colors
+                cs[check, :] = flashColor
+                flashField.colors = cs
                 for f in range(self._flashDurationNumFrames):
                     flashField.draw()
                     win.flip()
