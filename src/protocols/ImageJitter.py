@@ -142,6 +142,8 @@ class ImageJitter(protocol):
                 
         self._positionLog_Pix = np.zeros([self._stimTimeNumFrames, 2, self.stimulusReps])
         
+        apertureDiameterPix = self.apertureDiameter * pixPerDeg
+        
         stdSpeedPix = self.speedStandardDeviation * pixPerDeg / self._FR
         
         recenterSpeedPix = self.recenterSpeed * pixPerDeg / self._FR
@@ -168,8 +170,8 @@ class ImageJitter(protocol):
                     currentY += dy
                     
                     #check if a recentering is needed
-                    if abs(self._imageHeight_Pix - currentY) < self.apertureDiameter or abs(currentY) > self._imageHeight_Pix//2 \
-                        or abs(self._imageWidth_Pix - currentX) < self.apertureDiameter or abs(currentX) > self._imageWidth_Pix//2:
+                    if self._imageHeight_Pix - abs(currentY) < apertureDiameterPix//2 or abs(currentY) > self._imageHeight_Pix//2 \
+                        or self._imageWidth_Pix - abs(currentX) < apertureDiameterPix//2 or abs(currentX) > self._imageWidth_Pix//2:
                             recenterNeeded = True
                 
                 else: #recentering is needed
