@@ -113,13 +113,13 @@ class ImageJitter(protocol):
         sequence = []
         remaining = self.stimulusReps - 0 #hacky way to get a new pointer
         for i in range(timesLarger):
-            if remaining > self.stimulusReps:
+            if remaining > len(self._allImgs):
                 numToAdd = len(self._allImgs)
             else:
                 numToAdd = remaining - 0 #new pointer again
             
             sequence += random.sample(self._allImgs, numToAdd)
-            remaining -= self.stimulusReps
+            remaining -= numToAdd
             
         self._imageSequence = [os.path.join(self.imageFolderPath, img) for img in sequence]
 
