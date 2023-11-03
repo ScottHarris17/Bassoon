@@ -93,7 +93,7 @@ class ImageJitter(protocol):
             except:
                 print("!!! JSON Data is Missing or Incorrect for these images, loading default values from UPENN natural image dataset.")
                 self._imageHeight_Pix = 2000
-                self._imageWidth_Pix = 2008
+                self._imageWidth_Pix = 3008
                 self._pixPerDeg_RawImages = 92.0
         
         imagesFound = True
@@ -332,5 +332,6 @@ class ImageJitter(protocol):
 
             self._numberOfEpochsCompleted += 1
 
-
+        self._positionLog_Pix = self._positionLog_Pix.tolist() #convert to list for JSON dump saving
         self._completed = 1
+        
