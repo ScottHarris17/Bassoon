@@ -27,6 +27,7 @@ import pickle
 import json
 import math
 import time
+import copy
 
 # Each protocol subclass must be imported here:
 from experiments.experiment import experiment
@@ -235,7 +236,7 @@ class Bassoon:
         try:
             index_int = int(index_input)
         except:
-            print('***Invalid Entry: Insert an integer value in the input box that specifies where you would like to insert the stimulus')
+            print('***Invalid Entry: Insert an integer value in the input box that specifies where you would like to insert the stimulus.')
             return
 
         # check edge cases where index is too small and round it to the proper value
@@ -270,6 +271,7 @@ class Bassoon:
         # update the list box to reflect the new stimulus
         self.updateExperimentSketch()
 
+
     def quickActionsWin(self):
         '''
         Buttons for quickly executing commands on the spot
@@ -293,6 +295,75 @@ class Bassoon:
                     print('TTL set to ON')
             return
         
+        def moveProtocol(self, currentIndx, newIndx):
+            ''' Move a protocol at current index to newIndx in the experiment sketch'''
+            try:
+                currentIndx_int = int(currentIndx)
+                newIndx_int = int(newIndx)
+            except:
+                print("***Could not move the stimulus. Check that index entries are integers")
+                return
+            
+            if currentIndx_int > len(self.experimentSketch):
+                print("***Could not move the stimulus. The value entered in the current index box is larger than the number of protocols that are currently in the experiment sketch.")
+                return
+            
+            if currentIndx_int < 1 or newIndx_int < 1:
+                print("***Could not move the stimulus. Enter index values of 1 or greater only.")
+                return
+            
+            protocolTup = self.experimentSketch.pop(currentIndx_int - 1) #grabs the tuple of (protocol name, protocolObj) while simulatenously removing it from the list
+                
+            if (len(self.experimentSketch) == 1 and newIndx_int > 1)\
+                    or (newIndx_int > len(self.experimentSketch) and len(self.experimentSketch) != 1):
+                self.experimentSketch.append(protocolTup)
+            else:
+                self.experimentSketch.insert(
+                    newIndx_int-1, protocolTup)
+            
+            # update the list box to reflect the new stimulus
+            self.updateExperimentSketch()
+            
+            
+        
+        def copyAndPasteProtocol(self, currentIndx, newIndx):
+            '''Copy a protocol at currentIndx to a slot at newIndx'''
+            
+            try:
+                currentIndx_int = int(currentIndx)
+                newIndx_int = int(newIndx)
+            except:
+                print("***Could not copy and paste the stimulus. Check that index entries are integers")
+                return
+            
+            if currentIndx_int > len(self.experimentSketch):
+                print("***Could not copy and paste the stimulus. The value entered in the current index box is larger than the number of protocols that are currently in the experiment sketch.")
+                return
+            
+            if currentIndx_int < 1 or newIndx_int < 1:
+                print("***Could not copy and paste the stimulus. Enter index values of 1 or greater only.")
+                return
+            
+            protocolTup = copy.deepcopy(self.experimentSketch[currentIndx_int - 1]) #grabs the tuple of (protocol name, protocolObj)
+            
+            protocolTup[1].suffix += 'COPY' #update the suffix to indicate it's a copy
+
+            if (len(self.experimentSketch) == 1 and newIndx_int > 1)\
+                    or (newIndx_int >= len(self.experimentSketch) and len(self.experimentSketch) != 1):
+                self.experimentSketch.append(protocolTup)
+            else:
+                self.experimentSketch.insert(
+                    newIndx_int-1, protocolTup)
+                
+            # update the list box to reflect the new stimulus
+            self.updateExperimentSketch()
+            
+            #open the edit menu for the new protocol to encourage the user to update it
+            self.editProtocol(calledByCopy = (True, newIndx_int-1))
+            
+        
+        
+        
         actionsWindow = Toplevel(root)
         actionsWindow.title('Quick Actions')
         
@@ -314,6 +385,50 @@ class Bassoon:
         #turn on the TTL channel
         flipTTLBtn = Button(comFrame, text = 'TTL On', padx = 7, command = lambda: FlipTTL(self, 'On'))
         flipTTLBtn.grid(row=2, column = 3)
+        
+        
+        #Move existing protocol
+        moveFrame = LabelFrame(actionFrame, text='Move A Protocol', bd = 5, padx = 10, pady = 10)
+        moveFrame.configure(font=("Helvetica", 12))
+        moveFrame.pack()
+        
+        moveCurrentIndexLabel = Label(moveFrame, text = "Current Index", padx = 10)
+        moveCurrentIndexLabel.grid(row = 0, column = 0) 
+        moveCurrentIndexEntry = Entry(moveFrame)
+        moveCurrentIndexEntry.grid(row = 1, column = 0)
+        
+        moveToIndexLabel = Label(moveFrame, text = "Move To Index", padx = 10)
+        moveToIndexLabel.grid(row = 2, column = 0)
+        moveToIndexEntry = Entry(moveFrame)
+        moveToIndexEntry.grid(row = 3, column = 0)
+        
+        moveBtn = Button(moveFrame, text = 'Go', command = lambda: moveProtocol(self, moveCurrentIndexEntry.get(), moveToIndexEntry.get()))
+        moveBtn.grid(row = 4, column = 0)
+        
+        moveNoteOnIndexingLabel = Label(moveFrame, text = "*Note that indexing starts with 1, not 0", font =("Helvetica 9 italic"), pady = 12)
+        moveNoteOnIndexingLabel.grid(row = 5, column = 0)
+        
+        #copy existing protocol
+        copyFrame = LabelFrame(actionFrame, text='Copy A Protocol', bd = 5, padx = 10, pady = 10)
+        copyFrame.configure(font=("Helvetica", 12))
+        copyFrame.pack()
+        
+        copyCurrentIndexLabel = Label(copyFrame, text = "Current Index", padx = 10)
+        copyCurrentIndexLabel.grid(row = 0, column = 0) 
+        copyCurrentIndexEntry = Entry(copyFrame)
+        copyCurrentIndexEntry.grid(row = 1, column = 0)
+        
+        copyToIndexLabel = Label(copyFrame, text = "Copy To Index", padx = 10)
+        copyToIndexLabel.grid(row = 2, column = 0)
+        copyToIndexEntry = Entry(copyFrame)
+        copyToIndexEntry.grid(row = 3, column = 0)
+        
+        copyBtn = Button(copyFrame, text = 'Go', command = lambda: copyAndPasteProtocol(self,  copyCurrentIndexEntry.get(), copyToIndexEntry.get()))
+        copyBtn.grid(row = 4, column = 0)
+        
+        copyNoteOnIndexingLabel = Label(copyFrame, text = "*Note that indexing starts with 1, not 0", font =("Helvetica 9 italic"), pady = 12)
+        copyNoteOnIndexingLabel.grid(row = 5, column = 0)
+        
         
  
 
@@ -469,7 +584,7 @@ class Bassoon:
         ttlPortDropDown = OptionMenu(experimentFrame, self.ttlPortSelection, *availablePorts)
         ttlPortDropDown.grid(row = 1, column = 4)
 
-        #Framebuffer object selection
+        #Framebuffer object selection (FBO)
         FBOLabel = Label(experimentFrame, text = 'Use FBO?', padx = 10) # Check to see if case exists where user passes morph file, but FBO is false
         FBOLabel.grid(row = 3, column = 0)
         self.FBObjectSelection = IntVar(root)
@@ -753,16 +868,22 @@ class Bassoon:
         print('\n--> Changes to experiment settings have also been saved.')
 
 
-    def editProtocol(self, e=0):
+    def editProtocol(self, e=0, calledByCopy = (False, 0)):
         '''
         Opens a new window in which the user can edit certain 'editable' properties
         of the selected protocol
 
         e is a placehold in case this function is called by a double left click
+        
+        calledByCopy is a tuple. If the first value is True then it means this function was called by the copy protocol option in the quick menu box. In that case, use the second value of the tuple to determine the selected index. Otherwise, ignore this variable and simly use the curselection index from the experimentSketchBox
         '''
 
         # get information about the selected protocol
-        selectedIndex = self.experimentSketchBox.curselection()[0]
+        if calledByCopy[0]:
+            selectedIndex = calledByCopy[1]
+        else:
+            selectedIndex = self.experimentSketchBox.curselection()[0]
+            
         selectedName = self.experimentSketch[selectedIndex][0]
         selectedProtocol = self.experimentSketch[selectedIndex][1]
 
