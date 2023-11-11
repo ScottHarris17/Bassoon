@@ -52,40 +52,24 @@ To exit Bassoon press the 'quit' option in the menu bar on the main window, or s
 
 <h2>Building Experiments Programmatically</h2>
 There are two primary classes in Bassoon: experiments and protocols. To show stimuli, you must first instantiate an experiment (make sure you're working directory is set to Bassoon/src):
-<br><code>
-from experiments.experiment import experiment 
-</code>
-<br><code>
-e = experiment()
-</code>
+<br><code>from experiments.experiment import experiment </code>
+<br><code>e = experiment()</code>
 <br><br>
 Protocols contain stimuli. Each stimulus is a subclass of the protocol superclass. To load a stimulus, say a flash, use:
-<br><code>
-from protocols.Flash import Flash
-</code>
-<br><code>
-f = Flash()
-</code>
+<br><code>from protocols.Flash import Flash</code>
+<br><code>f = Flash()</code>
 <br><br>
 You can change the properties of a stimulus by directly assigning its attributes:
-<br><code>
-f.stimTime = 2
-</code>
+<br><code>f.stimTime = 2</code>
 <br><br>
 Load the stimulus into the experiment when you're done setting its attributes. Stimuli will be played in the order that they are added to the experiment:
-<br><code>
-e.addProtocol(f)
-</code>
+<br><code>e.addProtocol(f)</code>
 <br><br>
 Experiment attributes can be similarly adjusted:
-<br><code>
-e.useInformationMonitor = True
-</code>
+<br><code>e.useInformationMonitor = True</code>
 <br><br>
 When you're ready, run the experiment:
-<br><code>
-e.activate()
-</code>
+<br><code>e.activate()</code>
 
 <br><br><br>
 Bassoon is free to use and community development is encouraged. If used for published science, please consider including a reference so that others can find us.
