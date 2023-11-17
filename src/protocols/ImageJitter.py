@@ -307,8 +307,7 @@ class ImageJitter(protocol):
                 image.draw()
                 win.flip()
                 
-                if self.writeTTL: #option to send TTL pulse on every frame
-                    self.sendTTL()
+                self.sendTTL()
                     
                 if self.checkQuit():
                     return

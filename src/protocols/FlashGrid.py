@@ -111,7 +111,7 @@ class FlashGrid(protocol):
         self._flashDurationNumFrames = round(self._FR * self.flashDuration)
         self._actualFlashDuration = self._flashDurationNumFrames * 1/self._FR
         
-        self._interFlashIntervalNumFrames = round(self._FR * self.interFlashInterval)
+        self._interFlashIntervalNumFrames = round(self._FR * self.interFlashInterval) + 1 #add 1 frame because it is helpful to have at least a brief pause between stimuli for the TTL pattern
         self._actualInterFlashInterval = self._interFlashIntervalNumFrames * 1/self._FR
         
 
@@ -158,7 +158,7 @@ class FlashGrid(protocol):
               this stimulus is now estimated to take " + str(m) + " minutes and " \
                   + str(s) + " seconds")
         
-        self.burstTTL(win) #burst to mark onset of the stimulus
+        self.burstTTL(win) #burst to mark onset of the stimulus for pulse mode only
 
         trialClock = core.Clock() #this will reset every trial
         
@@ -182,9 +182,7 @@ class FlashGrid(protocol):
 
 
             self._stimulusStartLog.append(trialClock.getTime())
-            self.sendTTL()
             self._numberOfEpochsStarted += 1
-            
             #pretime... nothing happens
             for f in range(self._preTimeNumFrames):
                 win.flip()
@@ -207,13 +205,14 @@ class FlashGrid(protocol):
                 for f in range(self._flashDurationNumFrames):
                     flashField.draw()
                     win.flip()
-                    if f == 0 and self.writeTTL:
+                    if f == 0:
                         self.sendTTL()  #write ttl at the onset of every flash
                     
                     if self.checkQuit():
                         return
             
                 flashField.colors = colors #reset opacities to all zero
+                self.sendTTL()
                 
                 #wait the interFlashInterval time
                 for f in range(self._interFlashIntervalNumFrames):
@@ -232,10 +231,8 @@ class FlashGrid(protocol):
                 if self.checkQuit():
                         return
 
-
             self._stimulusEndLog.append(trialClock.getTime())
-            self.sendTTL()
-
+            
             self._numberOfEpochsCompleted += 1
 
         self._completed = 1

@@ -572,7 +572,16 @@ class Bassoon:
         self.writeTtlSelection.set(self.experiment.writeTTL)
         writeTtlDropdown = OptionMenu(experimentFrame, self.writeTtlSelection, *['None', 'Pulse', 'Sustained'])
         writeTtlDropdown.grid(row = 1, column = 2)
-
+        
+        #check box for TTL bookmarks between protocols in sustained mode
+        ttlBookmarksLabel = Label(experimentFrame, text = 'TTL Bookmarks (for sustained mode only)', padx = 10)
+        ttlBookmarksLabel.grid(row = 2, column = 0, columnspan = 2)
+        self.ttlBookmarks = IntVar(root)
+        self.ttlBookmarks.set = (self.experiment.ttlBookmarks)
+        ttlBookmarksChk = Checkbutton(experimentFrame, var=self.ttlBookmarks)
+        ttlBookmarksChk.grid(row = 2, column = 2, pady = 10)
+        
+           
         #choose ttl port
         ttlPortLabel = Label(experimentFrame, text = 'TTL Port', padx = 10)
         ttlPortLabel.grid(row = 1, column = 3)
