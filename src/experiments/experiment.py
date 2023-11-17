@@ -71,6 +71,8 @@ class experiment():
                     self.userInitiated = configOptions['experiment']['userInitiated']
                     self.angleOffset = float(configOptions['experiment']['angleOffset'])
                     self.writeTTL = configOptions['experiment']['writeTTL']
+                    if isinstance(self.writeTTL, bool):
+                        self.writeTTL = "None"
                     self.ttlPort = configOptions['experiment']['ttlPort']
                     self.useFBO = configOptions['experiment']['useFBO']
                     self.warpFileName = configOptions['experiment']['warpFileName']

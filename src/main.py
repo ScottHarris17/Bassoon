@@ -576,9 +576,9 @@ class Bassoon:
         #check box for TTL bookmarks between protocols in sustained mode
         ttlBookmarksLabel = Label(experimentFrame, text = 'TTL Bookmarks (for sustained mode only)', padx = 10)
         ttlBookmarksLabel.grid(row = 2, column = 0, columnspan = 2)
-        self.ttlBookmarks = IntVar(root)
-        self.ttlBookmarks.set = (self.experiment.ttlBookmarks)
-        ttlBookmarksChk = Checkbutton(experimentFrame, var=self.ttlBookmarks)
+        self.ttlBookmarksSelection = IntVar(root)
+        self.ttlBookmarksSelection.set(self.experiment.ttlBookmarks)
+        ttlBookmarksChk = Checkbutton(experimentFrame, var=self.ttlBookmarksSelection)
         ttlBookmarksChk.grid(row = 2, column = 2, pady = 10)
         
            
@@ -819,6 +819,7 @@ class Bassoon:
             print('***Could not update Angle Offset value. Input type was probably not convertible to a float')
 
         self.experiment.writeTTL = self.writeTtlSelection.get()
+        self.experiment.ttlBookmarks = self.ttlBookmarksSelection.get() == 1
         portSelection = self.ttlPortSelection.get()
         if portSelection in ['No Available Ports', '', None]:
             self.experiment.writeTTL = 'None' #reset write ttl feature to not active
@@ -857,6 +858,7 @@ class Bassoon:
                 "userInitiated": self.userInitSelection.get() == 1,
                 "angleOffset": self.angleOffsetSelection.get(),
                 "writeTTL": self.writeTtlSelection.get(),
+                "ttlBookmarks": self.ttlBookmarksSelection.get(),
                 "ttlPort": self.ttlPortSelection.get(),
                 "useFBO": self.FBObjectSelection.get() == 1,
                 "warpFileName": self.experiment.warpFileName
@@ -868,7 +870,7 @@ class Bassoon:
             configDict['experiment']['writeTTL'] = False
             configDict['experiment']['ttlPort'] = 'No Available Ports'
 
-        #Once Dictionary is filled with prefernces it can be converted to JSON and saved
+        #Once Dictionary is filled with preferences it can be converted to JSON and saved
 
         with open("configOptions.json", 'w') as f:
             json.dump(configDict,f, indent=4)
