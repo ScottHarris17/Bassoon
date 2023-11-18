@@ -25,6 +25,8 @@ class protocol():
         self._numberOfEpochsStarted = 0
         self._numberOfEpochsCompleted = 0 #counts the number of epochs that have actually occured
         
+        self._timesTTLFlipped = 0 #counts the number of TTL flips, used for sustained mode only
+        
         self._completed = -1 # -1 indicates stimulus never ran. 0 indicates stimulus started but ended early. 1 indicates stimulus ran to completion
         
         
@@ -105,6 +107,7 @@ class protocol():
                     print('***WARNING: TTL Pulse Failed***')
         
         elif self.writeTTL == 'Sustained':
+            self._timesTTLFlipped += 1
             if self._TTLON: #IF TTL is ON, turn it OFF
                 self._portObj.setRTS(True) #'True' turns TTL off on picolo
                 self._TTLON = False
