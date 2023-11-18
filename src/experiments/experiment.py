@@ -161,18 +161,13 @@ class experiment():
                 if self.ttlBookmarks: #Run the bookmark before the start of each stimulus: this is 1 frame on, 2 frames off, 3 frames on, 4 frames Off, 5 frames On, 6 frames Off at the frame frate of self.win The port should end in the off position again. Range is not inclusive
                     self.win.flip() #brief pause at frame rate in case there was just another flip from the previous stimulus (e.g., on the last frame of the previous stimulus)
                     for i in range(1, 7):
-                        if p._TTLON: #if TTL is on, turn it off
-                            p._portObj.setRTS(True)
-                            p._TTLON = False
-                        else: #if TTL is off, turn it on
-                            p._portObj.setRTS(False)
-                            p._TTLON = True
+                        p.sendTTL(bookmark = True)
                         for m in range(i): #flip a number of frames that is equal to the iteration number
                             self.win.flip()
                     
                     #just ensure that the TTL pulse is actually off:
-                    p._portObj.setRTS(True) #ensure TTL is OFF to begin
-                    p._TTLON = False #used to track state of sustained TTL pulses                
+                    if p._TTLON:            
+                        p.sendTTL(bookmark = True)
                     
                                 
 

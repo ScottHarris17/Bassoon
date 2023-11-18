@@ -47,7 +47,7 @@ class CheckerboardReceptiveField(protocol):
 
 
     def generateColorLog(self, numChecks):
-
+        print("Building noise sequence, this may take a while")
         random.seed(self.randomSeed) #reinitialize the random seed
 
         colorLog = np.empty((self.stimulusReps, int(np.ceil(self._stimTimeNumFrames/self.frameDwell)), numChecks))
@@ -57,6 +57,7 @@ class CheckerboardReceptiveField(protocol):
                     c = int((int(random.random() < 0.5) - 0.5) *2)
 
                     colorLog[i,j,n] = c #3 dimensional array: d1 = rep number, d2 = flip number for that rep, d3 = check number. Value is the color
+        print("Done!")
         return colorLog
 
 

@@ -26,7 +26,8 @@ class protocol():
         self._numberOfEpochsCompleted = 0 #counts the number of epochs that have actually occured
         
         self._timesTTLFlipped = 0 #counts the number of TTL flips, used for sustained mode only
-        
+        self._timesTTLFlippedBookmark = 0 #counts the number of TTL flips during bookmark (sustained mode with bookmarking only)
+    
         self._completed = -1 # -1 indicates stimulus never ran. 0 indicates stimulus started but ended early. 1 indicates stimulus ran to completion
         
         
@@ -40,8 +41,7 @@ class protocol():
     
     def getFR(self, win):
         '''
-        Determine the frame rate of the win object (e.g. stimulus monitor) and
-        calculate number of frames and total time for each segment of the stimulus
+        Determine the frame rate of the win object (e.g. stimulus monitor) and calculate number of frames and total time for each segment of the stimulus
         '''
         
         self._FR = win.getActualFrameRate()
@@ -94,11 +94,9 @@ class protocol():
         return 0
             
     
-    def sendTTL(self):
+    def sendTTL(self, bookmark = False):
         '''
-        sends ttl pulse during experiment if the setting is turned on
-        TTL pulse or sustained can be selected. If pulse is turned on, this
-        only executes during a protocol, but not before.
+        sends ttl pulse during experiment if the setting is turned on TTL pulse or sustained can be selected. If pulse is turned on, this only executes during a protocol, but not before.
         '''
         if self.writeTTL == 'Pulse':
                 try:
@@ -107,7 +105,11 @@ class protocol():
                     print('***WARNING: TTL Pulse Failed***')
         
         elif self.writeTTL == 'Sustained':
-            self._timesTTLFlipped += 1
+            if bookmark:
+                self._timesTTLFlippedBookmark += 1
+            else:
+                self._timesTTLFlipped += 1
+                
             if self._TTLON: #IF TTL is ON, turn it OFF
                 self._portObj.setRTS(True) #'True' turns TTL off on picolo
                 self._TTLON = False
@@ -119,11 +121,7 @@ class protocol():
     
     def burstTTL(self, win):
         '''
-        sends a burst of TTL pulses at the start of a stimulus when the the TTL port is in pulse mode
-        
-        As of 10/29/2023 this appears to only be implemented for checkerboard receptive field and flash grid
-        
-        The stereotyped busrt is 20 TTL pulses at frame rate, wait 0.2 seconds, and 20 more TTL pulses at frame rate
+        sends a burst of TTL pulses at the start of a stimulus when the the TTL port is in pulse mode. As of 10/29/2023 this appears to only be implemented for checkerboard receptive field and flash grid. The stereotyped busrt is 20 TTL pulses at frame rate, wait 0.2 seconds, and 20 more TTL pulses at frame rate
         '''
         if self.writeTTL != 'Pulse':
             return
