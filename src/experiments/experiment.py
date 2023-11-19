@@ -175,9 +175,8 @@ class experiment():
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object
             
             #Make sure TTL port is turned OFF if running in sustained mode (it's often left on if the user quits a stimulus early)
-            if self.writeTTL == 'Sustained':
-                p._portObj.setRTS(True)
-                p._TTLON = False
+            if self.writeTTL == 'Sustained' and p._TTLON:
+                p.sendTTL()
 
             #write down properties from previous stimulus
             protocolProperties = vars(p)
