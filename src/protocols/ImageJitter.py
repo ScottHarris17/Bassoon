@@ -170,8 +170,8 @@ class ImageJitter(protocol):
                     currentY += dy
                     
                     #check if a recentering is needed
-                    if self._imageHeight_Pix - abs(currentY) < apertureDiameterPix//2 or abs(currentY) > self._imageHeight_Pix//2 \
-                        or self._imageWidth_Pix - abs(currentX) < apertureDiameterPix//2 or abs(currentX) > self._imageWidth_Pix//2:
+                    if self._imageHeight_Pix - abs(currentY) < apertureDiameterPix//2.5 or abs(currentY) > self._imageHeight_Pix//2.5 \
+                        or self._imageWidth_Pix - abs(currentX) < apertureDiameterPix//2.5 or abs(currentX) > self._imageWidth_Pix//2.5:
                             recenterNeeded = True
                 
                 else: #recentering is needed
