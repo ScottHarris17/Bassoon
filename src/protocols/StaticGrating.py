@@ -143,7 +143,7 @@ class StaticGrating(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
             #pretime... stationary grating
@@ -154,7 +154,7 @@ class StaticGrating(protocol):
                 grating.draw()
                 coverRectangle.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
             #stim time - flash
@@ -162,7 +162,7 @@ class StaticGrating(protocol):
                 grating.draw()
                 coverRectangle.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
             #tail time
@@ -170,7 +170,7 @@ class StaticGrating(protocol):
                 grating.draw()
                 coverRectangle.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
 

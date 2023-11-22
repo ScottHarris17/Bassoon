@@ -100,7 +100,7 @@ class FlashFamily(protocol):
             win.color = self.backgroundColor
             for f in range(self._interFamilyIntervalNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                         return
             
             for stepNum in range(len(self.stepSizes)):
@@ -109,7 +109,7 @@ class FlashFamily(protocol):
                 win.color = self.backgroundColor
                 for f in range(self._interFlashIntervalNumFrames):
                     win.flip()
-                    if self.checkQuit():
+                    if self.checkQuitOrPause():
                         return
                 
                 self._stimulusStartLog.append(trialClock.getTime())
@@ -119,21 +119,21 @@ class FlashFamily(protocol):
                 win.color = self.backgroundColor
                 for f in range(self._preTimeNumFrames):
                     win.flip()
-                    if self.checkQuit():
+                    if self.checkQuitOrPause():
                         return
             
                 #stim time
                 win.color = intensityList[stepNum] #set flash intensity
                 for f in range(self._stimTimeNumFrames):
                     win.flip()
-                    if self.checkQuit():
+                    if self.checkQuitOrPause():
                         return
                     
                 #tail time
                 win.color = self.backgroundColor
                 for f in range(self._tailTimeNumFrames):
                     win.flip()
-                    if self.checkQuit():
+                    if self.checkQuitOrPause():
                         return
         
             

@@ -107,7 +107,7 @@ class PupilCalibration(protocol):
             self.sendTTL() #mark left side snap
             time.sleep(0.5)
             self.sendTTL()
-            self.checkQuit
+            self.checkQuitOrPause()
             
             #RIGHT SIDE SNAP SECOND
             if self._informationWin[0]:
@@ -120,7 +120,7 @@ class PupilCalibration(protocol):
             time.sleep(0.5)
             self.sendTTL()
             
-            self.checkQuit
+            self.checkQuitOrPause()
             self._stimulusEndLog.append(trialClock.getTime())
             self._numberOfEpochsCompleted += 1
                 

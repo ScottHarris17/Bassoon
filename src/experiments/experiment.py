@@ -137,7 +137,16 @@ class experiment():
         self.activated = True
         self.loggedStimuli = [] #always resets on a new run
         for i, p in enumerate(self.protocolList):
-            print('!!! Running Protocol Number ' + str(i+1) + ' of ' +  str(len(self.protocolList)))
+            
+            name = p[0]
+            suffix = p[1].suffix
+            if suffix == '_' or suffix.strip() == '':
+                displayName = name
+            else:
+                displayName = name + suffix
+
+            print('!!! Running Protocol Number ' + str(i+1) + ' of ' +  str(len(self.protocolList)) + ', with name ' + displayName)
+            
             p = p[1] #the protocol object is the second one in the tuple
 
             #assign relevant experiment properties to the protocol
@@ -169,7 +178,6 @@ class experiment():
                     if p._TTLON:            
                         p.sendTTL(bookmark = True)
                     
-                                
 
             #run the protocol
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object

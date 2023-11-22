@@ -139,7 +139,7 @@ class DriftingNoise(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
             #pretime... stationary pattern
@@ -150,7 +150,7 @@ class DriftingNoise(protocol):
                 pattern.draw()
                 coverRectangle.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
             
             
@@ -160,7 +160,7 @@ class DriftingNoise(protocol):
                 pattern.draw()
                 coverRectangle.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
             #tail time - stationary pattern
@@ -168,7 +168,7 @@ class DriftingNoise(protocol):
                 pattern.draw()
                 coverRectangle.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
 

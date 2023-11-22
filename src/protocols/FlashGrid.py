@@ -177,7 +177,7 @@ class FlashGrid(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                         return
 
 
@@ -187,7 +187,7 @@ class FlashGrid(protocol):
             for f in range(self._preTimeNumFrames):
                 win.flip()
                 allKeys = event.getKeys() #check if user wants to quit early
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                         return
 
             #decrease baudrate for speed during frame flips
@@ -208,7 +208,7 @@ class FlashGrid(protocol):
                     if f == 0:
                         self.sendTTL()  #write ttl at the onset of every flash
                     
-                    if self.checkQuit():
+                    if self.checkQuitOrPause():
                         return
             
                 flashField.colors = colors #reset opacities to all zero
@@ -217,7 +217,7 @@ class FlashGrid(protocol):
                 #wait the interFlashInterval time
                 for f in range(self._interFlashIntervalNumFrames):
                     win.flip()
-                    if self.checkQuit():
+                    if self.checkQuitOrPause():
                         return
 
             #return baudrate to high value

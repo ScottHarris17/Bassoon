@@ -71,20 +71,20 @@ class Pause(protocol):
         self._numberOfEpochsStarted += 1
         for f in range(self._preTimeNumFrames):
             win.flip()
-            if self.checkQuit():
+            if self.checkQuitOrPause():
                 return
         
         #stim time
         for f in range(self._stimTimeNumFrames):
             win.flip()
-            if self.checkQuit():
+            if self.checkQuitOrPause():
                 return
         
         #tail time
         win.color = self.backgroundColor
         for f in range(self._tailTimeNumFrames):
             win.flip()
-            if self.checkQuit():
+            if self.checkQuitOrPause():
                 return
     
         

@@ -134,7 +134,7 @@ class MovingBar(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
                 
             
@@ -144,7 +144,7 @@ class MovingBar(protocol):
             #pretime... nothing happens
             for f in range(self._preTimeNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
             
             #move the bar during the stim time
@@ -153,14 +153,14 @@ class MovingBar(protocol):
                 bar.pos += speedComponents
                 bar.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
                     
             #remove bar at the end of the stimulus and wait the post time
             bar.opacity = 0
             for f in range(self._tailTimeNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
                 
         

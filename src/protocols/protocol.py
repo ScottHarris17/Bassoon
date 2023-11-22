@@ -5,6 +5,7 @@ Created on Fri Jul  9 17:24:45 2021
 @author: mrsco
 """
 from psychopy import core, visual, data, event, monitors
+import time
 import random, math
 
 class protocol():
@@ -27,7 +28,10 @@ class protocol():
         
         self._timesTTLFlipped = 0 #counts the number of TTL flips, used for sustained mode only
         self._timesTTLFlippedBookmark = 0 #counts the number of TTL flips during bookmark (sustained mode with bookmarking only)
-    
+        
+        self._userPauseCount = 0 #counts the number of times the user initiated a pause in the middle of the stimulus
+        self._userPauseDurations = [] #list of amount of time (in seconds) that each pause lasted for
+        
         self._completed = -1 # -1 indicates stimulus never ran. 0 indicates stimulus started but ended early. 1 indicates stimulus ran to completion
         
         
@@ -82,15 +86,27 @@ class protocol():
         informationalText.draw()
         win.flip()
 
-    def checkQuit(self):
+    def checkQuitOrPause(self):
         '''
-        Checks if user wants to quit early during a stimulus. Press 'q' key to quit early
+        Checks if user wants to quit early during a stimulus or pause the stimulus. Press 'q' key to quit early. Press 'p' to pause the stimulus''
         '''
         allKeys = event.getKeys() #check if user wants to quit early
         if len(allKeys)>0:
             if 'q' in allKeys:
                 self._stoppedEarly = 1
+                print('*** Quiting stimulus early')
                 return 1
+            elif 'p' in allKeys:
+                self._userPauseCount += 1
+                print('*** STIMULUS HAS PAUSED. Press any key to resume')
+                startTime = time.time()
+                event.waitKeys() #wait for key press to resume
+                endTime = time.time()
+                pauseTime = endTime - startTime
+                print('*** Resuming Stimulus. Total pause time was %s seconds' % pauseTime)
+                self._userPauseDurations.append(pauseTime)
+                return 0
+            
         return 0
             
     

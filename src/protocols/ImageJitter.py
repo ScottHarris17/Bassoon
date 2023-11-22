@@ -283,7 +283,7 @@ class ImageJitter(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
             #pretime... stationary image
@@ -294,7 +294,7 @@ class ImageJitter(protocol):
                 image.draw()
                 #aperture.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
             
             if self.writeTTL == 'Pulse':
@@ -309,7 +309,7 @@ class ImageJitter(protocol):
                 
                 self.sendTTL()
                     
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
             
             #return baudrate to high value
@@ -321,7 +321,7 @@ class ImageJitter(protocol):
                 image.draw()
                 #aperture.draw()
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                     return
 
 

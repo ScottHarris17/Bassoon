@@ -129,7 +129,7 @@ class CheckerboardReceptiveField(protocol):
             win.color = self.backgroundColor
             for f in range(self._interStimulusIntervalNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                         return
 
 
@@ -140,7 +140,7 @@ class CheckerboardReceptiveField(protocol):
             for f in range(self._preTimeNumFrames):
                 win.flip()
                 allKeys = event.getKeys() #check if user wants to quit early
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                         return
 
             #stim time
@@ -158,7 +158,7 @@ class CheckerboardReceptiveField(protocol):
                 noiseField.draw()
                 win.flip()
                 self.sendTTL()  #write ttl for every frame flip for this stimulus
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                         return
 
             #return baudrate to high value
@@ -168,7 +168,7 @@ class CheckerboardReceptiveField(protocol):
             #tail time
             for f in range(self._tailTimeNumFrames):
                 win.flip()
-                if self.checkQuit():
+                if self.checkQuitOrPause():
                         return
 
 
