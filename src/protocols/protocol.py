@@ -49,6 +49,14 @@ class protocol():
         '''
         
         self._FR = win.getActualFrameRate()
+        
+        #On rare occasions (depending on the monitor) there appears to be a timing issue with winl.getActialFrameRate().
+        #In such cases, you can keep querying until you get a numerical value other than None
+        #I've set a stop here after 1000 queries, which seems sufficient to prevent this error and avoids an infinite loopq
+        if self._FR is None:
+            count = 0
+            while self._FR is None and count < 1000:
+                self._FR = win.getActualFrameRate()
 
         self._preTimeNumFrames = round(self._FR*self.preTime)
         self._stimTimeNumFrames = round(self._FR*self.stimTime)
