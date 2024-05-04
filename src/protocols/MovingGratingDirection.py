@@ -10,6 +10,7 @@ Order is random.
 from protocols.protocol import protocol
 from psychopy import core, visual, data, event, monitors
 import serial, random, math
+import numpy as np
 
 class MovingGratingDirection(protocol):
     def __init__(self):
@@ -20,6 +21,7 @@ class MovingGratingDirection(protocol):
         self.meanIntensity = 0.0; #mean intensity of the grating
         self.spatialFrequency = 0.1 #cycles per degree
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
+        self.blankedPixelsFraction = 0.0 #float between 0 and 1
         self.speed = 10.0 #deg/s
         self.orientations = [float(x*45) for x in range(8)] #list of floats - degrees
         self.backgroundColor = [0.0, 0.0, 0.0]
@@ -67,7 +69,7 @@ class MovingGratingDirection(protocol):
 
     def run(self, win, informationWin):
         '''
-        Executes the MovingBar stimulus
+        Executes the MovingGratingDirection stimulus
         '''
 
         self._completed = 0 #started but not completed
@@ -95,10 +97,24 @@ class MovingGratingDirection(protocol):
             sf = (spatialFrequencyCyclesPerPixel, None),
             tex = self.gratingTexture,
             contrast = self.gratingContrast,
-            color = self.gratingColor
+            color = self.gratingColor,
             )
 
+        #if the user wants to use a mask to blank out a nonzero amount of the stimulus then this block will execute, otherwise no mask will be applied
+        if self.blankedPixelsFraction > 0:
+            if self.blankedPixelsFraction > 1:
+                print('***Fraction of pixels indicated to be blanked was greater than 1, correcting to 1')
+                self.blankedPixelsFraction = 1.0
 
+            mask = np.zeros((1, win.size[0]*2 * win.size[1]*2))+1 # 1 is fully transparent, -1 is fully opaque
+            indexList = list(range(np.size(mask)))
+            numBlanks = round(self.blankedPixelsFraction*len(indexList))
+            blankPixels = random.sample(indexList, numBlanks)
+            mask[0][blankPixels] = -1
+            reshapedMask = np.reshape(mask, (win.size[0]*2, win.size[1]*2))
+            grating.mask = reshapedMask
+            
+            
         #The cover rectangle is drawn on top of the primary grating. It is used
         #to change the mean intensity of the grating when the user desires.
         #If the mean intensity is set to 0, then the cover rectangle is still
@@ -119,6 +135,8 @@ class MovingGratingDirection(protocol):
         self._numCyclesToShiftByFrame = self.speed*self.spatialFrequency*(1/self._FR)
 
         self.createOrientationLog()
+        
+        
 
         totalEpochs = len(self._orientationLog)
         epochNum = 0
