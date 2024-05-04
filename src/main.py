@@ -28,6 +28,7 @@ import json
 import math
 import time
 import copy
+import random
 
 # Each protocol subclass must be imported here:
 from experiments.experiment import experiment
@@ -295,6 +296,7 @@ class Bassoon:
                     print('TTL set to ON')
             return
         
+        
         def moveProtocol(self, currentIndx, newIndx):
             ''' Move a protocol at current index to newIndx in the experiment sketch'''
             try:
@@ -361,7 +363,19 @@ class Bassoon:
             #open the edit menu for the new protocol to encourage the user to update it
             self.editProtocol(calledByCopy = (True, newIndx_int-1))
             
-        
+            
+        def shuffleProtocolList(self):
+            '''Shuffle the order of stimuli in the protocol list'''
+            
+            if len(self.experimentSketch) < 2:
+                print('***Shuffling is not possible with less than 2 protocols in the protocol list')
+                return
+            
+            random.shuffle(self.experimentSketch)
+            
+            # update the list box to reflect the new stimulus
+            self.updateExperimentSketch()
+            print('--> Shuffled!')            
         
         
         actionsWindow = Toplevel(root)
@@ -428,6 +442,14 @@ class Bassoon:
         
         copyNoteOnIndexingLabel = Label(copyFrame, text = "*Note that indexing starts with 1, not 0", font =("Helvetica 9 italic"), pady = 12)
         copyNoteOnIndexingLabel.grid(row = 5, column = 0)
+        
+        #shuffle protocols
+        shuffleFrame = LabelFrame(actionFrame, text='Shuffle Protocols', bd = 5, padx = 10, pady = 10)
+        shuffleFrame.configure(font=("Helvetica", 12))
+        shuffleFrame.pack()
+        
+        shuffleBtn = Button(shuffleFrame, text = 'Shuffle', command = lambda: shuffleProtocolList(self))
+        shuffleBtn.pack(side=TOP)
         
         
  
