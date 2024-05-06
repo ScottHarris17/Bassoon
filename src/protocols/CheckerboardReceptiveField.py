@@ -47,11 +47,11 @@ class CheckerboardReceptiveField(protocol):
 
 
     def generateColorLog(self, numChecks):
-        print("Building noise sequence, this may take a while")
         random.seed(self.randomSeed) #reinitialize the random seed
 
         colorLog = np.empty((self.stimulusReps, int(np.ceil(self._stimTimeNumFrames/self.frameDwell)), numChecks))
         for i in range(self.stimulusReps):
+            self.printProgressBar(i, self.stimulusReps-1, prefix = 'Building noise sequence: ')
             for j in range(int(np.ceil(self._stimTimeNumFrames/self.frameDwell))):
                 for n in range(numChecks):
                     c = int((int(random.random() < 0.5) - 0.5) *2)
@@ -79,7 +79,7 @@ class CheckerboardReceptiveField(protocol):
 
         #Pause for keystroke if the user wants to manually initiate
         if self.userInitiated:
-            self.showInformationText(win, 'Stimulus Information: Flash Family \nPress any key to begin')
+            self.showInformationText(win, 'Stimulus Information: Checkerboard Receptive Field \nPress any key to begin')
             event.waitKeys() #wait for key press
 
         winWidthPix = win.size[0]
@@ -93,11 +93,11 @@ class CheckerboardReceptiveField(protocol):
         yCoordinates = [y - win.size[1]/2 for y in range(-checkHeightPix,win.size[1]+checkHeightPix,checkHeightPix)]
         numChecks = len(xCoordinates)*len(yCoordinates)
 
-        self.checkCoordinates = []
-        colors =[]
+        self._checkCoordinates = []
+        colors = []
         for i in range(len(xCoordinates)):
             for j in range(len(yCoordinates)):
-                self.checkCoordinates.append([xCoordinates[i], yCoordinates[j]])
+                self._checkCoordinates.append([xCoordinates[i], yCoordinates[j]])
 
 
         sizes = [(checkWidthPix, checkHeightPix) for i in range(numChecks)]
@@ -110,7 +110,7 @@ class CheckerboardReceptiveField(protocol):
             nElements = numChecks,
             elementMask="None",
             elementTex = None,
-            xys = self.checkCoordinates,
+            xys = self._checkCoordinates,
             sizes = sizes,
             )
 
