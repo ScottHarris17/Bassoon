@@ -35,6 +35,21 @@ class protocol():
         self._completed = -1 # -1 indicates stimulus never ran. 0 indicates stimulus started but ended early. 1 indicates stimulus ran to completion
         
         
+    def validatePropertyValues(self, tf = True, errorMessage = ''):
+        '''
+        Validates the property values for select protocols. It does this by looking for an internal validation function within the protocol subclass called "internalValidation()". If this function does not exist, the validations are automatically passed.
+
+        Returns:
+            tf - bool value, true if validations are passed, false if they are not
+            errorMessage - string, message to be displayed in validations are not passed
+        '''
+        internalValidation = getattr(self, "internalValidation", None)
+        if not callable(internalValidation):
+            return tf, errorMessage
+        
+        tf, errorMessage = self.internalValidation()
+        
+        return tf, errorMessage
 
     def estimateTime(self):
         '''
@@ -161,3 +176,27 @@ class protocol():
             win.flip()
         
         return
+    
+
+    def printProgressBar(self, iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+        '''
+        Call in a loop to create terminal progress bar
+        @params:
+            iteration   - Required  : current iteration (Int)
+            total       - Required  : total iterations (Int)
+            prefix      - Optional  : prefix string (Str)
+            suffix      - Optional  : suffix string (Str)
+            decimals    - Optional  : positive number of decimals in percent complete (Int)
+            length      - Optional  : character length of bar (Int)
+            fill        - Optional  : bar fill character (Str)
+            printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+        
+        adapted from: https://stackoverflow.com/questions/3173320/text-progress-bar-in-terminal-with-block-characters By @Greenstick
+        '''
+        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+        # Print New Line on Complete
+        if iteration == total: 
+            print()

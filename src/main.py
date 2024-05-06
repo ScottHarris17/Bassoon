@@ -46,6 +46,7 @@ from protocols.SnellenShapes import SnellenShapes
 from protocols.DriftingNoise import DriftingNoise
 from protocols.FlashGrid import FlashGrid
 from protocols.ImageJitter import ImageJitter
+from protocols.ScotomaMovingGrating import ScotomaMovingGrating
 
 class Bassoon:
     def __init__(self, master):
@@ -1000,11 +1001,12 @@ class Bassoon:
 
         inputs:
             - selectedIndex = index of selected protocol in self.experimentSketch
-            - selectedProtoco = the potocol object that has been selected
+            - selectedProtocol = the potocol object that has been selected
             - updateDict = update instructions for new attribute values
         '''
         pnameWithSpaces = self.experimentSketch[selectedIndex][0]
-
+        copyOfSelectedProtocol = copy.deepcopy(selectedProtocol)
+        
         updateNames = updateDict['propNamesEditable']
         userEntries = updateDict['entries']
         updateTypes = updateDict['propTypes']
@@ -1042,20 +1044,32 @@ class Bassoon:
             except:
                 print('***Update Failure for property with name ' + updateNames[i]
                       + ' Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
-
+        
+         #check any validations that are needed for the current stimulus type
+        tf, errorMessage = selectedProtocol.validatePropertyValues()
+        if not tf:
+             print('\n***Update Failure. Could not update this stimulus because validations on property assignments were not passed. This came with the following error message:')
+             print('VALIDATION ERROR: ' + errorMessage)
+             
+             #place the old protocol back into the experiment sketch
+             self.experimentSketch[selectedIndex] = (
+                 pnameWithSpaces, copyOfSelectedProtocol)
+             return
+         
         # put the object back into the experiment sketch
         self.experimentSketch[selectedIndex] = (
             pnameWithSpaces, selectedProtocol)
 
         # reload the experiment sketch list box
         self.updateExperimentSketch()
-
+        
         # update time estimation in the edit window
         protocolRounded_minutes, protocolRemainingSeconds = secondsToMinutesAndSeconds(
             selectedProtocol.estimateTime())
         self.protocolEstimatedTimeLabel.configure(text='Estimated Time: ' + str(
             protocolRounded_minutes) + 'm ' + str(protocolRemainingSeconds) + 's')
-
+        
+        print('Stimulus was successfully updated')
 
     def removeProtocol(self):
         '''
