@@ -10,7 +10,6 @@ from protocols.protocol import protocol
 from psychopy import core, visual, data, event, monitors
 import serial, random, math
 import numpy as np
-import copy
 
 class ScotomaMovingGrating(protocol):
     def __init__(self):
