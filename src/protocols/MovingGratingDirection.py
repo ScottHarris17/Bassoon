@@ -21,7 +21,6 @@ class MovingGratingDirection(protocol):
         self.meanIntensity = 0.0; #mean intensity of the grating
         self.spatialFrequency = 0.1 #cycles per degree
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
-        self.blankedPixelsFraction = 0.0 #float between 0 and 1
         self.speed = 10.0 #deg/s
         self.orientations = [float(x*45) for x in range(8)] #list of floats - degrees
         self.backgroundColor = [0.0, 0.0, 0.0]
@@ -31,13 +30,14 @@ class MovingGratingDirection(protocol):
         self.tailTime = 1.0 #s
         self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
-
+        
+        
     def estimateTime(self):
         '''
         Estimate the total amount of time that this protocol will take to run
         given the current parameters
 
-        Value is stored as total time in seconds in the property 'self.estimatedTime'
+        Value is stored as total time in seconds in the property 'self._estimatedTime'
         which is initialized by the protocol superclass.
 
         returns: estimated time in seconds
@@ -99,20 +99,6 @@ class MovingGratingDirection(protocol):
             contrast = self.gratingContrast,
             color = self.gratingColor,
             )
-
-        #if the user wants to use a mask to blank out a nonzero amount of the stimulus then this block will execute, otherwise no mask will be applied
-        if self.blankedPixelsFraction > 0:
-            if self.blankedPixelsFraction > 1:
-                print('***Fraction of pixels indicated to be blanked was greater than 1, correcting to 1')
-                self.blankedPixelsFraction = 1.0
-
-            mask = np.zeros((1, win.size[0]*2 * win.size[1]*2))+1 # 1 is fully transparent, -1 is fully opaque
-            indexList = list(range(np.size(mask)))
-            numBlanks = round(self.blankedPixelsFraction*len(indexList))
-            blankPixels = random.sample(indexList, numBlanks)
-            mask[0][blankPixels] = -1
-            reshapedMask = np.reshape(mask, (win.size[0]*2, win.size[1]*2))
-            grating.mask = reshapedMask
             
             
         #The cover rectangle is drawn on top of the primary grating. It is used

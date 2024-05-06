@@ -26,7 +26,6 @@ class OscillatingGrating(protocol):
         self.spatialFrequency = 0.15 #cycles per visual degree
         self.gratingOrientations = [90.0, 270.0] #degrees
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
-        self.blankedPixelsFraction = 0.0 #float between 0 and 1
         self.oscillationPeriod = 15.0 #seconds
         self.oscillationAmplitude = 20.0 #visual degrees - distance that the grating moves over the course of one half oscillation
         self.oscillationPhaseShift = 0.0 #degrees - between 0 and 90 - 90 will start the oscillation in the middle of it's cycle. 0 will start it all the way on one side
@@ -38,6 +37,8 @@ class OscillatingGrating(protocol):
         self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
         self._angleOffset = 0.0 #reassigned by experiment in most cases
         
+    
+   
     def estimateTime(self):
         '''
         Estimate the total amount of time that this protocol will take to run
@@ -133,19 +134,6 @@ class OscillatingGrating(protocol):
             color = self.gratingColor
             )
         
-        #if the user wants to use a mask to blank out a nonzero amount of the stimulus then this block will execute, otherwise no mask will be applied
-        if self.blankedPixelsFraction > 0:
-            if self.blankedPixelsFraction > 1:
-                print('***Fraction of pixels indicated to be blanked was greater than 1, correcting to 1')
-                self.blankedPixelsFraction = 1.0
-
-            mask = np.zeros((1, win.size[0]*2 * win.size[1]*2))+1 # 1 is fully transparent, -1 is fully opaque
-            indexList = list(range(np.size(mask)))
-            numBlanks = round(self.blankedPixelsFraction*len(indexList))
-            blankPixels = random.sample(indexList, numBlanks)
-            mask[0][blankPixels] = -1
-            reshapedMask = np.reshape(mask, (win.size[0]*2, win.size[1]*2))
-            grating.mask = reshapedMask
         
         #The cover rectangle is drawn on top of the primary grating. It is used
         #to change the mean intensity of the grating when the user desires. 
