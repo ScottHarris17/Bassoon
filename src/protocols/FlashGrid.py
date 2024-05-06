@@ -28,7 +28,27 @@ class FlashGrid(protocol):
         self.tailTime = 1.0 #s
         self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
-
+        
+        
+    def internalValidation(self, tf = True, errorMessage = ''):
+         '''
+         Validates the properties. This is called when the user updates the protocol's properties. It is directly called by the validatePropertyValues() method in the protocol super class
+     
+         -------
+         Returns:
+             tf - bool value, true if validations are passed, false if they are not
+             errorMessage - string, message to be displayed in validations are not passed
+     
+         '''
+         if self.stimTime != 0:
+             tf = True
+             errorMessage = ''
+             print('Validations were passed, but stimTime must be 0 and was forced back to this value (it is a dummy variable for this stimulus).')
+             self.stimTime = 0.0
+             
+         return tf, errorMessage
+     
+        
     def estimateTime(self):
         '''
         Estimate the total amount of time that this protocol will take to run
