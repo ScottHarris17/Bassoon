@@ -148,6 +148,7 @@ class ScotomaMovingGrating(protocol):
         #if subtracting scotomas:
         if numScotomasToAdd < 0:
             self._scotomaSequence = np.array(random.sample(scotomaIndices, -numScotomasToAdd))
+            self._newScotomasPerFrame = [-x for x in self._newScotomasPerFrame]
             
     
     def run(self, win, informationWin):
@@ -318,7 +319,7 @@ class ScotomaMovingGrating(protocol):
             if numScotomasToAdd > 0:
                 addColor = self.scotomaOpacity #scotoma color, used when adding scotomas
             else:
-                addColor = 1 #transparent - used when taking away scotomas
+                addColor = 0 #transparent - used when taking away scotomas
                 
             count = 0 
             for f in range(self._numFramesGrowth):
