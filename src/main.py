@@ -986,9 +986,10 @@ class Bassoon:
         buttonGrid = Frame(editFrame)
         buttonGrid.grid(row=i + 2, column=2)
 
-        applyChangesButton = Button(buttonGrid, text='Apply Changes',
+        #make the apply changes button a property so that it can be accessed by self.applyPropertyChanges() function in order to update the button color if validations aren't passed
+        self.applyChangesButton = Button(buttonGrid, text='Apply Changes',
                                     command=lambda: self.applyPropertyChanges(selectedIndex, selectedProtocol, updateDict))
-        applyChangesButton.grid(row=1, column=1)
+        self.applyChangesButton.grid(row=1, column=1)
         closeButton = Button(buttonGrid, text='Close Window',
                              command=lambda: editWindow.destroy())
         closeButton.grid(row=1, column=2)
@@ -1054,7 +1055,11 @@ class Bassoon:
              #place the old protocol back into the experiment sketch
              self.experimentSketch[selectedIndex] = (
                  pnameWithSpaces, copyOfSelectedProtocol)
+             
+             self.applyChangesButton.configure(bg=_from_rgb((200, 150, 150)))
              return
+         
+        self.applyChangesButton.configure(bg=_from_rgb((240, 240, 240)))
          
         # put the object back into the experiment sketch
         self.experimentSketch[selectedIndex] = (
@@ -1119,7 +1124,7 @@ class Bassoon:
 
         # bind double click left button to edit the current field
         self.experimentSketchBox.bind('<Double-Button-1>', self.editProtocol)
-        # bind single left click to getting the updating the protocol index field
+        # bind single right click to getting the updating the protocol index field
         self.experimentSketchBox.bind('<Button-3>', self.changeProtocolIndex)
 
 
