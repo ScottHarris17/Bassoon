@@ -48,6 +48,7 @@ class experiment():
         self.useFBO = False
 
         self.FR = 0 #frame rate of the stimulus window
+        self.timingReport = False
                 
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
@@ -79,6 +80,8 @@ class experiment():
                     
                     #add new options here so that they don't mess up old file formats
                     self.ttlBookmarks = configOptions['experiment']['ttlBookmarks']
+                    
+                    self.timingReport = configOptions['experiment']['timingReport']
                 except:
                     print('*** Could not load all configuration settings from src/configOptions.json. Manually apply settings in the Options menu')
 
@@ -150,6 +153,7 @@ class experiment():
             p = p[1] #the protocol object is the second one in the tuple
 
             #assign relevant experiment properties to the protocol
+            p._timingReport = self.timingReport
             if hasattr(p, '_angleOffset'):
                 p._angleOffset = self.angleOffset
 
@@ -185,6 +189,14 @@ class experiment():
             #Make sure TTL port is turned OFF if running in sustained mode (it's often left on if the user quits a stimulus early)
             if self.writeTTL == 'Sustained' and p._TTLON:
                 p.sendTTL()
+                
+            #print the timing report if the user asks for it
+            if p._timingReport:
+                allTimes = [p._stimulusEndLog[i]-p._stimulusStartLog[i] for i in range(len(p._stimulusEndLog))]
+                totalTime = 0
+                for t in allTimes:
+                    totalTime += t
+                # p.reportTime(totalTime, p._totalFrames) #In Development
 
             #write down properties from previous stimulus
             protocolProperties = vars(p)

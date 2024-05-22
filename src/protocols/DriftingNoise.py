@@ -124,6 +124,8 @@ class DriftingNoise(protocol):
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
 
+        self._totalFrames = (self._interStimulusIntervalNumFrames+self._preTimeNumFrames+self._stimTimeNumFrames+self._tailTimeNumFrames)*self.stimulusReps
+        
         #stimulus loop
         for ori in self._orientationLog:
             pattern.ori = -ori + 37 - self._angleOffset #add 37 b/c for some reason binary noise phase modulates along this direction... flip for coordinate convention: 0 = east, 90 = north, 180 = west, 270 = south
@@ -170,7 +172,6 @@ class DriftingNoise(protocol):
                 win.flip()
                 if self.checkQuitOrPause():
                     return
-
 
             self._stimulusEndLog.append(trialClock.getTime())
             self.sendTTL()

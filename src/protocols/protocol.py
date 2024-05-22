@@ -34,6 +34,7 @@ class protocol():
         
         self._completed = -1 # -1 indicates stimulus never ran. 0 indicates stimulus started but ended early. 1 indicates stimulus ran to completion
         
+        self._timingReport = False #bool, inhereted from experiment parameters. Indicates whether the user wants to print a timing report for each stimulus (usually to determine if frames are being dropped)
         
     def validatePropertyValues(self, tf = True, errorMessage = ''):
         '''
@@ -177,7 +178,16 @@ class protocol():
         
         return
     
+    def reportTime(self, totalTime, numFrames):
+        '''
+        Tells user how much time the stimulus took to run versus how much time the user should have expected if the frame rate was ideal
+        '''
+        actualFR = numFrames/totalTime
+        expectedFR = self._FR
+        
+        print(f"--> TIMING REPORT: The actual frame rate was {actualFR}. The stimulus took a total of {totalTime} seconds to run. The expected frame rate was {expectedFR},\n\tPlease note, this feature only works if the stimulus is played for its full duration and not quit early. ")
 
+    
     def printProgressBar(self, iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
         '''
         Call in a loop to create terminal progress bar

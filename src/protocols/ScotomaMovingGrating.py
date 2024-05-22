@@ -27,19 +27,20 @@ class ScotomaMovingGrating(protocol):
         self.backgroundColor = [0.0, 0.0, 0.0]
         
         #scotoma parameters
-        self.scotomaStartFraction = 0.2 #Fraction of pixels that start as a scotoma
+        self.scotomaStartFraction = 0 #Fraction of pixels that start as a scotoma
         self.scotomaEndFraction = 1.0 #fraction of pixels that end as a scotoma
         self.scotomaOpacity = 1.0 #1 is fully opaque, 0 is fully transparent
         self.scotomaReverse = True #bool, True means that the scotoma will go from start to end and then end to start, False means it will only go from start to end
-        self.scotomaGrowthTime = 20.0 #amount of time that the stimulus grows for
-        self.scotomaBookendTime = 3.0 #seconds before scotoma comes online, while the grating is still moving. Also the amount of time to pause for in a reversal stimulus, and the amount of time that the grating continues to move for after the stimulus has gone away.
+        self.scotomaGrowthTime = 80.0 #amount of time that the stimulus grows for
+        self.scotomaBookendTime = 10.0 #seconds before scotoma comes online, while the grating is still moving. Also the amount of time to pause for in a reversal stimulus, and the amount of time that the grating continues to move for after the stimulus has gone away.
         self.scotomaGrowth = 'lin' #currently only 'lin' is supported for linear growth
-        self.scotomaSize = 0.1 #in degrees. Scotomas will be square, such that height == width
+        self.scotomaSize = 0.67 #in degrees. Scotomas will be square, such that height == width
+        self.scotomaColor = [0.0, 0.0, 0.0]
         
         self.stimulusReps = 3        
-        self.preTime = 1.0 #s
+        self.preTime = 20.0 #s
         self.stimTime = 0.0 #the total time that the grating moves for. This number is calculated during run time and should not be edited here. It is listed here as a dummy variable because it is required by the getFR method in protocol.py
-        self.tailTime = 1.0 #s
+        self.tailTime = 20.0 #s
         self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
 
@@ -149,8 +150,10 @@ class ScotomaMovingGrating(protocol):
         if numScotomasToAdd < 0:
             self._scotomaSequence = np.array(random.sample(scotomaIndices, -numScotomasToAdd))
             self._newScotomasPerFrame = [-x for x in self._newScotomasPerFrame]
+
+        if numScotomasToAdd == 0:
+            self._scotomaSequence = np.array([0])
             
-    
     def run(self, win, informationWin):
         '''
         Executes the ScotomaMovingGrating stimulus
@@ -214,7 +217,7 @@ class ScotomaMovingGrating(protocol):
             elementTex = None,
             xys = self._scotomaCoordinates,
             sizes = sizes,
-            colors = self.backgroundColor
+            colors = self.scotomaColor
             )
         
         random.seed(self.randomSeed) #reinitialize the random seed

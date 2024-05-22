@@ -118,6 +118,8 @@ class CheckerboardReceptiveField(protocol):
         self.burstTTL(win) #burst to mark onset of the stimulus
 
         trialClock = core.Clock() #this will reset every trial
+        self._totalFrames = (self._interStimulusIntervalNumFrames+self._preTimeNumFrames+self._stimTimeNumFrames+self._tailTimeNumFrames)*self.stimulusReps
+            
         for i in range(self.stimulusReps):
 
             #show information if necessary
@@ -139,7 +141,6 @@ class CheckerboardReceptiveField(protocol):
             #pretime... nothing happens
             for f in range(self._preTimeNumFrames):
                 win.flip()
-                allKeys = event.getKeys() #check if user wants to quit early
                 if self.checkQuitOrPause():
                         return
 
@@ -178,4 +179,5 @@ class CheckerboardReceptiveField(protocol):
             self._numberOfEpochsCompleted += 1
 
 
+            
         self._completed = 1

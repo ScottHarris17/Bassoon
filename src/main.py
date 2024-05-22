@@ -643,6 +643,16 @@ class Bassoon:
         recompileChk = Checkbutton(
             experimentFrame, var=self.recompileSelection)
         recompileChk.grid(row=4, column=3)
+        
+        #timing report
+        timingReportLabel = Label(
+            experimentFrame, text='Print Timing Reports', padx=10)
+        timingReportLabel.grid(row=5, column = 0, columnspan=3)
+        self.timingReportSelection = IntVar(root)
+        self.timingReportSelection.set(self.experiment.timingReport)
+        timingReportChk = Checkbutton(
+            experimentFrame, var=self.timingReportSelection)
+        timingReportChk.grid(row=5, column=3)
 
         # add apply and close buttons
         buttonFrame = Frame(editFrame)
@@ -854,7 +864,7 @@ class Bassoon:
 
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
         self.recompileExperiment = self.recompileSelection.get() == 1
-
+        self.experiment.timingReport = self.timingReportSelection.get()==1
 
         print('\n--> New experiment settings have been applied')
 
@@ -884,7 +894,8 @@ class Bassoon:
                 "ttlBookmarks": self.ttlBookmarksSelection.get(),
                 "ttlPort": self.ttlPortSelection.get(),
                 "useFBO": self.FBObjectSelection.get() == 1,
-                "warpFileName": self.experiment.warpFileName
+                "warpFileName": self.experiment.warpFileName,
+                "timingReport": self.timingReportSelection.get()==1
             }
         }
 
