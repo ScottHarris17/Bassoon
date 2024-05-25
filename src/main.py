@@ -376,7 +376,58 @@ class Bassoon:
             
             # update the list box to reflect the new stimulus
             self.updateExperimentSketch()
-            print('--> Shuffled!')            
+            print('--> Shuffled!')   
+        
+        def clearProtocolList(self):
+            '''Clear all of the stimuli in the protocol list.
+            
+            The function will open a confirmation window first since this is a permenant action. Then it will execute the confirmClear() helper function based on the user's choice
+            ''' 
+            def confirmClear(self, confirmClearWindow, choice = 'Abort'):
+                ''' 
+                Helper function that executes after the user interacts with the confirmation window
+                '''
+                if choice == 'clear':
+                    #clear the experiment sketch
+                    self.experimentSketch = []
+                    # update the list box
+                    self.updateExperimentSketch()
+                    print('--> The protocol list has been cleared')
+                else:
+                    print('--> The clear was aborted')
+            
+                confirmClearWindow.destroy()
+                return
+                    
+            #check edge case
+            if len(self.experimentSketch) == 0:
+                print('***Clearing is not possible because there are no protocols in the protocol list.')
+                return
+            
+            #build separate window for the user to confirm that they actually want to clear
+            confirmClearWindow = Toplevel(root)
+            confirmClearWindow.title('Confirm Clear')
+            confirmClearWindow.background = '#fce390'
+            confirmClearFrame = Frame(confirmClearWindow, padx=20)
+            confirmClearFrame.pack(fill = "both", expand = True)
+            
+            confirmClearLabel = Label(confirmClearFrame, text = 'WARNING: This action will perminantly erase all protocols from the protocol list.', background='#fce390')
+            confirmClearLabel.config(font=("Helvetica, 12"))
+            confirmClearLabel.pack()
+
+            btnFrame = Frame(confirmClearWindow, padx=20)
+            btnFrame.pack(fill = "both", expand = True)
+            
+            #confirm clear button
+            confirmClearBtn = Button(btnFrame, text = '!Proceed', background = '#e3907f', padx = 7, command = lambda: confirmClear(self, confirmClearWindow, 'clear'))
+            confirmClearBtn.grid(row=0, column = 0, padx = 30)
+            
+            #Abort clear button
+            abortClearBtn = Button(btnFrame, text = 'Abort', background = '#c9ffd8', padx = 7, command = lambda: confirmClear(self, confirmClearWindow, 'abort'))
+            abortClearBtn.grid(row=0, column = 1)
+            
+            return
+        
         
         
         actionsWindow = Toplevel(root)
@@ -445,12 +496,16 @@ class Bassoon:
         copyNoteOnIndexingLabel.grid(row = 5, column = 0)
         
         #shuffle protocols
-        shuffleFrame = LabelFrame(actionFrame, text='Shuffle Protocols', bd = 5, padx = 10, pady = 10)
-        shuffleFrame.configure(font=("Helvetica", 12))
-        shuffleFrame.pack()
+        macroEditFrame = LabelFrame(actionFrame, text='Macro Edits', bd = 5, padx = 10, pady = 10)
+        macroEditFrame.configure(font=("Helvetica", 12))
+        macroEditFrame.pack()
         
-        shuffleBtn = Button(shuffleFrame, text = 'Shuffle', command = lambda: shuffleProtocolList(self))
+        shuffleBtn = Button(macroEditFrame, text = 'Shuffle Protocols', command = lambda: shuffleProtocolList(self))
         shuffleBtn.pack(side=TOP)
+        
+        
+        clearBtn = Button(macroEditFrame, text = 'Clear All Protocols', command = lambda: clearProtocolList(self))
+        clearBtn.pack(side=TOP)
         
         
  
