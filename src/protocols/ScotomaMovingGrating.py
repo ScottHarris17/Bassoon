@@ -20,7 +20,7 @@ class ScotomaMovingGrating(protocol):
         self.gratingColor = [1.0, 1.0, 1.0]
         self.gratingContrast = 1.0 #multiplied by the color
         self.meanIntensity = 0.0; #mean intensity of the grating
-        self.spatialFrequency = 0.1 #cycles per degree
+        self.spatialFrequency = 0.15 #cycles per degree
         self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
         self.speed = 10.0 #deg/s
         self.orientations = [90]#[float(x*45) for x in range(8)] #list of floats - degrees
