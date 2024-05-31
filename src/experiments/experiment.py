@@ -20,7 +20,7 @@ class experiment():
         self.allowGUI = True
         self.screen = 0
         self.fullscr = False
-        self.backgroundColor = [-1, -1, -1] #doesn't do much, more or less obselete because it's hardly seen
+        self.backgroundColor = [-1, -1, -1] #doesn't do much, more or less obsolete because it's hardly seen
         self.units = 'pix'
         self.allowStencil = True
         self.stimMonitor = 'testMonitor'
@@ -112,7 +112,8 @@ class experiment():
                     color = self.backgroundColor,
                     units = self.units,
                     useFBO = self.useFBO,
-                    allowStencil = self.allowStencil)
+                    allowStencil = self.allowStencil
+                    )
 
         self.FR = self.win.getActualFrameRate() #log the frame rate of the stimulus window
 
@@ -162,7 +163,7 @@ class experiment():
             #set up the TTL ports based on the mode.
             if self.writeTTL == 'Pulse':
                 portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
-                p._portObj = serial.Serial(portNameSerial, 4000000) #initialize port_Obj for sending TTL pulses
+                p._portObj = serial.Serial(portNameSerial, 4000000) #initialize portObj for sending TTL pulses
                 p._portObj.setRTS(True) #ensure TTL is OFF to begin
                 p.burstTTL(self.win) #execute a stereotyped burst to mark the start of the stimulus in pulse mode
             elif self.writeTTL == 'Sustained':
@@ -192,11 +193,8 @@ class experiment():
                 
             #print the timing report if the user asks for it
             if p._timingReport:
-                allTimes = [p._stimulusEndLog[i]-p._stimulusStartLog[i] for i in range(len(p._stimulusEndLog))]
-                totalTime = 0
-                for t in allTimes:
-                    totalTime += t
-                # p.reportTime(totalTime, p._totalFrames) #In Development
+                p.reportTime(displayName)
+               
 
             #write down properties from previous stimulus
             protocolProperties = vars(p)

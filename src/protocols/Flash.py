@@ -62,8 +62,7 @@ class Flash(protocol):
         
         epochNum = 0
         trialClock = core.Clock() #this will reset every trial
-        self._totalFrames = (self._interStimulusIntervalNumFrames+self._preTimeNumFrames+self._stimTimeNumFrames+self._tailTimeNumFrames)*self.stimulusReps
-
+        
         for stim in range(self.stimulusReps):
             epochNum += 1
         
@@ -107,5 +106,4 @@ class Flash(protocol):
             
             self._numberOfEpochsCompleted += 1
                 
-            
         self._completed = 1

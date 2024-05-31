@@ -13,8 +13,8 @@ class protocol():
         self.suffix = '_' #suffix for the protocol name, begin with _
         self.userInitiated = False #determines whether a key stroke is needed to initiate the protocol. Will be set to the corresponding experiment value if not updated by the user
         
-        self._stimulusStartLog = []
-        self._stimulusEndLog = []
+        self._stimulusStartLog = [] #list of time stamps marking the start of each epoch
+        self._stimulusEndLog = [] #list of time stamps marking the end of each epoch
         self._pauseTimeLog = []
         
         self.randomSeed = random.random()
@@ -178,14 +178,49 @@ class protocol():
         
         return
     
-    def reportTime(self, totalTime, numFrames):
+    
+    def reportTime(self, displayName):
         '''
-        Tells user how much time the stimulus took to run versus how much time the user should have expected if the frame rate was ideal
-        '''
-        actualFR = numFrames/totalTime
-        expectedFR = self._FR
+        Prints a timing report for each stimulus when the experiment settings indicate to do so. This is primarily used for diagnostic purposes or when designing new stimuli.
         
-        print(f"--> TIMING REPORT: The actual frame rate was {actualFR}. The stimulus took a total of {totalTime} seconds to run. The expected frame rate was {expectedFR},\n\tPlease note, this feature only works if the stimulus is played for its full duration and not quit early. ")
+        inputs:
+            - displayName: string that shows the name of the current stimulus
+        '''
+        
+        #make sure the stimulus was fully completed. If it was not, the timing report is not generated
+        if not self._completed:
+            print(f"*** ALERT: The timing report for {displayName} could not be generated because the protocol was not run to completion. Retry without terminating the protocol early.\n")
+            return
+        
+        
+        #Calculate the timing metrics
+        #the start and stop time of each epoch are calculated and reported to the user. Usually, this does not include the interstimulus interval.
+        allTimes = [self._stimulusEndLog[i]-self._stimulusStartLog[i] for i in range(len(self._stimulusEndLog))]
+        totalTime = self._stimulusEndLog[-1] - self._stimulusStartLog[0]
+        percentDifference = 100*self._estimatedTime/totalTime
+        print(f"-----------Timing Report Summary for {displayName}--------------")
+        print("\nTime Elapsed Per Epoch:")
+        
+        for i, time in enumerate(allTimes):
+            print(f"Epoch {i + 1}: {time:.2f} seconds")
+            
+        print('(note that reported epoch times typically do not include interstimulus intervals. See the script for the specific protocol for more information)\n')
+        
+        #then, the total elapsed time for the stimulus is compared to the expected elapsed time
+        print(f"Total Time Elapsed for this Stimulus: {totalTime:.2f} seconds")
+        print(f"Expected Time Elapsed for this Stimulus: {self._estimatedTime:.2f} seconds")
+        
+        #a frame rate calculation is made using the total and expected elapsed time
+        print("\nFrame Rate Information:")
+        print(f"Expected Frame Rate: {self._FR} Hz")
+        print(f"Actual Frame Rate (percentage of expected): {percentDifference:.2f}%")
+        
+        #check if there were any manual pauses. If so, tell the user just in case
+        if self._userPauseCount > 0:
+            print('\n*** Note: Be aware that {self._userPauseCount} user pauses were detected during this stimulus, which will affect the timing report.')
+        print("---------------------------------------------\n")
+        
+        return
 
     
     def printProgressBar(self, iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
