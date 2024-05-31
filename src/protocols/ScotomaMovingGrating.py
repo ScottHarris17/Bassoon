@@ -69,7 +69,7 @@ class ScotomaMovingGrating(protocol):
             
         if self.stimTime != 0:
             self.stimTime = 0
-            print('\nNOTE: Stim Time was reset to 0. It will be updated during run time. Users should not manually change this parameter for the Scotoma Moving Grating stimulus')
+            print('\nNOTE: Stim Time was reset to 0. It will be updated on the fly during run time. Users should not manually change this parameter for the Scotoma Moving Grating stimulus.')
             
         if self.scotomaSize < 0.5:
             print('\nNOTE: Scotoma Size is small. This may slow down the frame rate. If this occurs, increase scotoma size to improve the frame rate')
@@ -105,7 +105,7 @@ class ScotomaMovingGrating(protocol):
 
         Desired orientations are specified as a list in self.orientations
 
-        creates self._orientationLog, a list, which specifies the orienation
+        creates self._orientationLog, a list which specifies the orienation
         to use for each epoch
         '''
         orientations = self.orientations
@@ -115,6 +115,7 @@ class ScotomaMovingGrating(protocol):
         for n in range(self.stimulusReps):
             self._orientationLog += random.sample(orientations, len(orientations))
             
+        return
     
     
     def createScotomaGrowthSequence(self, numScotomasToAdd, numTotalScotomas, scotomaIndices):
@@ -153,6 +154,8 @@ class ScotomaMovingGrating(protocol):
 
         if numScotomasToAdd == 0:
             self._scotomaSequence = np.array([0])
+        
+        return
             
     def run(self, win, informationWin):
         '''
