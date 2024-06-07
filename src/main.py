@@ -50,7 +50,10 @@ from protocols.ScotomaMovingGrating import ScotomaMovingGrating
 
 class Bassoon:
     def __init__(self, master):
-        master.title('Bassoon App')
+        self.master = master
+        
+        self.master.title('Bassoon App')
+        
         # initialize the experiment
         self.experiment = experiment()
 
@@ -129,6 +132,9 @@ class Bassoon:
         self.runExperimentButton.grid(row=1, column=4)
         self.buttonFrame.pack()
 
+         # Bind the on_closing function to the window close event
+        master.protocol("WM_DELETE_WINDOW", self.onClosing)
+        
         #load rig configuration
         #self.loadRigPreferences()
 
@@ -190,7 +196,7 @@ class Bassoon:
         '''
         Generate a list of available protocols to display in the dropdown menu
         '''
-        protocolFiles = os.listdir('protocols')
+        protocolFiles = os.listdir('protocols') #I think this assumes the working directory is main.py
 
         # save all available protocols
         self.protocolList = [p[:-3] for p in protocolFiles if p.endswith(
@@ -205,7 +211,7 @@ class Bassoon:
                     pnameWithSpaces += char
 
             self.protocolList[i] = pnameWithSpaces
-
+            
 
     def changeProtocolIndex(self, e=0):
         '''
@@ -285,15 +291,15 @@ class Bassoon:
             if self.experiment.ttlPort == 'No Available Ports':
                 print('Could not flip TTL because no port has been selected for this experiment')
                 return
+            elif self.experiment.ttlPortOpen == False:
+                print('Could not flip TTL port because there is not an open port')
+                return
             else:
-                portName = self.experiment.ttlPort
-                portNameSerial = portName[:portName.find(' ')]
-                portObj = serial.Serial(portNameSerial)
                 if direction == 'Off':
-                    portObj.setRTS(True) #turns OFF ttl
+                    self.experiment.portObj.rts = True #turns OFF ttl
                     print('TTL set to OFF')
                 elif direction == 'On':
-                    portObj.setRTS(False) #turns OFF ttl
+                    self.experiment.portObj.rts = False #turns OFF ttl
                     print('TTL set to ON')
             return
         
@@ -667,7 +673,7 @@ class Bassoon:
         self.ttlPortSelection.set(self.experiment.ttlPort)
         availablePorts = list(list_ports.comports()) #get available com ports
         if len(availablePorts) == 0:
-            availablePorts = ['No Available Ports']
+            availablePorts = ['No Available Ports']        
         ttlPortDropDown = OptionMenu(experimentFrame, self.ttlPortSelection, *availablePorts)
         ttlPortDropDown.grid(row = 1, column = 4)
 
@@ -914,8 +920,9 @@ class Bassoon:
             self.writeTtlSelection.set('None') #reset option box to reflect that you're not writing
             self.experiment.ttlPort = 'No Available Ports' #set the name of the port
         else:
-            self.experiment.ttlPort = portSelection #set the name of the port
-
+            #if the user will be running sustained pulses, you must immediately open the ttl port and set it to the OFF state. The port must remain open for the duration of the app being open
+            self.experiment.establishPort(portSelection)
+                
 
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
         self.recompileExperiment = self.recompileSelection.get() == 1
@@ -1296,6 +1303,17 @@ class Bassoon:
         print('\n\nBassoon is ready to play again!')
         root.deiconify()
 
+    def onClosing(self):
+        '''
+        Executes when the main app window closes in order to clean up anything that needs to get done
+        '''
+        #close any open com ports
+        if self.experiment.ttlPortOpen:
+            self.experiment.portObj.close()
+            print('Closed the active serial port')
+        
+        print('--> Bassoon is closing. Goodbye!')
+        self.master.destroy()
 
 #########HELPERS##########
 def _from_rgb(rgb):
@@ -1333,7 +1351,6 @@ root.geometry('400x600')
 app = Bassoon(root)
 
 root.mainloop()
-root.destroy()
 
 
 # Example of how to load experiments without opening the GUI:

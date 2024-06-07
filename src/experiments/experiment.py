@@ -42,14 +42,14 @@ class experiment():
         self.writeTTL = 'None' #can be 'None', 'Pulse', 'Sustained'
         self.ttlBookmarks = False #used for sustained mode only to send stereotyped bookmark patterns before each stimulus
         self.ttlPort = ''
-        
+        self.ttlPortOpen = False #tracks whether the TTL port is open or not (not whether it's ON or OFF, but if the port itself is open and ready for commands)
 
         self.warpFileName = 'Warp File Location' #must be .data
         self.useFBO = False
 
         self.FR = 0 #frame rate of the stimulus window
         self.timingReport = False
-                
+        
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
             with open('configOptions.json') as f:
@@ -74,16 +74,17 @@ class experiment():
                     self.writeTTL = configOptions['experiment']['writeTTL']
                     if isinstance(self.writeTTL, bool):
                         self.writeTTL = "None"
-                    self.ttlPort = configOptions['experiment']['ttlPort']
+                    portInfo = configOptions['experiment']['ttlPort']
+                    if self.writeTTL != "None":
+                        self.establishPort(self.ttlPort)
                     self.useFBO = configOptions['experiment']['useFBO']
                     self.warpFileName = configOptions['experiment']['warpFileName']
                     
                     #add new options here so that they don't mess up old file formats
                     self.ttlBookmarks = configOptions['experiment']['ttlBookmarks']
-                    
                     self.timingReport = configOptions['experiment']['timingReport']
                 except:
-                    print('*** Could not load all configuration settings from src/configOptions.json. Manually apply settings in the Options menu')
+                    print('*** Could not load all configuration settings from src/configOptions.json. Manually apply settings in the Options menu.')
 
 
     def addProtocol(self, newProtocol):
@@ -100,6 +101,46 @@ class experiment():
         self.estimatedTotalTime = estimatedTotalTime #store total estimated time in self.estimatedTotalTime
 
 
+    def establishPort(self, portInfo):
+        '''
+        This function is used to open the COM/USB/serial/TTL port that is used for timing signals. It is critical that this port persists/remains open so long as the app is running/a port has been set. If the experiment object is deleted, the port attribute is deleted, or the port itself is closed, the voltage will revert back to its default state, making it difficult to control. This messes up timing protocols, so instead, keep the same port open for the duration of the experiment(s). Note: this scheme of keeping the port continuously open is an update as of 6/7/2024
+
+        Inputs:
+            - portInfo = the information about the selected port that is returned by serial.tools.list_ports.comports()
+        '''
+        
+        if self.ttlPortOpen: #check if there is an open port. If so, close it so that you can reconnect or connect to a different port
+            print('--> Closing old TTL port')
+            self.ttlPortOpen = False
+            self.portObj.close() #close the open port if one is open that has a DIFFERENT name than the new one
+        
+        if self.writeTTL != ('Sustained' or 'Pulse'):
+            return #just in case, make sure this function is only called when the writeTTL option is set to Sustained
+        
+        if portInfo == 'No Available Ports' or portInfo == '':
+            return #check to make sure a real port has been selected
+        
+        #open the port
+        portName = portInfo[:portInfo.find(' ')] #PARSING FOR HOW PORT NAME IS DETERMINED - may need to be manually adjusted based on operating system
+        self.ttlPort = portName
+        try:
+            if self.writeTTL == 'Sustained':
+                self.portObj = serial.Serial(portName)
+                self.portObj.rts = True #set the RTS value to True, moving the voltage to 0
+            elif self.writeTTL == 'Pulse':
+                self.portObj = serial.Serial(portName, 4000000)   
+            self.ttlPortOpen = True
+            print('--> New TTL port has been opened')
+        except serial.serialutil.SerialException:
+            print('***IMPORTANT: It looks like the port you are trying to access is already in use. It may be open in a different program, or it may have never been closed by a previous instance of Bassoon. It is recommended that you close python and restart Bassoon to release the port')
+        except:
+            print('***Could not open or set the serial port called ', portName, '. Ensure you\'ve selected the proper port and try again. (If this error persists, see the experiment.establishPort() method. You may need to change the parsing for how the port name is determined depending on your operating system.')
+        
+        #The port should now stay open for as long as the experiment persists. If a new experiment is loaded in, the port should be reset and reopened. If
+        return
+        
+        
+        
     def activate(self):
         '''
         Begin the experiment
@@ -162,14 +203,12 @@ class experiment():
 
             #set up the TTL ports based on the mode.
             if self.writeTTL == 'Pulse':
-                portNameSerial = self.ttlPort[:self.ttlPort.find(' ')] #serial.Serial will only use beginning of port name
-                p._portObj = serial.Serial(portNameSerial, 4000000) #initialize portObj for sending TTL pulses
-                p._portObj.setRTS(True) #ensure TTL is OFF to begin
+                p._portObj = self.portObj #initialize portObj for sending TTL pulses
+                p._portObj.rts = True #ensure TTL is OFF to begin
                 p.burstTTL(self.win) #execute a stereotyped burst to mark the start of the stimulus in pulse mode
             elif self.writeTTL == 'Sustained':
-                portNameSerial = self.ttlPort[:self.ttlPort.find(' ')]
-                p._portObj = serial.Serial(portNameSerial)
-                p._portObj.setRTS(True) #ensure TTL is OFF to begin
+                p._portObj = self.portObj
+                p._portObj.rts = True #ensure TTL is OFF to begin
                 p._TTLON = False #used to track state of sustained TTL pulses                
                
                 if self.ttlBookmarks: #Run the bookmark before the start of each stimulus: this is 1 frame on, 2 frames off, 3 frames on, 4 frames Off, 5 frames On, 6 frames Off at the frame frate of self.win The port should end in the off position again. Range is not inclusive
@@ -190,7 +229,7 @@ class experiment():
             #Make sure TTL port is turned OFF if running in sustained mode (it's often left on if the user quits a stimulus early)
             if self.writeTTL == 'Sustained' and p._TTLON:
                 p.sendTTL()
-                
+                                
             #print the timing report if the user asks for it
             if p._timingReport:
                 p.reportTime(displayName)
