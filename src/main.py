@@ -65,7 +65,7 @@ class Bassoon:
         self.optionsMenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_command(label="Options", command=self.editExperiment)
         self.menubar.add_command(label ="Quick Actions", command=self.quickActionsWin)
-        self.menubar.add_command(label="Quit", command=self.frame.quit)
+        self.menubar.add_command(label="Quit", command=self.onClosing)
         master.config(menu=self.menubar)
 
         # Create a label that will provide the name of the database that is open
@@ -1309,10 +1309,12 @@ class Bassoon:
         '''
         #close any open com ports
         if self.experiment.ttlPortOpen:
-            self.experiment.portObj.close()
-            print('Closed the active serial port')
-        
-        print('--> Bassoon is closing. Goodbye!')
+            try:
+                self.experiment.portObj.close()
+                print('\nClosed the active serial port')
+            except:
+                print('\nAn open serial port was detected, but could not be closed. It is recommended that you close python and reopen before trying to run Bassoon again, otherwise you may encounter connection errors when attempting to use the same serial port.')
+        print('\n--> Bassoon is closing. Goodbye!')
         self.master.destroy()
 
 #########HELPERS##########

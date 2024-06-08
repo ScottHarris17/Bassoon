@@ -76,7 +76,8 @@ class experiment():
                         self.writeTTL = "None"
                     portInfo = configOptions['experiment']['ttlPort']
                     if self.writeTTL != "None":
-                        self.establishPort(self.ttlPort)
+                        self.establishPort(portInfo)
+                    
                     self.useFBO = configOptions['experiment']['useFBO']
                     self.warpFileName = configOptions['experiment']['warpFileName']
                     
@@ -133,8 +134,12 @@ class experiment():
             print('--> New TTL port has been opened')
         except serial.serialutil.SerialException:
             print('***IMPORTANT: It looks like the port you are trying to access is already in use. It may be open in a different program, or it may have never been closed by a previous instance of Bassoon. It is recommended that you close python and restart Bassoon to release the port')
+            self.writeTTL = 'None'
+            self.ttlPort = ''
         except:
-            print('***Could not open or set the serial port called ', portName, '. Ensure you\'ve selected the proper port and try again. (If this error persists, see the experiment.establishPort() method. You may need to change the parsing for how the port name is determined depending on your operating system.')
+            print('***Could not open or set the serial port called ', portName, '. Ensure you\'ve selected the proper port and try again. (If this error persists, see the experiment.establishPort() method. You may need to change the parsing for how the port name is determined depending on your operating system).')
+            self.writeTTL = 'None'
+            self.ttlPort = ''
         
         #The port should now stay open for as long as the experiment persists. If a new experiment is loaded in, the port should be reset and reopened. If
         return
@@ -203,10 +208,16 @@ class experiment():
 
             #set up the TTL ports based on the mode.
             if self.writeTTL == 'Pulse':
+                if not hasattr(self, 'portObj'):
+                    print('\n***NOTICE: stimulus ', i, 'was skipped because a TTL write method was selected, but no port has been connected to.')
+                    continue
                 p._portObj = self.portObj #initialize portObj for sending TTL pulses
                 p._portObj.rts = True #ensure TTL is OFF to begin
                 p.burstTTL(self.win) #execute a stereotyped burst to mark the start of the stimulus in pulse mode
             elif self.writeTTL == 'Sustained':
+                if not hasattr(self, 'portObj'):
+                    print('\n***NOTICE: stimulus ', i, 'was skipped because a TTL write method was selected, but no port has been connected to.')
+                    continue
                 p._portObj = self.portObj
                 p._portObj.rts = True #ensure TTL is OFF to begin
                 p._TTLON = False #used to track state of sustained TTL pulses                
