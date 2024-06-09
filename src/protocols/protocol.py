@@ -58,7 +58,7 @@ class protocol():
         estimateTime place holder. Should be overriden in subclass
         '''
         return 0
-    
+        
     
     def getFR(self, win):
         '''

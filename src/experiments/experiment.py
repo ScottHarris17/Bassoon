@@ -9,12 +9,13 @@ from psychopy.visual.windowwarp import Warper
 import serial
 import json
 from pathlib import Path
+from datetime import datetime
 
 class experiment():
     def __init__(self):
         self.protocolList = []
 
-        self.experimentDate = 0
+        self.experimentDate = datetime.now().strftime("%D %H:%M:%S")
         self.activated = False
 
         self.allowGUI = True
@@ -48,6 +49,9 @@ class experiment():
         self.useFBO = False
 
         self.FR = 0 #frame rate of the stimulus window
+        
+        self.recompileExperiment = False  # option that is used by self.saveExperiment()
+
         self.timingReport = False
         
         #Load previously saved experimental settings from configOptions.json
@@ -84,6 +88,7 @@ class experiment():
                     #add new options here so that they don't mess up old file formats
                     self.ttlBookmarks = configOptions['experiment']['ttlBookmarks']
                     self.timingReport = configOptions['experiment']['timingReport']
+                    self.recompileExperiment = configOptions['experiment']['recompileExperiment']
                 except:
                     print('*** Could not load all configuration settings from src/configOptions.json. Manually apply settings in the Options menu.')
 
@@ -121,9 +126,15 @@ class experiment():
         if portInfo == 'No Available Ports' or portInfo == '':
             return #check to make sure a real port has been selected
         
-        #open the port
+        #get port name
         portName = portInfo[:portInfo.find(' ')] #PARSING FOR HOW PORT NAME IS DETERMINED - may need to be manually adjusted based on operating system
         self.ttlPort = portName
+        
+        #if self.ttlPort is blank, then self.writeTTL must be None
+        if self.ttlPort.strip() == '':
+            self.writeTTL = 'None'
+            return
+        
         try:
             if self.writeTTL == 'Sustained':
                 self.portObj = serial.Serial(portName)
@@ -187,16 +198,15 @@ class experiment():
         self.activated = True
         self.loggedStimuli = [] #always resets on a new run
         for i, p in enumerate(self.protocolList):
-            
-            name = p[0]
+            name = p[0] #note: p is not a deep copy, so the pointer in memory is to the same location as the protocol in self.protocolList and app.experiment.protocolList
             suffix = p[1].suffix
+            
             if suffix == '_' or suffix.strip() == '':
                 displayName = name
             else:
                 displayName = name + suffix
 
             print('!!! Running Protocol Number ' + str(i+1) + ' of ' +  str(len(self.protocolList)) + ', with name ' + displayName)
-            
             p = p[1] #the protocol object is the second one in the tuple
 
             #assign relevant experiment properties to the protocol
