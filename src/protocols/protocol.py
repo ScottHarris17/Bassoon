@@ -26,6 +26,7 @@ class protocol():
         self._numberOfEpochsStarted = 0
         self._numberOfEpochsCompleted = 0 #counts the number of epochs that have actually occured
         
+        self._portName = '' #name of the TTL port if in use. Implemented 
         self._timesTTLFlipped = 0 #counts the number of TTL flips, used for sustained mode only
         self._timesTTLFlippedBookmark = 0 #counts the number of TTL flips during bookmark (sustained mode with bookmarking only)
         
@@ -57,7 +58,7 @@ class protocol():
         estimateTime place holder. Should be overriden in subclass
         '''
         return 0
-    
+        
     
     def getFR(self, win):
         '''
@@ -86,7 +87,6 @@ class protocol():
         '''
         determine the pixels per degree for the stimulus monitor
         '''
-
         mon = monitors.Monitor(stimMonitor.name)
         eyeDistance = mon.getDistance()
         numPixelsWide = mon.currentCalib['sizePix'][0]
@@ -140,7 +140,7 @@ class protocol():
         '''
         if self.writeTTL == 'Pulse':
                 try:
-                    self._portObj.write(0X4B) #self._portObj is initialized in the experiment.activate() method
+                    self._portObj.write(0X4B)
                 except:
                     print('***WARNING: TTL Pulse Failed***')
         
@@ -151,17 +151,17 @@ class protocol():
                 self._timesTTLFlipped += 1
                 
             if self._TTLON: #IF TTL is ON, turn it OFF
-                self._portObj.setRTS(True) #'True' turns TTL off on picolo
+                self._portObj.rts = True #'True' turns TTL off on picolo
                 self._TTLON = False
             else: # If TTL is OFF, turn it ON
-                self._portObj.setRTS(False) #'False' turns TTL ON on picolo
+                self._portObj.rts = False #'False' turns TTL ON on picolo
                 self._TTLON = True
         return
     
     
     def burstTTL(self, win):
         '''
-        sends a burst of TTL pulses at the start of a stimulus when the the TTL port is in pulse mode. As of 10/29/2023 this appears to only be implemented for checkerboard receptive field and flash grid. The stereotyped busrt is 20 TTL pulses at frame rate, wait 0.2 seconds, and 20 more TTL pulses at frame rate
+        sends a burst of TTL pulses at the start of a stimulus when the the TTL port is in pulse mode. As of 10/29/2023 this appears to only be implemented for checkerboard receptive field and flash grid. The stereotyped burst is 20 TTL pulses at frame rate, wait 0.2 seconds, and 20 more TTL pulses at frame rate
         '''
         if self.writeTTL != 'Pulse':
             return

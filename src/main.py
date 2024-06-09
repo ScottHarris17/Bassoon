@@ -4,6 +4,8 @@ Created on Fri Jul  9 17:23:23 2021
 
 Welcome to Bassoon. Run this file to open the GUI.
 
+Repository: www.github.com/Scottharris17/Bassoon
+
 You must have psychopy libraries installed to use built in stimuli and to achieve the necessary imports.
 www.psychopy.org
 
@@ -50,7 +52,10 @@ from protocols.ScotomaMovingGrating import ScotomaMovingGrating
 
 class Bassoon:
     def __init__(self, master):
-        master.title('Bassoon App')
+        self.master = master
+        
+        self.master.title('Bassoon App')
+        
         # initialize the experiment
         self.experiment = experiment()
 
@@ -62,7 +67,7 @@ class Bassoon:
         self.optionsMenu = Menu(self.menubar, tearoff=0)
         self.menubar.add_command(label="Options", command=self.editExperiment)
         self.menubar.add_command(label ="Quick Actions", command=self.quickActionsWin)
-        self.menubar.add_command(label="Quit", command=self.frame.quit)
+        self.menubar.add_command(label="Quit", command=self.onClosing)
         master.config(menu=self.menubar)
 
         # Create a label that will provide the name of the database that is open
@@ -110,9 +115,6 @@ class Bassoon:
         # list of tuples. Position 1 = protocol name. Position 2 = protocol object
         self.experimentSketch = []
 
-        # save options
-        self.recompileExperiment = True  # option that is used by self.saveExperiment()
-
         # button grid at bottom
         self.buttonFrame = Frame(self.frame)
         self.editProtocolButton = Button(
@@ -129,9 +131,9 @@ class Bassoon:
         self.runExperimentButton.grid(row=1, column=4)
         self.buttonFrame.pack()
 
-        #load rig configuration
-        #self.loadRigPreferences()
-
+         # Bind the on_closing function to the window close event
+        master.protocol("WM_DELETE_WINDOW", self.onClosing)
+        
 
         print("\n\n\n-------------------Bassoon App-------------------")
         print("--> Initialization Complete!")
@@ -148,13 +150,15 @@ class Bassoon:
     def loadExperiment(self):
         '''
         Load an experiment that was previously built. This can either be a new experiment that has never been run, or an experiment that has been run before. In either case, a new experiment will be loaded into Bassoon. Properties of each protocol will be set according to those in the loaded experiment when possible. However, only attributes that are set before a protocol is run will be loaded. Properties that are set during the running of an experiment and private properties that start with '_' will not be updated.
+        
+        Perhaps confusingly, you are also not loading in the experiment settings from the previous experiment. These are specified in the config file and include things like screen name, number etc. Here, you are only loading in the protocols and their properties from a previous experiment (i.e., the experimentSketch)
         '''
         with tkfd.askopenfile(mode='rb', title="Select a file", filetypes=(("Experiment Files", "*.experiment"), ("python files", "*.py"), ("all files", "*.*"))) as exp:
             newExperimentTemplate = pickle.load(exp)
 
         self.experimentSketch = []  # clear experiment sketch if it was filled before this
-
-        newExperiment = experiment() #load a new experiment object to fill
+        self.experiment.loggedStimuli = [] # clear the logged stimuli
+        
         # iterate through the stored protocols and add them and their names to
         # the experiment sketch. Then, update
         for num, p in enumerate(newExperimentTemplate.protocolList):
@@ -190,7 +194,7 @@ class Bassoon:
         '''
         Generate a list of available protocols to display in the dropdown menu
         '''
-        protocolFiles = os.listdir('protocols')
+        protocolFiles = os.listdir('protocols') #I think this assumes the working directory is main.py
 
         # save all available protocols
         self.protocolList = [p[:-3] for p in protocolFiles if p.endswith(
@@ -205,7 +209,7 @@ class Bassoon:
                     pnameWithSpaces += char
 
             self.protocolList[i] = pnameWithSpaces
-
+            
 
     def changeProtocolIndex(self, e=0):
         '''
@@ -285,15 +289,15 @@ class Bassoon:
             if self.experiment.ttlPort == 'No Available Ports':
                 print('Could not flip TTL because no port has been selected for this experiment')
                 return
+            elif self.experiment.ttlPortOpen == False:
+                print('Could not flip TTL port because there is not an open port')
+                return
             else:
-                portName = self.experiment.ttlPort
-                portNameSerial = portName[:portName.find(' ')]
-                portObj = serial.Serial(portNameSerial)
                 if direction == 'Off':
-                    portObj.setRTS(True) #turns OFF ttl
+                    self.experiment.portObj.rts = True #turns OFF ttl
                     print('TTL set to OFF')
                 elif direction == 'On':
-                    portObj.setRTS(False) #turns OFF ttl
+                    self.experiment.portObj.rts = False #turns OFF ttl
                     print('TTL set to ON')
             return
         
@@ -503,7 +507,6 @@ class Bassoon:
         shuffleBtn = Button(macroEditFrame, text = 'Shuffle Protocols', command = lambda: shuffleProtocolList(self))
         shuffleBtn.pack(side=TOP)
         
-        
         clearBtn = Button(macroEditFrame, text = 'Clear All Protocols', command = lambda: clearProtocolList(self))
         clearBtn.pack(side=TOP)
         
@@ -667,7 +670,7 @@ class Bassoon:
         self.ttlPortSelection.set(self.experiment.ttlPort)
         availablePorts = list(list_ports.comports()) #get available com ports
         if len(availablePorts) == 0:
-            availablePorts = ['No Available Ports']
+            availablePorts = ['No Available Ports']        
         ttlPortDropDown = OptionMenu(experimentFrame, self.ttlPortSelection, *availablePorts)
         ttlPortDropDown.grid(row = 1, column = 4)
 
@@ -694,7 +697,7 @@ class Bassoon:
             experimentFrame, text='Recompile Experiment When Saving', padx=10)
         recompileLabel.grid(row=4, column=0, columnspan=3)
         self.recompileSelection = IntVar(root)
-        self.recompileSelection.set(self.recompileExperiment)
+        self.recompileSelection.set(self.experiment.recompileExperiment)
         recompileChk = Checkbutton(
             experimentFrame, var=self.recompileSelection)
         recompileChk.grid(row=4, column=3)
@@ -721,6 +724,7 @@ class Bassoon:
         closeButton = Button(buttonFrame, text='Close Window',
                              command=lambda: monitorEditWindow.destroy())
         closeButton.grid(row=0, column=2)
+
 
     # Gamma calibration of monitor
     def calibrateGammaMenu(self):
@@ -914,11 +918,12 @@ class Bassoon:
             self.writeTtlSelection.set('None') #reset option box to reflect that you're not writing
             self.experiment.ttlPort = 'No Available Ports' #set the name of the port
         else:
-            self.experiment.ttlPort = portSelection #set the name of the port
-
+            #if the user will be running sustained pulses, you must immediately open the ttl port and set it to the OFF state. The port must remain open for the duration of the app being open
+            self.experiment.establishPort(portSelection)
+                
 
         self.experiment.useFBO = self.FBObjectSelection.get() == 1
-        self.recompileExperiment = self.recompileSelection.get() == 1
+        self.experiment.recompileExperiment = self.recompileSelection.get() == 1
         self.experiment.timingReport = self.timingReportSelection.get()==1
 
         print('\n--> New experiment settings have been applied')
@@ -950,7 +955,8 @@ class Bassoon:
                 "ttlPort": self.ttlPortSelection.get(),
                 "useFBO": self.FBObjectSelection.get() == 1,
                 "warpFileName": self.experiment.warpFileName,
-                "timingReport": self.timingReportSelection.get()==1
+                "timingReport": self.timingReportSelection.get()==1,
+                "recompileExperiment":self.recompileSelection.get()==1
             }
         }
 
@@ -1207,16 +1213,18 @@ class Bassoon:
 
         print('--> Assembling new experiment...')
         for p in self.experimentSketch:
-            protocolObject = p[1]
+            protocolObject = copy.deepcopy(p[1]) #do a deep copy to establish a new pointer, so that  you can update values during experiment run that won't carry over to the next experiment
             self.experiment.addProtocol(protocolObject)
 
 
-    def saveExperiment(self):
+    def saveExperiment(self, runJustFinished=False):
         '''
         save the experiment information
         '''
-        if self.recompileExperiment:
-            self.compileExperiment()
+        if self.experiment.recompileExperiment and not runJustFinished:
+            print('\n***NOTE!!! Recompiling experiment and clearing old logs. Data from past experiments will be lost, including experiment.loggedStimuli')
+            self.compileExperiment() #By default, experiments won't be recompiled after an experiment is just run because there is no conceivable reason to do so. In all other cases, it depends on the user's preference as determined by self.experiment.recompileExperiment
+            self.experiment.loggedStimuli = [] #remove the logged stimuli list
         else:
             print('--> Bassoon is saving the previously compiled experiment...')
 
@@ -1226,7 +1234,7 @@ class Bassoon:
                                           title="Save Experiment")
 
         if expfname == '':
-            print('--> Save was ABORTED. Try saving again from the Bassoon GUI or console. Recompile should be set to False in the options menu in order to keep current data...')
+            print('--> Save was ABORTED. Try saving again from the Bassoon GUI or console. Recompile should be set to False in the options menu in order to keep current data.')
             return
 
         # set wins to None type because they may still be running processes which will prevent pickling
@@ -1237,7 +1245,7 @@ class Bassoon:
 
         # save a json file as well that can be read in matlab
         jsonfname = expfname[0:-11] + '.json'
-        jsonDict = vars(self.experiment)
+        jsonDict = copy.deepcopy(vars(self.experiment))
         jsonDict['protocolList'] = [p[0] for p in jsonDict['protocolList']]
         for p in jsonDict['loggedStimuli']:
             p.pop('_portObj', None)
@@ -1270,12 +1278,10 @@ class Bassoon:
         # assemble the experiment
         self.compileExperiment()
 
-        self.recompileExperiment = False
-
         # add all protocol objects to the experiment
         print(' \n--> Preparing to run experiment. Bassoon will become tacet.')
 
-        root.withdraw()  # hide bassoon while the experiment is running
+        root.withdraw()  #hide bassoon while the experiment is running
         print('--> Tacet!')
         print('--> Experiment is now live! If available, use the information window for further assistance. Good luck.')
 
@@ -1286,16 +1292,29 @@ class Bassoon:
         try:
             print('\n--> The experiment has ended. Please save.')
             # pass recompile = False becasue you want to save the experiment that you just ran, not a new one
-            self.saveExperiment()
+            self.saveExperiment(runJustFinished = True) #recompileOption not passed (defaults to false, because you want to save the experiment you just ran)
 
         except:
             print('\n***NOTICE: THE PRECEEDING EXPERIMENT WAS NOT SAVED. MANUALLY SAVE BEFORE PROCEEDING OR THE EXPERIMENT WILL BE LOST.' +
-                  '\n--> Invoke app.recompileExperiment = False; app.saveExperiment() to save the experiment.' +
+                  '\n--> Invoke app.experiment.recompileExperiment = False; app.saveExperiment() to save the experiment.' +
                   '\n--> Alternatively, the experiment object is located at app.experiment. However, this object may not be immediately pickalable without invoking \'app.experiment.win = None\' and \'app.experiment.informationWin = None\'')
 
         print('\n\nBassoon is ready to play again!')
         root.deiconify()
 
+    def onClosing(self):
+        '''
+        Executes when the main app window closes in order to clean up anything that needs to get done
+        '''
+        #close any open com ports
+        if self.experiment.ttlPortOpen:
+            try:
+                self.experiment.portObj.close()
+                print('\nClosed the active serial port')
+            except:
+                print('\nAn open serial port was detected, but could not be closed. It is recommended that you close python and reopen before trying to run Bassoon again, otherwise you may encounter connection errors when attempting to use the same serial port.')
+        print('\n--> Bassoon is closing. Goodbye!')
+        self.master.destroy()
 
 #########HELPERS##########
 def _from_rgb(rgb):
@@ -1331,14 +1350,16 @@ root = Tk()  # full function = tk.Tk()
 root.geometry('400x600')
 #root.iconbitmap(r'images\bassoonIcon.ico')
 app = Bassoon(root)
-
 root.mainloop()
-root.destroy()
-
+try:
+    root.destroy()
+except:
+    pass #normally root.destroy is not needed because it's handled in app.onClosing()
+    
 
 # Example of how to load experiments without opening the GUI:
 # e = experiment() #load an experiment object
-# b = MovingBar() #load a protocol subclass (i.e. a stimulus)
+# b = MovingBar() #load a protocol (i.e. a stimulus)
 # b.stimTime = 3 #change stimulus attributes as you see fit
 # e.addProtocol(b) #Add the modified stimulus to the experiment
 
