@@ -75,7 +75,6 @@ class PupilCalibration(protocol):
         
         self.getFR(win)
         
-        stimMonitor = win.monitor
                 
         #Pause for keystroke if the user wants to manually initiate
         if self.userInitiated:
