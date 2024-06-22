@@ -107,7 +107,7 @@ class experiment():
         self.estimatedTotalTime = estimatedTotalTime #store total estimated time in self.estimatedTotalTime
 
 
-    def establishPort(self, portInfo):
+    def establishPort(self, portInfo, fromSave = False):
         '''
         This function is used to open the COM/USB/serial/TTL port that is used for timing signals. It is critical that this port persists/remains open so long as the app is running/a port has been set. If the experiment object is deleted, the port attribute is deleted, or the port itself is closed, the voltage will revert back to its default state, making it difficult to control. This messes up timing protocols, so instead, keep the same port open for the duration of the experiment(s). Note: this scheme of keeping the port continuously open is an update as of 6/7/2024
 
@@ -115,6 +115,7 @@ class experiment():
         
         Inputs:
             - portInfo = the information about the selected port that is returned by serial.tools.list_ports.comports()
+            - fromSave = boolean value that indicates whether this function is being called from the saveExperiment() function in main.py
         '''
         
         if self.ttlPortOpen: #check if there is an open port. If so, close it so that you can reconnect or connect to a different port
@@ -129,7 +130,11 @@ class experiment():
             return #check to make sure a real port has been selected
         
         #get port name
-        portName = portInfo[:portInfo.find(' ')] #PARSING FOR HOW PORT NAME IS DETERMINED - may need to be manually adjusted based on operating system
+        if fromSave:
+            portName = portInfo
+        else:   
+            portName = portInfo[:portInfo.find(' ')] #PARSING FOR HOW PORT NAME IS DETERMINED - may need to be manually adjusted based on operating system
+            
         self.ttlPort = portName
         
         #if self.ttlPort is blank, then self.writeTTL must be None
