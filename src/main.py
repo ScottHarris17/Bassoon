@@ -1275,7 +1275,7 @@ class Bassoon:
               expfname[0:-11] + '.*')
         
         # re-establish the TTL port for the experiment
-        self.experiment.establishPort(self.experiment.ttlPort)
+        self.experiment.establishPort(self.experiment.ttlPort, fromSave=True)
         
         try:
             self.saveExperimentButton.configure(bg=_from_rgb((100, 200, 100)))
