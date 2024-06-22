@@ -1243,6 +1243,13 @@ class Bassoon:
         with open(expfname, 'wb') as f:
             pickle.dump(self.experiment, f)
 
+        #close the serial port and remove it as a property of the experiment
+        if self.experiment.ttlPortOpen:
+            self.experiment.portObj.close()
+            self.ttlPortOpen = False
+            del self.experiment.portObj #delete the port object (it is readded after saving at the end of this function)
+            
+            
         # save a json file as well that can be read in matlab
         jsonfname = expfname[0:-11] + '.json'
         jsonDict = copy.deepcopy(vars(self.experiment))
@@ -1250,7 +1257,7 @@ class Bassoon:
         for p in jsonDict['loggedStimuli']:
             p.pop('_portObj', None)
 
-
+        
         try:  # LOOK INTO WHY THESE COMMANDS THROW AN ERROR SOMETIMES... MIGHT HAVE TO DO WITH WHEN AN EXPERIMENT IS RELOADED AFTER BEING RUN ONCE
             jsonDict['experimentStartTime'] = jsonDict['experimentStartTime'].strftime(
                 "%D %H:%M:%S")
@@ -1265,6 +1272,10 @@ class Bassoon:
         print('--> Save succesful. Time: ', now.strftime("%D %H:%M:%S"))
         print('--> .experiment and .json files saved at ' +
               expfname[0:-11] + '.*')
+        
+        # re-establish the TTL port for the experiment
+        self.experiment.establishPort()
+        
         try:
             self.saveExperimentButton.configure(bg=_from_rgb((100, 200, 100)))
         except:

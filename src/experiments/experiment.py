@@ -111,6 +111,8 @@ class experiment():
         '''
         This function is used to open the COM/USB/serial/TTL port that is used for timing signals. It is critical that this port persists/remains open so long as the app is running/a port has been set. If the experiment object is deleted, the port attribute is deleted, or the port itself is closed, the voltage will revert back to its default state, making it difficult to control. This messes up timing protocols, so instead, keep the same port open for the duration of the experiment(s). Note: this scheme of keeping the port continuously open is an update as of 6/7/2024
 
+        The port is purposefully closed when an experiment is saved, however, because it cannot be serialized (I think). This function is then called again after saving to re-establish the port.
+        
         Inputs:
             - portInfo = the information about the selected port that is returned by serial.tools.list_ports.comports()
         '''
@@ -152,7 +154,7 @@ class experiment():
             self.writeTTL = 'None'
             self.ttlPort = ''
         
-        #The port should now stay open for as long as the experiment persists. If a new experiment is loaded in, the port should be reset and reopened. If
+        #The port should now stay open for as long as the experiment persists. If a new experiment is loaded in, the port should be reset and reopened. If the experiment is saved, the port will be temporarily closed, deleted, and then reestablished and opened
         return
         
         
