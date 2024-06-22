@@ -155,6 +155,8 @@ class ScotomaMovingGrating(protocol):
         if numScotomasToAdd == 0:
             self._scotomaSequence = np.array([0])
         
+        self._scotomaSequence = self._scotomaSequence.tolist() # make it a list b/c ndarrays have trouble saving
+        
         return
             
     def run(self, win, informationWin):
@@ -397,6 +399,6 @@ class ScotomaMovingGrating(protocol):
             win.flip();win.flip() #two flips to allow for a pause for TTL writing
 
             self._numberOfEpochsCompleted += 1
-
-
+            
+        
         self._completed = 1
