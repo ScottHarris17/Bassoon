@@ -1246,7 +1246,7 @@ class Bassoon:
         #close the serial port and remove it as a property of the experiment
         if self.experiment.ttlPortOpen:
             self.experiment.portObj.close()
-            self.ttlPortOpen = False
+            self.experiment.ttlPortOpen = False
             del self.experiment.portObj #delete the port object (it is readded after saving at the end of this function)
             
             
