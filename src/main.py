@@ -1265,6 +1265,7 @@ class Bassoon:
                 "%D %H:%M:%S")
         except:
             pass
+        
         with open(jsonfname, 'w') as f:
             json.dump(jsonDict, f)
 
@@ -1274,7 +1275,7 @@ class Bassoon:
               expfname[0:-11] + '.*')
         
         # re-establish the TTL port for the experiment
-        self.experiment.establishPort()
+        self.experiment.establishPort(self.experiment.ttlPort)
         
         try:
             self.saveExperimentButton.configure(bg=_from_rgb((100, 200, 100)))
