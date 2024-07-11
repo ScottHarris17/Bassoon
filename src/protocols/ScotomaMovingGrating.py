@@ -328,7 +328,8 @@ class ScotomaMovingGrating(protocol):
                 addColor = self.scotomaOpacity #scotoma color, used when adding scotomas
             else:
                 addColor = 0 #transparent - used when taking away scotomas
-                
+
+            #scotoma growth starts here
             count = 0 
             for f in range(self._numFramesGrowth):
                 scotomasToChangeThisFrame = self._scotomaSequence[count:count+self._newScotomasPerFrame[f]]
