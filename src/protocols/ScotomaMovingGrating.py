@@ -313,7 +313,7 @@ class ScotomaMovingGrating(protocol):
             
             #stim time
             
-            #bookend 1 (grating starts moving before stimulus moves)
+            #bookend 1 (grating starts moving before scotomas are added)
             for f in range(self._numFramesBookend):
                 grating.phase += self._numCyclesToShiftByFrame
                 grating.draw()
