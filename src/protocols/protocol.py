@@ -201,8 +201,8 @@ class protocol():
         print(f"-----------Timing Report Summary for {displayName}--------------")
         print("\nTime Elapsed Per Epoch:")
         
-        for i, time in enumerate(allTimes):
-            print(f"Epoch {i + 1}: {time:.2f} seconds")
+        for i, t in enumerate(allTimes):
+            print(f"Epoch {i + 1}: {t:.2f} seconds")
             
         print('(note that reported epoch times typically do not include interstimulus intervals. See the script for the specific protocol for more information)\n')
         
