@@ -110,9 +110,9 @@
 
         // set the background color of the page to a random pastel
         function setBackgroundColor() {
-            var color1 = Math.random() * 0.07 + 0.93;
-            var color2 = Math.random() * 0.07 + 0.93;
-            var color3 = Math.random() * 0.07 + 0.93;
+            var color1 = Math.random() * 0.05 + 0.95;
+            var color2 = Math.random() * 0.05 + 0.95;
+            var color3 = Math.random() * 0.05 + 0.5;
 
             color1 = Math.floor(color1 * 255);
             color2 = Math.floor(color2 * 255);
@@ -132,7 +132,7 @@
     <p>Bassoon is no-code visual graphics software to easily create, manage, and execute custom visual stimuli for vision science experiments. Bassoon is python based, and is built on the popular <a href='https://www.psychopy.org' target="_blank">Psychopy</a> API.
     </p>
 
-    <p>Maintained by the <a href=https://dunnlab.ucsf.edu/" target ="_blank">Dunn Lab</a> at UCSF.</p>
+    <p>Maintained by the <a href=https://dunnlab.ucsf.edu" target ="_blank">Dunn Lab</a> at UCSF.</p>
 
     <div class="button-container" style="width:60%; margin-top: 30px; margin-bottom: 30px;">
         <a href="https://github.com/ScottHarris17/Bassoon/archive/refs/heads/main.zip">
@@ -226,7 +226,7 @@
                 <li>Protocol Index Box: Enter the index number where you would like to add your selected protocol. 1 corresponds to the first protocol that will be played in the experiment sketch.</li>
                 <li>Add Stimulus Button: Press this button to add the stimulus you selected at the index number listed in the Protocol Index Box.</li>
                 <li>Protocol List: After pressing the Add Stimulus button, your new stimulus should be displayed in the white area. The order of stimuli listed here corresponds to the order in which they will play. There are several features available via the "Quick Actions" menu (number 10) to modify this list rapidly.</li>
-                <li>Edit Stimulus Parameters: Bassoon allows you to easily customize the parameters of each stimuli in the experiment sketch. Select any of the stimuli in the protocol list, either by single clicking on their name and then pressing edit button (5b), or by double clicking on their name. This should open a new window, which shows all of the customizable parameters for the stimulus. <img class="screenshot" src=help/images/stimulusParameters.png alt="Parameters for the flash stimulus" style="width:400px; height:360px"> You can change the values of each parameter using the text boxes next to their name in the new window. The information in brackets < > on the right side tell you the data type that you must enter (these correspond to python classes). For lists, you'll see two entries, one that says 'list' and a second that specifies the data type of each list element, such as 'float'. Once you've customized the stimulus by changing all necessary parameters, click the Apply Changes button. You should receive a report in your python console indicating that the properties were successfully updated. After pressing Apply, the Estimated Time value will also update, indicating the amount of time that the stimulus is expected to take. Once you are finished customizing the parameters, you may exit the edit window.<em>Note that for lists, you must use the correct syntax, including square brackets on either end and commas between entries. If you enter the wrong data type, your changes may be rejected, and this will be reflected in the python console.</em>
+                <li>Edit Stimulus Parameters: Bassoon allows you to easily customize the parameters of each stimuli in the experiment sketch. Select any of the stimuli in the protocol list, either by single clicking on their name and then pressing edit button (5b), or by double clicking on their name. This should open a new window, which shows all of the customizable parameters for the stimulus. <img class="screenshot" src=help/images/stimulusParameters.png alt="Parameters for the flash stimulus" style="width:400px; height:360px"> You can change the values of each parameter using the text boxes next to their name in the new window. The information in brackets < > on the right side tell you the data type that you must enter (these correspond to python classes). For lists, you'll see two entries, one that says 'list' and a second that specifies the data type of each list element, such as 'float'. Once you've customized the stimulus by changing all necessary parameters, click the Apply Changes button. You should receive a report in your python console indicating that the properties were successfully updated. After pressing Apply, the Estimated Time value will also update, indicating the amount of time that the stimulus is expected to take. Once you are finished customizing the parameters, you may exit the edit window.<em> Note that for lists, you must use the correct syntax, including square brackets on either end and commas between entries. If you enter the wrong data type, your changes may be rejected, and this will be reflected in the python console.</em>
                     <br/> <br/>
                 While most stimuli share some parameters in common, each one also contains its own unique parameters. The best way to get familiar with what each does through experimentation. You can also look at the source code files (see <a href="#NutsAndBoltsAnchor">Nuts and Bolts</a>). A few common stimulus paramaters are described here:
                     <ul>
