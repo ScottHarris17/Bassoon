@@ -36,6 +36,7 @@
         button:hover {
             background-color: rgb(4, 132, 0);
             color: #fcfcfc;
+            box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
         }
 
         h2{
@@ -133,8 +134,7 @@
     </p>
 
     <p>Maintained by the <a href=https://dunnlab.ucsf.edu" target ="_blank">Dunn Lab</a> at UCSF.</p>
-    <h1>Download</h1>
-    <p>Download the zipped project folder or clone it from the Github repository.</p>
+
     <div class="button-container" style="width:60%; margin-top: 30px; margin-bottom: 30px;">
         <a href="https://github.com/ScottHarris17/Bassoon/archive/refs/heads/main.zip">
             <button id="downloadButton">
@@ -147,12 +147,11 @@
                             <!--Draws the little zipper icon on the button-->
                     </svg>
                 </span>
-                <div><span><b>Download Zip</b></span></div>
+                <div><span><b>DOWNLOAD ZIP</b></span></div>
 
             </button>
         </a>
-        <a href="https://github.com/ScottHarris17/Bassoon" target="_blank"><button id="repoButton"><b>View
-                    Repository</b>
+        <a href="https://github.com/ScottHarris17/Bassoon" target="_blank"><button id="repoButton"><b>View Repository</b>
             </button>
         </a>
     </div>
@@ -163,6 +162,9 @@
     <ul class="toc_list">
         <li><a href="#requirementsAnchor">Requirements</a></li>
         <li><a href="#installationAnchor">Installation</a></li>
+        <ul>
+            <a href="#commonProblemsAnchor">Common Problems</a>
+        </ul>
         <li><a href="#generalUseAnchor">General Use</a></li>
         <li><a href="#NutsAndBoltsAnchor">Nuts And Bolts</a></li>
         <ul>
@@ -192,26 +194,31 @@
     <h2 id="installationAnchor">Installation</h2>
     <p> Bassoon relies on <a href="https://www.python.org/downloads/" target = "_blank">Python 3</a> and the <a href='https://www.psychopy.org' target="_blank">Psychopy</a> libraries. Follow these steps to install Bassoon on your computer:
         <ol>
-            <li><u>Download Bassoon:</u> Download a zipped Bassoon folder <a href="https://github.com/ScottHarris17/Bassoon/archive/refs/heads/main.zip">here</a>. You can also download or clone directly from the <a href="https://github.com/ScottHarris17/Bassoon" target="_blank">Github repository.</a> Once downloaded, extract the files into a directory on your local computer (if you'd like to receive updates to your local copy as they're published to github, cloning is highly recommended over downloading. If you're new to git, checkout <a href = "https://desktop.github.com/download/" target="_blank">github desktop</a> to manage your packages.</li>
+            <li><u>Download Bassoon:</u> Download a zipped Bassoon folder <a href="https://github.com/ScottHarris17/Bassoon/archive/refs/heads/main.zip">here</a>. You can also download or clone directly from the <a href="https://github.com/ScottHarris17/Bassoon" target="_blank">Github repository.</a> Once downloaded, extract the files into a directory on your local computer (if you'd like to receive updates to your local copy as they're published to github, cloning is highly recommended over downloading. If you're new to git and using Windows, checkout <a href = "https://desktop.github.com/download/" target="_blank">github desktop</a> to manage your packages).</li>
 
             <li><u>Download Python 3, Create an Environment, and Install Psychopy:</u> There are two options for downloading python if you do not already have it.
                 <ol>
                     <li><em>Create a conda environment (recommended):</em> Download <a href="https://www.anaconda.com/download" target="_blank">anaconda</a> or <a href="https://docs.anaconda.com/miniconda/" target="_blank">miniconda</a>. Launch the terminal (on windows, you must use "Anaconda Prompt") and create a new conda environment called "Bassoon" by typing <code>conda create -n Bassoon python=3.10</code>. Once the environment is created, activate it using <code>conda activate Bassoon</code> and install psychopy by entering <code>pip install psychopy</code> (note that the there used to be a conda distribution for Psychopy, but it is no longer up to date). If you run into trouble, look through the <a href="https://www.psychopy.org/download.html" target="_blank">Psychopy documentation</a>.</li>
                     <li><em>Install python/psychopy outside of conda:</em> If you would prefer to install python/psychopy in a different way, you may. Regular Venvs should work along with pip installs. Be sure to use <a href="https://www.python.org/downloads/" target = "_blank">python 3</a> and to pay close attention to the <a href="https://www.psychopy.org/download.html" target="_blank">psychopy documentation</a>.</li>
                 </ol>
-            
+            <li><u>Install Additional Dependencies:</u> Other packages that are needed are tkinter and pyserial. Install them into your conda or virtual environment by running  <code>pip install tk</code> and <code>pip install pyserial</code>. Make sure that your conda or virtual environment is activated before pip installing (typically, this is indicated by the name of the environment being listed in parentheses in your terminal/anaconda prompt. For instnace, <code style="background-color: #000000; color:#fcfcfc">(base) C:\Users\mrsco></code> indicates that the base environment is active). </li>
             <li><u>Install an IDE for Python:</u> This step is not strictly required, but highly recommended. It will allow you to make changes to  Bassoon, including adding or modifying stimuli on your local device, debugging errors, and making contributions to the Github repository. If you installed Psychopy via conda, make sure the environment is activated (<code>conda activate Bassoon</code>) and then enter <code>conda install spyder</code> into the terminal (or conda prompt). Once installed, you can type <code>spyder</code> into the terminal, and it should launch an IDE from which you can view, test, and run Bassoon. If you prefer an IDE other than spyder, a popular option is <a href="https://code.visualstudio.com/" target = "_blank">VS Code</a> (you can follow <a href = "https://code.visualstudio.com/docs/python/python-tutorial" target = "_blank">these instructions</a> on how to connect VS code to python, especially if you are not using a conda environment).</li>
         </ol>
 
-        You should now be ready to run Bassoon. Locate the file called <em>main.py</em>, which is located in /Bassoon/src/. Either open this file in your IDE and press run, or run it directly from your terminal (on Windows: <code>python /path/to/main.py</code>). If the Bassoon window launches then you're ready to go! If you encounter an error (either here or at any further step) make sure you have the neccessary dependencies installed. It is possible that you still need to install the following libraries into your conda or virtual environment:
-        <ul style="list-style-type: none;">
-            <li><code>pip install tk</code></li>
-            <li><code>pip install pyserial</code></li>
-            <li><code>pip install json</code></li>
-        </ul>
-        
-        The  terminal/command prompt is your friend. Read any and all error messages you receive for hints on what might be preventing installation!
-    </p>
+        You should now be ready to run Bassoon. Locate the file called <em>main.py</em>, which is located in /Bassoon/src/. Either open this file in your IDE and press run, or run it directly from your terminal (on Windows: <code>python /path/to/main.py</code>). If the Bassoon window launches then you're ready to go! If you encounter an error (either here or at any further step) make sure you have the neccessary dependencies installed.
+        </p>
+    <h5 id="commonProblemsAnchor">Common Problems</h5>
+        <p>This section is contains a list of known errors that users have encountered while trying to install Bassoon.
+        <ul>
+            <li><em>Package Versions:</em> pip installing psychopy should give you the most up to date version with no dependency conflicts. If you run into errors installing or using the manually installed packages (tk and pyserial) try explicitly installing the following versions:
+                <ul style="list-style-type: none;">
+                    <li><code>pip install tk=8</code></li>
+                    <li><code>pip install pyserial=3.5</code></li>
+                </ul>
+            <li><em>Dukpy Error:</em> Some users have encountered a problem installing the Dukpy package when running <em>pip install psychopy</em>. Typically the error reads something like <code style="background-color: #000000; color:#fcfcfc"><span style="color: #b92b64;">ERROR: </span>Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools"</code>. The solution is to download and install <a href="https://visualstudio.microsoft.com/" target="_blank">Visual Studio</a> from Microsoft, making sure to select the C++ packages during the installation process. Sometimes a link to dowload the software is also reported with the error message, which works equally well. Once you've installed Visual Studion, try rerunning <code>pip install psychopy</code>.</li>
+        </ul></p>
+        <p><b>General Advice for Python Beginners:</b> If you're new to programming, one of the most tempting things to do when you encounter a new or unknown error is to give up and ask for help. However, a closely kept secret is that even for experienced programmers, almost every error is a new error! I strongly encourage you to try to debug errors and problems yourself (at least for a bit). It's by far the best way to learn and build confidence. The biggest tips I can provide are to <em><u>read the error messages and terminal outputs, look through the code (especially if an error message points you to a particular line), experiment, and USE GOOGLE!</u></em> There's a 99% chance that the solution is documented somewhere online - Stack Overflow, Reddit, and even ChatGPT are great starting points. If you really can't figure something out, then ask for help - but don't be surprised if the "expert" you turn to just as quickly goes to Google to find the answer.</p>
+
     <h2 id="generalUseAnchor">General Use</h2>
         <p>This section describes how to create custom experiments using Bassoon's no-code GUI. For a detailed explanation of how Bassoon operates behind the scenes, including descriptions on how to create new protocol classes, see <a href="#NutsAndBoltsAnchor">Nuts And Bolts</a>.</p>
        
@@ -247,7 +254,7 @@
             <li>Remove Button: Select a stimulus and then press this button to delete it from the experiment sketch.</li>
             <li>Save Button: You can save an experiment sketch at any time using this button. When a stimulus runs, new parameters are generated so it's always important to save after running (and Bassoon will automatically prompt you to do this by openning a save dialogue at the end of each experiment). However, you can also save an experiment before running it (including while you're in the process of designing it). This allows you to build an experiment ahead of time, save it, and then reload the experiment into Bassoon when you're ready to run it. Similarly, you can rerun previous experiments that you've performed. The button appears red when the current experiment is not saved and green when it is saved.</li>
             <li>Load Experiment Menu: Select this button to load a previous experiment. You will be taken to a dialogue box to select a previosuly saved experiment. Once loaded, that experiment sketch will automatically populate your Bassoon window. You can run it immediately, or make additional customizations. Note, that when loading experiments, you will load in the same randomSeed parameters as previously used, meaning that pseudorandom stimulus sequences will be identical unless this value is changed.</li>
-            <li>Options Menu: Allows you to customize specific parameters for your experiment. See <a href="#experimentParametersAnchor">below</a> for a walk through of some of these features.<img src=help/images/experimentOptions.png alt="Experiment Options Window" style="width:400px;height:500px;"></li>
+            <li>Options Menu: Allows you to customize specific parameters for your experiment. See <a href="#experimentParametersAnchor">below</a> for a walk through of some of these features.<img src=help/images/experimentOptions.png alt="Experiment Options Window" style="width:400px;height:440px;"></li>
             <li>Quick Actions Menu: Use this window to quickly perform different tasks. You can reorder stimuli, make a copy of a stimulus you have already customized, or manually turn ON and OFF a TTL output (if you have one).<img src=help/images/quickActionsMenu.png alt="Quick Actions Menu" style="width:200px;height:480px;"></li>
             <li>Run Experiment Button: Press this button once you have fully customized your experiment. It will launch the stimuli in a new window on the screen you specified in the Options Menu (#9). The stimuli will play in the order that they appeared in the protocol list box. The main Bassoon window will disappear from view while stimuli are playing, but Bassoon will continue to send you real time updates about the experiment through the python console, so look for messages. You may skip a stimulus at any time by pressing the 'q' key. You may also pause a stimulus by pressing the 'p' key. If you have selected to use an information window, additional information about the stimulus will appear there. Once the stimulus is done playing, you will automatically be requested to save the experiment. It is a good idea to do so, even if it has been previously saved, because there are new parameters that are created when the experiment runs. These include many paramters about the structure and timing of stimuli that can be critical for analysis.</li>
             <li>Quit Menu Option: Once you have finished running your experiment and saved everything, you may exit Bassoon by pressing the quit button.</li>
