@@ -13,11 +13,11 @@ import serial
 class Pause(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'Pause'
-        self.backgroundColor = [-1.0, -1.0, -1.0]
-        self.preTime = 1.0 #s
-        self.stimTime = 5.0 #s
-        self.tailTime = 1.0#s
+        self.protocolName = 'Pause' #The Pause is a way to put breaks in between different stimuli. It consists of a blank screen with no dynamic stimulus. It can be a good way to adapt animals or tissue to a new light level in before a stimulus of a new mean
+        self.backgroundColor = [-1.0, -1.0, -1.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors. For this stimulus, the entire stimulus consists of a static presentation of the background color across the entire screen.
+        self.preTime = 1.0 #seconds - the amount of time before the stim time. For this stimulus, there is no distinction between pretime, stimtime, and tailtime. The total stimulus time is the sum of all three.
+        self.stimTime = 5.0 #seconds - the stim time. For this stimulus, there is no distinction between pretime, stimtime, and tailtime. The total stimulus time is the sum of all three.
+        self.tailTime = 1.0 #seconds - the amount of time after the stim time. For this stimulus, there is no distinction between pretime, stimtime, and tailtime. The total stimulus time is the sum of all three.
                 
         
     def estimateTime(self):

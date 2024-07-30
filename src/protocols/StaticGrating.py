@@ -21,19 +21,19 @@ import serial, random, math
 class StaticGrating(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'StaticGrating'
-        self.gratingColor = [1.0, 1.0, 1.0]
-        self.gratingContrast = 1.0 #multiplied by the color
-        self.meanIntensity = 0.0; #mean intensity of the grating
-        self.spatialFrequency = 0.1 #cycles per degree
-        self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
-        self.orientations = [float(x*45) for x in range(8)] #list of floats - degrees
-        self.backgroundColor = [0.0, 0.0, 0.0]
-        self.stimulusReps = 3
-        self.preTime = 20.0 #s
-        self.stimTime = 1.0 #s
-        self.tailTime = 1.0 #s
-        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.protocolName = 'StaticGrating' #During the Static Grating stimulus, an unmoving grating pattern is presented on the screen
+        self.gratingColor = [1.0, 1.0, 1.0] #color of the grating (in RGB).-1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.gratingContrast = 1.0 #Sets the contrast of the grating by multiplying by the the grating color.
+        self.meanIntensity = 0.0; #The mean intensity of the grating. This value should be between -1 and 1.0, where 0.0 is "middle gray"
+        self.spatialFrequency = 0.15 #cycles per degree - the spatial frequency of the grating.
+        self.gratingTexture = 'sin' #The pattern of the grating. This can be 'sin', 'sqr', 'saw', 'tri', etc. Look at Psychopy gratingstim object for more information: https://www.psychopy.org/api/visual/gratingstim.html#psychopy.visual.GratingStim.tex 
+        self.orientations = [float(x*45) for x in range(8)] #degrees - a list of orientations that the grating will be presented in. The total number of epochs is equal to the number of orientations times the number of stimulus repetitions.
+        self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors. For this stimulus, the background is typically only seen between epochs.
+        self.stimulusReps = 3  #number of repetitions of the stimulus. Each epoch consists of the grating presented in one orientation, so the total number of epochs is the number of orientations times the number of stimulus reps
+        self.preTime = 20.0 #seconds - there is no difference between the pretime, stimtime, and tailtime for this stimulus, they all show a static grating. The total epoch duration is the sum of the three.
+        self.stimTime = 1.0 #seconds - there is no difference between the pretime, stimtime, and tailtime for this stimulus, they all show a static grating. The total epoch duration is the sum of the three.
+        self.tailTime = 1.0 #seconds - there is no difference between the pretime, stimtime, and tailtime for this stimulus, they all show a static grating. The total epoch duration is the sum of the three.
+        self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
 
     def estimateTime(self):

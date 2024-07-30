@@ -11,14 +11,14 @@ import serial, random, numpy, time
 class PupilCalibration(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'PupilCalibration'
-        self.numberOfLightLevels = 5
-        self.repititionsPerLightLevel = 5
-        self.angle = 11.4 #degrees - angle that the camera is rotated by... Calculated 20220112 SH 11.4 deg
+        self.protocolName = 'PupilCalibration' #the pupil calibration is a unique stimulus used for eye tracking experiments on a mouse behavior rig - as in https://elifesciences.org/articles/81780 . It requires the user to dynamically swing a camera between two locations and snap pictures at each. It also modulates the light level of the screen background level during this time in order to capture values across many pupil sizes.
+        self.numberOfLightLevels = 5 #number of different light levels to test across. The total number of epochs for this stimulus is equal to the number of light levels multiplied by the repetitions per light level.
+        self.repititionsPerLightLevel = 5 #the number of times each light level is repeated.The total number of epochs for this stimulus is equal to the number of light levels multiplied by the repetitions per light level.
+        self.angle = 11.4 #degrees - the angle that the camera is rotated by between successive pictures... This was calculated as 11.4 degrees for the Dunn Lab behavior rig as of January 12, 2022.
 
-        self.preTime = 1.0 #s - unused for this stimulus
-        self.stimTime = 1.0 #s - unused for this stimulus
-        self.tailTime = 1.0 #s - unused for this stimulus
+        self.preTime = 1.0 #seconds - unused for this stimulus
+        self.stimTime = 1.0 #seconds - unused for this stimulus
+        self.tailTime = 1.0 #seconds - unused for this stimulus
                 
         self._versionNumber = 1.2 #Version of the stimulus -
                                         #1.1 - this attribute didn't exist yet. There was a bug with win.flip() where the screen color wouldn't change

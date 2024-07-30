@@ -20,19 +20,19 @@ class SnellenShapes(protocol):
     
     def __init__(self):
         super().__init__()
-        self.protocolName = 'SnellenShapes'
-        self.numberOfOptotypes = 10
-        self.startingLevel = 5 #0 is the smallest optotype               
+        self.protocolName = 'SnellenShapes' #Snellen Shapes presents a pseudorandom series of squares and circles to a subject and asks for dynamic feedback about the identity of each stimulus. The subject presses 's' to indicate a square and 'c' to indicate a circle.
+        self.numberOfOptotypes = 10 #number of different optotype levels/sizes to draw from
+        self.startingLevel = 5 #The size of the first optoype. 0 is the smallest value possible               
        
-        self.textColor = [-1.0, -1.0, -1.0]
-        self.backgroundColor = [1.0, 1.0, 1.0]
+        self.textColor = [-1.0, -1.0, -1.0] #Color of the text (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.backgroundColor = [1.0, 1.0, 1.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
         
-        self.smallestOptotypeRadius_degrees = 0.2
-        self.largestOptotypeRadius_degrees = 4
+        self.smallestOptotypeRadius_degrees = 0.2 #degrees - radius of the smallest optotype
+        self.largestOptotypeRadius_degrees = 4 #degrees - radius of the largest optotype
         
-        self.preTime = 1.0 #s - unused for this stimulus
-        self.stimTime = 1.0 #s - unused for this stimulus
-        self.tailTime = 1.0 #s - unused for this stimulus
+        self.preTime = 1.0 #seconds - unused for this stimulus
+        self.stimTime = 1.0 #seconds - unused for this stimulus
+        self.tailTime = 1.0 #seconds - unused for this stimulus
         
     def estimateTime(self):
         '''

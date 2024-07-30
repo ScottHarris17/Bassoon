@@ -13,20 +13,20 @@ import serial, random, math
 class DriftingNoise(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'DriftingNoise'
-        self.noiseType = 'Binary'
-        self.patternColor = [1.0, 1.0, 1.0]
-        self.patternContrast = 1.0 #multiplied by the color
-        self.orientations = sum([[g for g in range(45, 136, 5)], [m for m in range(225, 316, 5)]], [])
-        self.speed = 10.0 #deg/s
-        self.checkSize = 0.5 #number of visual degrees that 1 noise check should subtend
-        self.backgroundColor = [0.0, 0.0, 0.0]
-        self.meanIntensity = 0.0 #useful when changing the contrast
-        self.stimulusReps = 5
-        self.preTime = 0.5 #s
-        self.stimTime = 3.0 #s
-        self.tailTime = 0.0 #s
-        self.interStimulusInterval = 0.5 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.protocolName = 'DriftingNoise' #During drifting noise, a noise pattern drifts linearly across the window in a specified range of directions
+        self.noiseType = 'Binary' #The type of noise pattern to use (only binary is available for now)
+        self.patternColor = [1.0, 1.0, 1.0] #color of the pattern in RGB, where -1 equates to 0 and 1 equates to 255 in an 8 bit color code.
+        self.patternContrast = 1.0 #The contrast of the pattern (multiplied by the pattern color).
+        self.orientations = sum([[g for g in range(45, 136, 5)], [m for m in range(225, 316, 5)]], []) #degrees - directions across the screen that the stimulus will drift. The stimulus will cycle through each orientation on every repetition, but the order is pseudorandom. 
+        self.speed = 10.0 #degrees per second - the speed at which the noise pattern drifts
+        self.checkSize = 0.5 #degrees - number of visual degrees that 1 noise check should subtend
+        self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen before/after the flash  (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.meanIntensity = 0.0 #Mean intensity of the noise. This must be 0 if the pattern contrast is 1.0. For lower contrasts, the mean intensity can be changed.
+        self.stimulusReps = 5 #number of repetitions of the stimulus. Each repition includes one pseudorandom cycle through the orientations. Thus, the number of epochs is equal to the number of orientations times the number of stimulus reps.
+        self.preTime = 0.5 #seconds - during the pretime, the noise pattern is visible, but not moving.
+        self.stimTime = 3.0 #seconds - during the stimtime, the noise pattern is visible and drifting across the screen at the specified speed.
+        self.tailTime = 0.0 #seconds - during the tailtime, the noise pattern is visible, but not moving. It is the same as the pretime, but happens after the stim time instead of before
+        self.interStimulusInterval = 0.5 #seconds - the wait time between each epoch. The background color is displayed during this time.
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
 
     def estimateTime(self):

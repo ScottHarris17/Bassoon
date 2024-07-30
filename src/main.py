@@ -1044,6 +1044,10 @@ class Bassoon:
 
             typeLabel = Label(editFrame, text=str(propType))
             typeLabel.grid(row=i, column=3)
+            
+            infoButton = Button(editFrame, text='\u24D8', font='Helvetica 10 bold', bg='#fcf9eb', command= lambda prop=prop: selectedProtocol.printDescription(prop))
+            infoButton.grid(row=i, column=4)
+            
 
         updateDict = {'propNamesEditable': propNamesEditable,
                       'propTypes': propTypes, 'entries': entries}

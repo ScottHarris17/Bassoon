@@ -17,15 +17,15 @@ import serial
 class FlashFamily(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'FlashFamily'
-        self.backgroundColor = [-1.0, -1.0, -1.0] #the 'mean' light level that displays between flashes
-        self.stepSizes = [0.1, 0.2, 0.4, 0.8, 1.4, 1.6, 2] #each flash intensity will be the background color + a stepSize
-        self.stimulusReps = 3 #times through the stimulus
-        self.preTime = 0.5 #s
-        self.stimTime = 0.5 #s
-        self.tailTime = 0.5#s
-        self.interFamilyInterval = 5 #s - wait time between each flash family. backGround color is displayed during this time
-        self.interFlashInterval = 0.5 #s - wait time between each flash within a family (should be nonzero to ensure TTL writing)
+        self.protocolName = 'FlashFamily' #The flash family consists of full field flashes of varying intensity.
+        self.backgroundColor = [-1.0, -1.0, -1.0] #the baseline light level that displays before, after, and between flashes (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.stepSizes = [0.1, 0.2, 0.4, 0.8, 1.4, 1.6, 2] #each flash intensity will be the background color + a stepSize. Stepsizes are additive to all RGB channels, so currently color cannot be changed (though this is easy to implement if you want to modify the protocol script or create a new one). Note that the stepSize + backgroundColor should always be between -1.0 and 1.0. Steps are played in the order they are specified here.
+        self.stimulusReps = 3 #number of times through the stimulus. Each repetition consists of a cycle through each step, so the total number of epochs is equal to the number of step sizes times the number of stimulus reps.
+        self.preTime = 0.5 #seconds - the amount of time before each flash starts playing. During this time, the background color is shown (each flash, even within a family, is treated as its own epoch, with a pretime, stimtime, and tailtime).
+        self.stimTime = 0.5 #seconds - the amount of time that each flash plays for (each flash, even within a family, is treated as its own epoch, with a pretime, stimtime, and tailtime).
+        self.tailTime = 0.5#seconds - the amount of time to wait after each flash before moving onto the next epoch. During this time, the background color is shown (each flash, even within a family, is treated as its own epoch, with a pretime, stimtime, and tailtime).
+        self.interFamilyInterval = 5 #seconds - the wait time between each epoch. The background color is displayed during this time.
+        self.interFlashInterval = 0.5 #seconds - the wait time between each flash within a family (should be nonzero to ensure TTL writing)
         
     def estimateTime(self):
         '''

@@ -12,21 +12,21 @@ import serial, random, math
 class FlashGrid(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'FlashGrid'
-        self.flashColor = [1.0, 1.0, 1.0]
-        self.flashIntensity = 0.5 #multiplied by the color
-        self.checkHeight = 3.0 #degrees
-        self.checkWidth = 3.0 #degrees
-        self.estimatedNumberOfChecks = 40 #this parameter is not really important. It is only used for the estimated time function because it is hard to calculate the true grid size prior to running the stimulus 
-        self.flashDuration = 1.0 #seconds
-        self.repsPerCheck = 5 #repetitions per flash, on each of self.stimulusReps
-        self.interFlashInterval = 1.0 #seconds
-        self.backgroundColor = [0.0, 0.0, 0.0]
-        self.stimulusReps = 3 #number of times the full stimulus is repeated
-        self.preTime = 1.0 #s
-        self.stimTime = 0.0 #s - placeholder/dummy variable for this experiment b/c it is required by the getFR method in protocol.py
-        self.tailTime = 1.0 #s
-        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.protocolName = 'FlashGrid' #In FlashGrid, different sectors of a grid flash in sequence in a pseudorandom order. The sectors are also called "checks" and form a rectangular grid that tile the monitor.
+        self.flashColor = [1.0, 1.0, 1.0] #the color of each flash  (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.flashIntensity = 0.5 #The intensity of the flashes (multiplied by the color). Flash color times flash intensity should yield values between -1 and 1.
+        self.checkHeight = 3.0 #degrees - the height of each sector/check
+        self.checkWidth = 3.0 #degrees - the width of each sector/check
+        self.estimatedNumberOfChecks = 40 #this parameter is not really important. It is only used for the estimated time function because it is hard to calculate the true grid size prior to running the stimulus.
+        self.flashDuration = 1.0 #seconds - the length of each flash.
+        self.repsPerCheck = 5 #repetitions per flash on each stimulus repetition.
+        self.interFlashInterval = 1.0 #seconds - the number of seconds between flashes
+        self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen everywhere where the flash is not occuring, as well as the full screen before and after the flash  (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.stimulusReps = 3 #number of times the full stimulus is repeated. Each stimulus repetition consists of multiple flashes per check, as defined by the reps per check parameter.
+        self.preTime = 1.0 #seconds - the amount of time on each epoch before the flashes start appearing. During this time, the background color is visible.
+        self.stimTime = 0.0 #seconds - placeholder/dummy variable for this experiment because it is required by the getFR method in protocol.py. You cannot modify this value.
+        self.tailTime = 1.0 #seconds - the amount of time on each epoch to wait before moving on to the next after all the checks have appeared. During this time, the background color is visible.
+        self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time.
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
         
         

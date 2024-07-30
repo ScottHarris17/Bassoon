@@ -19,22 +19,22 @@ import numpy as np
 class OscillatingGrating(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'OscillatingGrating'
-        self.gratingColor = [1.0, 1.0, 1.0]
-        self.gratingContrast = 1.0 #multiplied by the color
-        self.meanIntensity = 0.0; #mean intensity of the grating
-        self.spatialFrequency = 0.15 #cycles per visual degree
-        self.gratingOrientations = [90.0, 270.0] #degrees
-        self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
-        self.oscillationPeriod = 15.0 #seconds
+        self.protocolName = 'OscillatingGrating' #During the Oscillating Grating stimulus a grating pattern oscillates sinusoidally over time
+        self.gratingColor = [1.0, 1.0, 1.0]#color of the grating (in RGB).-1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.gratingContrast = 1.0 #Sets the contrast of the grating by multiplying by the the grating color.
+        self.meanIntensity = 0.0 #The mean intensity of the grating. This value should be between -1 and 1.0, where 0.0 is "middle gray"
+        self.spatialFrequency = 0.15 #cycles per degree - the spatial frequency of the grating.
+        self.gratingOrientations = [90.0, 270.0]  #degrees - a list of directions that the grating will move in. Because the oscillating grating moves in two directions per epoch, these numbers define the starting direction.
+        self.gratingTexture = 'sin' #The pattern of the grating. This can be 'sin', 'sqr', 'saw', 'tri', etc. Look at Psychopy gratingstim object for more information: https://www.psychopy.org/api/visual/gratingstim.html#psychopy.visual.GratingStim.tex 
+        self.oscillationPeriod = 15.0 #seconds - the time it takes to complete a full oscillation cycle
         self.oscillationAmplitude = 20.0 #visual degrees - distance that the grating moves over the course of one half oscillation
-        self.oscillationPhaseShift = 0.0 #degrees - between 0 and 90 - 90 will start the oscillation in the middle of it's cycle. 0 will start it all the way on one side
-        self.backgroundColor = [0.0, 0.0, 0.0]
-        self.stimulusReps = 3
-        self.preTime = 1.0 #s
-        self.stimTime = 10.0 #s
-        self.tailTime = 1.0 #s
-        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.oscillationPhaseShift = 0.0 #degrees - between 0 and 90 - 90 will start the oscillation in the middle of it's cycle (cosine function). 0 will start it all the way on one side (sine function)
+        self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors. For this stimulus, the background is typically only seen between epochs.
+        self.stimulusReps = 3 #number of repetitions of the stimulus. Each epoch consists of the grating oscillating in one orientation, so the total number of epochs is the number of grating orientations times the number of stimulus reps
+        self.preTime = 1.0 # seconds - time before the grating starts moving. During this time a static grating appears on the screen
+        self.stimTime = 10.0 #seconds - time over which the grating is oscillating. The number of oscillation cycles fully completed is equal to the stim time divided by the oscillation period
+        self.tailTime = 1.0 #seconds - time after the grating stops moving. During this time a static grating appears on the screen
+        self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time
         self._angleOffset = 0.0 #reassigned by experiment in most cases
         
     

@@ -15,17 +15,17 @@ import serial
 class CheckerboardReceptiveField(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'CheckerboardReceptiveField'
-        self.backgroundColor = [0.0, 0.0, 0.0] #the 'mean' light level that displays between flashes
-        self.checkHeight = 1.0 #deg
-        self.checkWidth = 1.0 #deg
-        self.frameDwell = 1 #update checkerboard every this number of frames
-        self.stimulusReps = 3 #times through the stimulus
-        self.preTime = 1.0 #s
-        self.stimTime = 60.0 #s
-        self.tailTime = 5.0 #s
-        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
-        self.noiseType = 'Binary' #other types not yet implemented... future addition
+        self.protocolName = 'CheckerboardReceptiveField' #This stimulus randomly updates a checkerboard pattern over time. It is a common method for building linear models of receptive fields.
+        self.backgroundColor = [0.0, 0.0, 0.0] #The 'mean' light level that displays in the background (RGB valued between -1.0 and 1.0, where -1 equates to 0 and 1 equates to 255 in an 8 bit color scheme)
+        self.checkHeight = 1.0 #degrees - height of the checks in the pattern
+        self.checkWidth = 1.0 #degrees - width of the checks in the pattern
+        self.frameDwell = 1 #the checkerboard updates every this number of frames
+        self.stimulusReps = 3 #number of times the stimulues repeats
+        self.preTime = 1.0 #seconds - during the pretime, the checkerboard is visible, but not changing.
+        self.stimTime = 60.0 #seconds - during the stim time the checkerboard pattern updates every frameDwell number of frames.
+        self.tailTime = 5.0 #seconds - during the tail time, the checkerboard is visible, but not changing. It is equivalent to the pre time, but happens after the stim time.
+        self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time.
+        self.noiseType = 'Binary' #The type of noise pattern to use. Binary is the only type currently implemented... future additions will have more.
 
     def estimateTime(self):
         '''

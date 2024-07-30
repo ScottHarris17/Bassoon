@@ -23,19 +23,19 @@ import numpy as np
 class ImageJitter(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'ImageJitter'
-        self.speedStandardDeviation = 100.0 #deg/s
-        self.recenterSpeed = 10.0 #deg/s - used to recenter the image if it drifts off too far
-        self.backgroundColor = [0.0, 0.0, 0.0]
-        self.stimulusReps = 3
-        self.preTime = 1.0 #s
-        self.stimTime = 60.0 #s
-        self.tailTime = 1.0 #s
-        self.interStimulusInterval = 3.0 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.protocolName = 'ImageJitter' #in the ImageJitter stimulus, presaved images are moved smoothly across the monitor according to a random walk pattern.
+        self.speedStandardDeviation = 100.0 #degrees per second - standard deviation of the jitter speed, which is used to pseudoramly select new jitter speeds throughout an epoch.
+        self.recenterSpeed = 10.0 #degrees per second - the speed at which the image will be recentered if it drifts too far out of frame.
+        self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen, which appears around the edges of the aperature, as well as before and after each epoch. -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.stimulusReps = 3 #number of repetitions of the stimulus. This is equal to the number of epochs for this stimulus. Even if you have more images to draw from than the number specified here, the stimulus will only play this number of repetitions. Images are drawn pseudorandomly. If the number of stimulus repetitions is larger than the number of available images, images will be repeated.
+        self.preTime = 1.0 #seconds - during this time the image is visible but not yet jittering
+        self.stimTime = 60.0 #seconds - the amount of time on each epoch for which the image is jittered
+        self.tailTime = 1.0 #seconds - during this time the image is visible but not yet jittering. It is the same as the pretime, except it happens after the stimtime instead of before.
+        self.interStimulusInterval = 3.0 #seconds - the wait time between each epoch. The background color is displayed during this time
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
-        self.apertureDiameter = 20.0 #degrees
-        self.imageStartingPosition = [0.0, 0.0] #x, y deg
-        self.moveMeanFrames = 100 #number of frames to do the moving mean over for the stimulus speed
+        self.apertureDiameter = 20.0 #degrees - the diameter of the aperature to use. Aperatures help control for edges in square images.
+        self.imageStartingPosition = [0.0, 0.0] #degrees - the x, y cartesian starting position of the image
+        self.moveMeanFrames = 100 #number of frames over which a moving mean is performed on the stimulus speed vector in order to smooth the motion. The higher this number, the smoother the jitter.
         
         #guess the file directory
         scriptDir = os.path.dirname(__file__)
@@ -43,8 +43,8 @@ class ImageJitter(protocol):
         pathThroughBassoon = scriptDir[:bassoonIndex+len("Bassoon")]
         pathToImagesFromBassoon = 'src/images/stimulusImages/example'
         
-        self.imageFileExtension = '*.jpg' #string can use glob.glob style pattern matching
-        self.imageFolderPath = os.path.join(pathThroughBassoon, pathToImagesFromBassoon) #string can include glob style pattern matching
+        self.imageFileExtension = '*.jpg' #string - the file extension of the images. You can use glob.glob style pattern matching.
+        self.imageFolderPath = os.path.join(pathThroughBassoon, pathToImagesFromBassoon) #string - The path to the folder with images. You can use glob style pattern matching.
                 
         
     def estimateTime(self):

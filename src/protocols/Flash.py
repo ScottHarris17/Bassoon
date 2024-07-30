@@ -13,14 +13,14 @@ import serial
 class Flash(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'Flash'
-        self.flashIntensity = [1.0, 1.0, 1.0]
-        self.backgroundColor = [-1.0, -1.0, -1.0]
-        self.stimulusReps = 3
-        self.preTime = 1.0 #s
-        self.stimTime = 5.0 #s
-        self.tailTime = 1.0 #s
-        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.protocolName = 'Flash' #The flash protocol presents a full field flash on the screen for a specified amount of time
+        self.flashIntensity = [1.0, 1.0, 1.0] #intensity of the screen (in RGB) during the flash. -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.backgroundColor = [-1.0, -1.0, -1.0] #background color of the screen before/after the flash  (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.stimulusReps = 3 #number of repetitions
+        self.preTime = 1.0 #seconds - the amount of time before the flash on each epoch, during which the background is shown
+        self.stimTime = 5.0 #seconds - the amount of time that the flash lasts for
+        self.tailTime = 1.0 #seconds - the amount of time after the flash on each epoch, during which the background is shown
+        self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time.
                 
         
     def estimateTime(self):

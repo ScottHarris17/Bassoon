@@ -7,36 +7,32 @@ Created on Fri Jul  9 17:24:45 2021
 from psychopy import core, visual, data, event, monitors
 import time
 import random, math
+import inspect
+import ast
+from functools import lru_cache
+
 
 class protocol():
     def __init__(self):
         self.suffix = '_' #suffix for the protocol name, begin with _
         self.userInitiated = False #determines whether a key stroke is needed to initiate the protocol. Will be set to the corresponding experiment value if not updated by the user
-        
         self._stimulusStartLog = [] #list of time stamps marking the start of each epoch
         self._stimulusEndLog = [] #list of time stamps marking the end of each epoch
         self._pauseTimeLog = []
-        
-        self.randomSeed = random.random()
-        
-        self.tagList = [] #list of tags for the protocol
-        
-        self._estimatedTime = 0.0 #estimated time in seconds that this stimulus will take. There should be a corresponding function self.estimateTime() that sets this number
-        
+        self.randomSeed = random.random() #seed value to use to generate pseudorandom sequences
+        self.tagList = [] #a list of tags for the protocol.
+        self._estimatedTime = 0.0 #estimated time in seconds that this stimulus will take. There should be a corresponding function self.estimateTime() that sets this number  
         self._numberOfEpochsStarted = 0
         self._numberOfEpochsCompleted = 0 #counts the number of epochs that have actually occured
-        
         self._portName = '' #name of the TTL port if in use. Implemented 
         self._timesTTLFlipped = 0 #counts the number of TTL flips, used for sustained mode only
         self._timesTTLFlippedBookmark = 0 #counts the number of TTL flips during bookmark (sustained mode with bookmarking only)
-        
         self._userPauseCount = 0 #counts the number of times the user initiated a pause in the middle of the stimulus
         self._userPauseDurations = [] #list of amount of time (in seconds) that each pause lasted for
-        
         self._completed = -1 # -1 indicates stimulus never ran. 0 indicates stimulus started but ended early. 1 indicates stimulus ran to completion
-        
         self._timingReport = False #bool, inhereted from experiment parameters. Indicates whether the user wants to print a timing report for each stimulus (usually to determine if frames are being dropped)
         
+
     def validatePropertyValues(self, tf = True, errorMessage = ''):
         '''
         Validates the property values for select protocols. It does this by looking for an internal validation function within the protocol subclass called "internalValidation()". If this function does not exist, the validations are automatically passed.
@@ -53,12 +49,58 @@ class protocol():
         
         return tf, errorMessage
 
+
     def estimateTime(self):
         '''
         estimateTime place holder. Should be overriden in subclass
         '''
         return 0
-        
+    
+    
+    def printDescription(self, attributeName):
+       ''' Given an attribute name, this function prints the description of that attribute (i.e., the comment next to it's initiation). It is called when each info button is hit in the editProtocol function in main.py'''
+       descriptions = {}
+       descriptions.update(self._get_attribute_descriptions(self.__class__))
+              
+       # Check the superclass if it exists and has an init method
+       for base in self.__class__.__bases__:
+           if hasattr(base, '__init__'):
+               descriptions.update(self._get_attribute_descriptions(base))
+
+       description = descriptions.get(attributeName, "Info is not available. Add a descriptive comment to the attribute initialization in the protocol's __init__() function to change this.")
+       print('--> ', attributeName, ': ', description)
+   
+    
+    @staticmethod
+    @lru_cache(maxsize=None) #no limit on caching (for now)
+    def _get_attribute_descriptions(cls):
+       '''Parses the class (or superclass) identified in cls to return all of the definitions of the attributes that are provided as comments in the __init__() methods'''
+       source = inspect.getsource(cls)
+
+       # Parse the source code into an Abstract Syntax Tree (AST)
+       tree = ast.parse(source)
+
+       # Initialize a dictionary to store attribute descriptions
+       attribute_descriptions = {}
+
+       # Traverse the AST to find the __init__ method
+       for node in ast.walk(tree):
+           lines = source.splitlines()
+           if isinstance(node, ast.FunctionDef) and node.name == "__init__":
+               # Traverse the body of the __init__ method to find assignments and comments
+               for n in node.body:
+                   if isinstance(n, ast.Assign):
+                       # Get the attribute name being assigned
+                       if isinstance(n.targets[0], ast.Attribute):
+                           attr_name = n.targets[0].attr
+                           lineNumber = n.lineno
+                           line = lines[lineNumber-1].strip()
+                           if '#' in line:
+                               comment = line.split('#', 1)[1].strip()
+                               attribute_descriptions[attr_name] = comment
+
+       return attribute_descriptions
+
     
     def getFR(self, win):
         '''

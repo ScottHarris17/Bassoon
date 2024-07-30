@@ -16,18 +16,18 @@ import serial
 class MovingBar(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'MovingBar'
-        self.orientations = [float(x*45) for x in range(8)]
-        self.barWidth = 3.23 #deg
-        self.barHeight = 100.0 #deg
-        self.speed = 10.0 #deg/s
-        self.barColor = [1.0, 1.0, 1.0]
-        self.backgroundColor = [-1.0, -1.0, -1.0]
-        self.stimulusReps = 3
-        self.preTime = 1.0 #s
-        self.stimTime = 5.0 #s
-        self.tailTime = 1.0#s
-        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.protocolName = 'MovingBar' #The moving bar stimulus presents a bar that drifts across the screen in a pseudorandom order of directions.
+        self.orientations = [float(x*45) for x in range(8)] #degrees - a list of directions that the bar will move in
+        self.barWidth = 3.23 #degrees - width of the bar
+        self.barHeight = 100.0 #degrees - height of the bar
+        self.speed = 10.0 #degrees per second - speed of the drifting bar
+        self.barColor = [1.0, 1.0, 1.0] #Color of the bar (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.backgroundColor = [-1.0, -1.0, -1.0]  #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.stimulusReps = 3 #number of repetitions of the stimulus. Each epoch consists of the bar moving in one direction, so the total number of epochs is the number of orientations times the number of stimulus reps
+        self.preTime = 1.0 #seconds - time before the bar starts moving. The bar is not visible during this time
+        self.stimTime = 5.0 #seconds - time over which the bar is moving
+        self.tailTime = 1.0 #seconds - time after the bar stops moving. The bar is not visible during this time
+        self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time
 
         self._angleOffset = 0.0 #deg - reassigned by the experiment in most cases
                 

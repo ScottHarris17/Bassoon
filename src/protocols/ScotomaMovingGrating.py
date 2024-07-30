@@ -14,34 +14,34 @@ import numpy as np
 class ScotomaMovingGrating(protocol):
     def __init__(self):
         super().__init__()
-        self.protocolName = 'ScotomaMovingGrating'
+        self.protocolName = 'ScotomaMovingGrating' #in the Scotoma Moving Grating stimulus, there is a drifting grating pattern that is progressively covered by a grid of "scotomas" (overlaid on top of the grating). The stimulus consists of up to 7 segments:   1) pretime: the grating is visible and static, with the initial scotoma density overlaid (defined by the scotoma start fraction),   2) bookend 1: the grating starts to move, but the scotomas do not change (again, the initial scotoma density is overlaid, but it is static),   3) growth/decay period 1: the grating continues to move, and the scotomas start to dynamically change in number from their start fraction to their end fraction (if scotomaReverse is set to False, skip ahead to segment 6),   4) bookend 2 (occurs only when scotomaReverse is set to True): the scotomas have reached their end fraction and are now static again while the grating continues to move,    5) growth/decay period 2 (occurs only when scotomaReverse is set to True): the scotomas start to dynamically change again, this time going from the end fraction to the start fraction value,   6) bookend 3: the scotomas now stop changing again, but the grating continues to move,   7) tailtime: the grating is visible and static, with the final scotoma density overlaid (final scotoma densitiy is equal to the scotomaEndFraction if scotomaReverse is False and the scotomaStartFraction if scotomaReverse is True).      The scotoma start fraction can be less than or greater than the end fraction. If if it is less than the end fraction, then scotomas will start out by appearing on the screen. If it is greater than the end fraction, then scotomas will start out by disappearing on the screen. The order of scotoma appearance is pseudorandom. You visualize this stimulus by following this link, where the start fraction is 0, then end fraction is 1, and scotomaReverse is set to True: https://youtu.be/9pvIeY91nvk
         
         #grating parameters
-        self.gratingColor = [1.0, 1.0, 1.0]
-        self.gratingContrast = 1.0 #multiplied by the color
-        self.meanIntensity = 0.0; #mean intensity of the grating
-        self.spatialFrequency = 0.15 #cycles per degree
-        self.gratingTexture = 'sin' #can be 'sin', 'sqr', 'saw', 'tri', None
-        self.speed = 10.0 #deg/s
-        self.orientations = [90]#[float(x*45) for x in range(8)] #list of floats - degrees
-        self.backgroundColor = [0.0, 0.0, 0.0]
+        self.gratingColor = [1.0, 1.0, 1.0] #color of the grating (in RGB).-1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
+        self.gratingContrast = 1.0 #Sets the contrast of the grating by multiplying by the the grating color.
+        self.meanIntensity = 0.0; #The mean intensity of the grating. This value should be between -1 and 1.0, where 0.0 is "middle gray"
+        self.spatialFrequency = 0.15 #cycles per degree - the spatial frequency of the grating
+        self.gratingTexture = 'sin' #The pattern of the grating. This can be 'sin', 'sqr', 'saw', 'tri', etc. Look at Psychopy gratingstim object for more information: https://www.psychopy.org/api/visual/gratingstim.html#psychopy.visual.GratingStim.tex 
+        self.speed = 10.0 #degrees per second - the speed at which the grating moves
+        self.orientations = [90.0] #degrees - a list of directions that the grating will move in. The total number of epochs is equal to the number of orientations times the number of stimulus repetitions.
+        self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors. For this stimulus, the background is typically only seen between epochs.
         
         #scotoma parameters
-        self.scotomaStartFraction = 0 #Fraction of pixels that start as a scotoma
-        self.scotomaEndFraction = 1.0 #fraction of pixels that end as a scotoma
-        self.scotomaOpacity = 1.0 #1 is fully opaque, 0 is fully transparent
-        self.scotomaReverse = True #bool, True means that the scotoma will go from start to end and then end to start, False means it will only go from start to end
-        self.scotomaGrowthTime = 80.0 #amount of time that the stimulus grows for
-        self.scotomaBookendTime = 10.0 #seconds before scotoma comes online, while the grating is still moving. Also the amount of time to pause for in a reversal stimulus, and the amount of time that the grating continues to move for after the stimulus has gone away.
-        self.scotomaGrowth = 'lin' #currently only 'lin' is supported for linear growth
-        self.scotomaSize = 0.67 #in degrees. Scotomas will be square, such that height == width
-        self.scotomaColor = [0.0, 0.0, 0.0]
+        self.scotomaStartFraction = 0.0 #Fraction of pixels that start as a scotoma. This number can be between 0.0 and 1.0.
+        self.scotomaEndFraction = 1.0 #Fraction of pixels that end as a scotoma after one growth/decay period. This number can be between 0.0 and 1.0
+        self.scotomaOpacity = 1.0 #The opacity of the scotomas. 1.0 is fully opaque, 0.0 is fully transparent
+        self.scotomaReverse = True #bool - True means that the scotomas will go from start to end and then end to start again. False means they will only go from start to end (press the information button on protocolName for more insight).
+        self.scotomaGrowthTime = 80.0 #seconds - the amount of time that one growth/decay period takes.
+        self.scotomaBookendTime = 10.0 #seconds - the amount of time that each bookend takes. During the bookends, the grating moves but the scotomas do not change. All bookends must be the same length. There are a maximum of three bookends per epoch: Once immediately after the pretime, once immediately before the tail time, and (if scotomaReverse is set to True) once between the first and second growth/decay times.
+        self.scotomaGrowth = 'lin' #Sets the pattern of scotoma growth. Currently only 'lin' is supported for linear growth
+        self.scotomaSize = 0.67 #degrees - The size of the scotomas (height and width). Scotomas will be square, such that height == width
+        self.scotomaColor = [0.0, 0.0, 0.0] #The color of the scotomas (in RGB).-1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
         
-        self.stimulusReps = 3        
-        self.preTime = 20.0 #s
-        self.stimTime = 0.0 #the total time that the grating moves for. This number is calculated during run time and should not be edited here. It is listed here as a dummy variable because it is required by the getFR method in protocol.py
-        self.tailTime = 20.0 #s
-        self.interStimulusInterval = 1.0 #s - wait time between each stimulus. backGround color is displayed during this time
+        self.stimulusReps = 3 #number of repetitions of the stimulus. The total number of epochs is equal to the number of orientations times the number of stimulus reps.
+        self.preTime = 20.0 #seconds - the number of seconds before the first bookend, when the grating starts moving. During this time, a static grating with the scotoma start fraction of scotomas overlaid appears on the screen.
+        self.stimTime = 0.0 #seconds - the total time that the grating moves for. This number is calculated during run time and should not be edited directly. It is listed here as a dummy variable because it is required by the getFR method in protocol.py
+        self.tailTime = 20.0 #seconds - the number of seconds after the last bookend. During this time a static grating with the scotoma start or end fraction overlaid appears on the screen.
+        self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
 
 
