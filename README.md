@@ -8,7 +8,7 @@
   <li>Build customized visual stimuli without writing a single line of code</li>
   <li>Create gratings, natural images, movies, noise patterns, and more</li>
   <li>Control temporal alignment on millisecond timescales</li>
-  <li>Run psychophysical, behavioral, and electrophysiology experiments</li>
+  <li>Run psychophysics, behavior, and electrophysiology experiments</li>
 </ul>
 
 <h2>Development</h2>
