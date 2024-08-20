@@ -7,9 +7,9 @@ Welcome to Bassoon. Run this file to open the GUI.
 Repository: www.github.com/Scottharris17/Bassoon
 
 You must have psychopy libraries installed to use built in stimuli and to achieve the necessary imports.
-www.psychopy.org
+Use "pip install psychopy", or see www.psychopy.org
 
-Experiments can be managed through the GUI or programmatically. See README.md for help.
+Experiments can be managed through the GUI or programmatically. See index.html for help.
 
 @author: Scott Harris
 scott.harris@ucsf.edu
@@ -144,7 +144,7 @@ class Bassoon:
         with open('images/welcomeArt.txt', 'r') as f:
             [print(line[1:-1]) for line in f]
 
-        print("\n\n--> Use the GUI to Generate New Psychopy Experiments\n")
+        print("\n\n--> Use the GUI to Generate New Experiments\n")
 
 
     def loadExperiment(self):

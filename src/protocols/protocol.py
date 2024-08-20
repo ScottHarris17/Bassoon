@@ -14,6 +14,7 @@ from functools import lru_cache
 
 class protocol():
     def __init__(self):
+        self.protocolName = '' #replaced by subclass
         self.suffix = '_' #suffix for the protocol name, begin with _
         self.userInitiated = False #determines whether a key stroke is needed to initiate the protocol. Will be set to the corresponding experiment value if not updated by the user
         self._stimulusStartLog = [] #list of time stamps marking the start of each epoch
@@ -109,7 +110,7 @@ class protocol():
         
         self._FR = win.getActualFrameRate()
         
-        #On rare occasions (depending on the monitor) there appears to be a timing issue with winl.getActialFrameRate().
+        #On rare occasions (depending on the monitor) there appears to be a timing issue with win.getActialFrameRate().
         #In such cases, you can keep querying until you get a numerical value other than None
         #I've set a stop here after 1000 queries, which seems sufficient to prevent this error and avoids an infinite loopq
         if self._FR is None:
