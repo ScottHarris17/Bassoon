@@ -730,6 +730,7 @@ class Bassoon:
         closeButton.grid(row=0, column=2)
 
     def editMonitors(self):
+        ''' A function to add or remove monitors from the psychopy monitor center programmatically'''
         editMonitorWindow = Toplevel(root)
         editMonitorWindow.title('Edit Monitors')
         editMonitorWindow.geometry('400x400')
@@ -780,7 +781,7 @@ class Bassoon:
         else:
             monitor = monitors.Monitor(name, distance=distance)
             monitor.save()
-            print(f'{name} saved!')
+            print(f'{name} saved! Close and reopen the options menu to see the updated list of monitors and to select the correct one for the experiment.')
         
     def removeMonitor(self):
         monitorToRemove = self.removeSelection.get()
