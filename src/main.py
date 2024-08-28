@@ -534,15 +534,15 @@ class Bassoon:
         stimulusFrame.configure(font=("Helvetica", 12))
         stimulusFrame.pack()
 
-        monitorNames = monitors.getAllMonitors()
+        self.monitorNames = monitors.getAllMonitors()
 
         # stimulus monitor name
         stimMonitorLabel = Label(stimulusFrame, text='Monitor', padx=10)
         stimMonitorLabel.grid(row=2, column=1)
         self.stimMonitorSelection = StringVar(root)
-        self.stimMonitorSelection.set(self.experiment.stimMonitor)
+        self.stimMonitorSelection.set(self.monitorNames[0])
         stimulusMonitorDropdown = OptionMenu(
-            stimulusFrame, self.stimMonitorSelection, *monitorNames)
+            stimulusFrame, self.stimMonitorSelection, *self.monitorNames)
         stimulusMonitorDropdown.grid(row=2, column=2)
 
         # stimulus full screen
@@ -570,6 +570,10 @@ class Bassoon:
         stimCalibrationLabel.grid(row=3, column=1)
         self.stimCalibrationBtn = Button(stimulusFrame, text='\u03B3 is {g}'.format(g=round(self.experiment.gamma,5)), padx=7, command= lambda: self.calibrateGammaMenu())
         self.stimCalibrationBtn.grid(row=3, column=2)
+        
+        #Add/Remove monitor button
+        self.editMonitorsButton = Button(stimulusFrame, text='Add/Remove Monitor', padx=5, command= lambda: self.editMonitors())
+        self.editMonitorsButton.grid(row=3, column=4)
 
         # information monitor selection
         informationFrame = LabelFrame(
@@ -597,7 +601,7 @@ class Bassoon:
         self.informationMonitorSelection.set(
             self.experiment.informationMonitor)
         informationMonitorDropdown = OptionMenu(
-            informationFrame, self.informationMonitorSelection, *monitorNames)
+            informationFrame, self.informationMonitorSelection, *self.monitorNames)
         informationMonitorDropdown.grid(row=2, column=2)
 
         # information full screen
@@ -725,7 +729,67 @@ class Bassoon:
                              command=lambda: monitorEditWindow.destroy())
         closeButton.grid(row=0, column=2)
 
-
+    def editMonitors(self):
+        editMonitorWindow = Toplevel(root)
+        editMonitorWindow.title('Edit Monitors')
+        editMonitorWindow.geometry('400x400')
+        
+        editMonitorFrame = Frame(editMonitorWindow, padx=10)
+        editMonitorFrame.pack(fill='both', expand=True)
+        
+        #add monitor
+        addMonitorLabelFrame = LabelFrame(editMonitorFrame, text='Add Monitor', pady=5)
+        addMonitorLabelFrame.configure(font=('Helvetica', 14))
+        addMonitorLabelFrame.pack(fill='both')
+        
+        addMonitorLabel = Label(addMonitorLabelFrame, text='Monitor name', padx=5)
+        addMonitorLabel.grid(row=0,column=0)
+        self.monitorName = StringVar(root)
+        addMonitorEntry = Entry(addMonitorLabelFrame, textvariable= self.monitorName)
+        addMonitorEntry.grid(row=0, column=1)
+        
+        monitorDistanceLabel = Label(addMonitorLabelFrame, text='Distance', padx=5)
+        monitorDistanceLabel.grid(row=1,column=0)
+        self.monitorDistance = DoubleVar(root)
+        monitorDistanceEntry = Entry(addMonitorLabelFrame, textvariable= self.monitorDistance)
+        monitorDistanceEntry.grid(row=1, column=1)
+        
+        #remove monitor
+        removeMonitorLabelFrame = LabelFrame(editMonitorFrame, text='Remove Monitor', pady=5)
+        removeMonitorLabelFrame.configure(font=('Helvetica', 14))
+        removeMonitorLabelFrame.pack(fill='both')
+        
+        removeMonitorLabel = Label(removeMonitorLabelFrame, text='Monitor name', padx=5)
+        removeMonitorLabel.grid(row=0, column=0)
+        self.removeSelection = StringVar(root)
+        self.removeSelection.set('Select')
+        removeDropdown = OptionMenu(removeMonitorLabelFrame, self.removeSelection, *self.monitorNames)
+        removeDropdown.grid(row=0, column=1)
+        
+        #save button
+        saveFrame = Frame(editMonitorFrame)
+        saveFrame.pack()
+        saveMonitorBtn = Button(saveFrame, text='Save', command= lambda: [self.saveMonitor(), self.removeMonitor()])
+        saveMonitorBtn.grid(row=0, column=0)
+    
+    def saveMonitor(self):
+        name = self.monitorName.get()
+        distance = self.monitorDistance.get()
+        if name == '':
+            pass
+        else:
+            monitor = monitors.Monitor(name, distance=distance)
+            monitor.save()
+            print(f'{name} saved!')
+        
+    def removeMonitor(self):
+        monitorToRemove = self.removeSelection.get()
+        if monitorToRemove == 'Select':
+            pass
+        else:
+            os.remove(rf"C:\Users\jjohn\AppData\Roaming\psychopy3\monitors\{monitorToRemove}.json")
+            print(f'{monitorToRemove} has been removed!')
+            
     # Gamma calibration of monitor
     def calibrateGammaMenu(self):
         '''Calibrate gamma value of stimulus monitor'''
