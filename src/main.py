@@ -17,6 +17,7 @@ scott.harris@ucsf.edu
 Copyright 2021 under MIT open source license.
 """
 import os
+from pathlib import Path
 from tkinter import *
 import tkinter.ttk as ttk
 import tkinter.filedialog as tkfd
@@ -788,7 +789,14 @@ class Bassoon:
         if monitorToRemove == 'Select':
             pass
         else:
-            os.remove(rf"C:\Users\jjohn\AppData\Roaming\psychopy3\monitors\{monitorToRemove}.json")
+            i = 0
+            endPath = f"AppData\Roaming\psychopy3\monitors\{monitorToRemove}.json"
+            while str(Path(__file__).parents[i+1]) != r"c:\users":
+                Path(__file__).parents[i]
+                i += 1
+                baseDir = Path(__file__).parents[i]
+            monPath = str(baseDir / endPath)
+            os.remove(monPath)
             print(f'{monitorToRemove} has been removed!')
             
     # Gamma calibration of monitor
