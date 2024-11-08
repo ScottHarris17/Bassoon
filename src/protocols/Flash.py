@@ -42,7 +42,7 @@ class Flash(protocol):
             
     def run(self, win, informationWin):
         '''
-        Executes the MovingBar stimulus
+        Executes the Flash stimulus
         '''
 
         self._completed = 0 #started but not completed
