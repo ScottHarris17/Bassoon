@@ -188,7 +188,7 @@ class Bassoon:
 
         self.updateExperimentSketch()
 
-    #Used by options Warp File to find file path
+
 
     def listProtocols(self):
         '''
@@ -628,13 +628,17 @@ class Bassoon:
         experimentFrame.pack()
 
         # user initiates protocols
+        def initiateWarning(): #message that displays when the checkbox is changed to indicate that this won't update protocols already in the experiment list
+            print('--> Manual initiation has been updated. This does not change initiation method of protocols that have already been added to the experiment. Be sure to change these yourself.\n')
+            return
         userInitLabel = Label(
-            experimentFrame, text='Manually Initiate Each Protol', padx=10)
+            experimentFrame, text='Manually Initiate Each Protocol', padx=10)
         userInitLabel.grid(row=0, column=0, columnspan=2)
         self.userInitSelection = IntVar(root)
         self.userInitSelection.set(self.experiment.userInitiated)
-        userInitChk = Checkbutton(experimentFrame, var=self.userInitSelection)
+        userInitChk = Checkbutton(experimentFrame, var=self.userInitSelection, command=lambda: initiateWarning())
         userInitChk.grid(row=0, column=2)
+        
 
         #Angle offset value for directional stimuli
         angleOffsetLabel = Label(

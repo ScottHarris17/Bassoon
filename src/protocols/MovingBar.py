@@ -8,7 +8,7 @@ Bar moves across the screen at a given speed in each of n directions
 """
 from protocols.protocol import protocol
 import random
-from psychopy import core, visual,  data, event, monitors
+from psychopy import core, visual, data, event, monitors
 import math
 import numpy
 import serial
