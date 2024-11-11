@@ -50,6 +50,7 @@ from protocols.DriftingNoise import DriftingNoise
 from protocols.FlashGrid import FlashGrid
 from protocols.ImageJitter import ImageJitter
 from protocols.ScotomaMovingGrating import ScotomaMovingGrating
+from protocols.Flicker import Flicker
 
 class Bassoon:
     def __init__(self, master):
