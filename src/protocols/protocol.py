@@ -34,23 +34,26 @@ class protocol():
         self._timingReport = False #bool, inhereted from experiment parameters. Indicates whether the user wants to print a timing report for each stimulus (usually to determine if frames are being dropped)
         
 
-    def validatePropertyValues(self, tf = True, errorMessage = ''):
+    
+    def internalValidation(self, tf = True, errorMessage = ''):
         '''
-        Validates the property values for select protocols. It does this by looking for an internal validation function within the protocol subclass called "internalValidation()". If this function does not exist, the validations are automatically passed.
-
-        Returns:
-            tf - bool value, true if validations are passed, false if they are not
-            errorMessage - string, message to be displayed in validations are not passed
+        placeholder for internalValidation function, which usually exists in the subclass. If the subclass doesn't have an internal validation function, then this one is run instead, and it returns no errors at all.
         '''
-        internalValidation = getattr(self, "internalValidation", None)
-        if not callable(internalValidation):
-            return tf, errorMessage
-        
-        tf, errorMessage = self.internalValidation()
-        
         return tf, errorMessage
-
-
+    
+    
+    
+    def validateColorInput(colorInputDictionary):
+        '''
+        Checks that the colorInput is a list with float values between -1 and 1. Anything outside of those values should return an error
+        '''
+        
+        #loop through the color input dictionary
+        #check that for every value the list items are between -1 and 1
+        #if any list item is outside this range, create an error message that includes the key value and a description of the error
+        #return tf = False and errorMessage = 'some string including the key value that returned false'
+        
+    
     def estimateTime(self):
         '''
         estimateTime place holder. Should be overriden in subclass

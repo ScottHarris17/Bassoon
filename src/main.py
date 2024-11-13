@@ -1194,10 +1194,10 @@ class Bassoon:
                 setattr(selectedProtocol, propName, convertedValue)
             except:
                 print('***Update Failure for property with name ' + updateNames[i]
-                      + ' Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
+                      + '. Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
         
          #check any validations that are needed for the current stimulus type
-        tf, errorMessage = selectedProtocol.validatePropertyValues()
+        tf, errorMessage = selectedProtocol.internalValidation()
         if not tf:
              print('\n***Update Failure. Could not update this stimulus because validations on property assignments were not passed. This came with the following error message:')
              print('VALIDATION ERROR: ' + errorMessage)
