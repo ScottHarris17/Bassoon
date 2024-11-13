@@ -22,7 +22,36 @@ class Flicker(protocol):
         self.tailTime = 1.0 #seconds - the amount of time after the flash on each epoch, during which the background is shown
         self.interStimulusInterval = 1.0 #seconds - the wait time between each epoch. The background color is displayed during this time.
         self.flickerInterval = 1.0 #seconds - the amount of time that each flicker lasts       
+        self.flickerType = 'custom' #Determines what happens during the "off" cycle of the flicker. "negative" presents the negative rgb value of the "flash intensity", 'background' presents the background color, 'custom' presents a custom color - default is 'custom' when the string input does not match a known case
+        self.customOffColor = [0.0, 0.0, 0.0] #Sets the off color of the flicker cycle, BUT only is used if the flicker type is set to "custom" 
         
+        
+    def internalValidation(self, tf = True, errorMessage = ''):
+             '''
+             Validates the properties. This is called when the user updates the protocol's properties. It is directly called by the validatePropertyValues() method in the protocol super class
+         
+             -------
+             Returns:
+                 tf - bool value, true if validations are passed, false if they are not
+                 errorMessage - string, message to be displayed in validations are not passed
+         
+             '''
+             possibleFlickerTypes = ['negative', 'custom', 'background']
+             if self.flickerType not in possibleFlickerTypes:
+                 tf = False
+                 errorMessage = 'Invalid Flicker Type. Choose between \'negative\', \'custom\', and \'background\''
+             
+            #check color parameters
+             colorInputDictionary = {
+                 'backgroundColor': self.backgroundColor,
+                 'flashIntensity': self.flashIntensity,
+                 'customOffColor': self.customOffColor
+                 }
+             
+             tf, errorMessage = self.validateColorInput(colorInputDictionary)
+             return tf, errorMessage
+         
+            
     def estimateTime(self):
         '''
         Estimate the total amount of time that this protocol will take to run
@@ -39,6 +68,7 @@ class Flicker(protocol):
         
         return self._estimatedTime
       
+
             
     def run(self, win, informationWin):
         '''
@@ -48,7 +78,15 @@ class Flicker(protocol):
         self._completed = 0 #started but not completed
         
         self._informationWin = informationWin #tuple, save here so you don't have to pass this as a function parameter every time you use it
-        self.switch = [-1.0, -1.0, -1.0]
+        
+        #self.switch is a list that contains the color that the screen should take when the flicker is on its "off" cycle
+        if self.flickerType == 'negative':
+            self.offColor = [-rgb for rgb in self.flashIntensity]
+        elif self.flickerType == 'background':
+            self.offColor = self.backgroundColor
+        else: #'custom'
+            self.offColor = self.customOffColor
+             
         
         self.getFR(win)
         self._interStimulusIntervalNumFrames = round(self._FR * self.interStimulusInterval)
@@ -94,13 +132,22 @@ class Flicker(protocol):
             
 
             #stim time - flicker
-            for flicker in range(self.roundedFlickerCount):
-                self.switch = [-rgb for rgb in self.switch]
-                win.color = self.switch
-                for f in range(self._flickerNumFrames):
-                    win.flip()
-                    if self.checkQuitOrPause():
-                        return
+            count = self._flickerNumFrames
+            switch = True
+            for f in range(self._stimTimeNumFrames):
+                if count == self._flickerNumFrames:
+                    if switch:
+                        win.color = self.flashIntensity
+                        switch = False
+                    else:
+                        win.color = self.offColor
+                        switch = True
+                    count = 0
+                
+                count += 1
+                win.flip()
+                if self.checkQuitOrPause():
+                    return
 
             #tail time
             win.color = self.backgroundColor
