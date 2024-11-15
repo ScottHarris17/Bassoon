@@ -787,7 +787,7 @@ class Bassoon:
         
     def removeMonitor(self):
         monitorToRemove = self.removeSelection.get()
-        if monitorToRemove == 'Select':
+        if os.name == 'nt' or monitorToRemove == 'Select':
             pass
         else:
             i = 0
