@@ -48,7 +48,7 @@ class Flicker(protocol):
                  'customOffColor': self.customOffColor
                  }
              
-             tf, errorMessage = self.validateColorInput(colorInputDictionary)
+             tf, errorMessage = self.validateColorInput(colorInputDictionary, tf, errorMessage)
              return tf, errorMessage
          
             

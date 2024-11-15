@@ -43,10 +43,19 @@ class protocol():
     
     
     
-    def validateColorInput(colorInputDictionary):
+    def validateColorInput(self, colorInputDictionary, tf = True, errorMessage = ''):
         '''
         Checks that the colorInput is a list with float values between -1 and 1. Anything outside of those values should return an error
         '''
+        for key, color in colorInputDictionary.items():
+            for rgb in color:
+                if rgb > -1 and rgb < 1:
+                    pass
+                else:
+                    tf = False
+                    errorMessage = f'{key} should have values between -1 and 1'
+                    
+        return tf, errorMessage
         
         #loop through the color input dictionary
         #check that for every value the list items are between -1 and 1
