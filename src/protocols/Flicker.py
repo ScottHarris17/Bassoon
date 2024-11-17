@@ -40,9 +40,7 @@ class Flicker(protocol):
              if self.flickerType not in possibleFlickerTypes:
                  tf = False
                  errorMessage.append('Invalid Flicker Type. Choose between \'negative\', \'custom\', and \'background\'')
-             if self.flashIntensity[0] == 0.5:
-                 tf = False
-                 errorMessage.append('shouldn\'t be 0.5')
+            
             #check color parameters
              colorInputDictionary = {
                  'backgroundColor': self.backgroundColor,
