@@ -59,11 +59,11 @@ class ScotomaMovingGrating(protocol):
             tf = False
             errorMessage.append('The scotoma start and end fractions must be a value between 0 and 1. If set to 1, all pixels will be blanked. If set to 0, no pixels will be blanked. If set to 0.5, half of the pixels will be blanked.')
         
-        elif self.scotomaGrowth != 'lin':
+        if self.scotomaGrowth != 'lin':
             tf = False
             errorMessage.append('The Scotoma Growth parameter must be set to "lin". Other growth options will be supported in future versions.')
         
-        elif self.scotomaOpacity > 1 or self.scotomaOpacity < 0:
+        if self.scotomaOpacity > 1 or self.scotomaOpacity < 0:
             tf = False
             errorMessage.append('Scotoma Opacity must be between 0.0 and 1.0. 1 is fully opaque, 0 is transparent.')
             
