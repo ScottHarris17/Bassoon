@@ -1199,8 +1199,9 @@ class Bassoon:
          #check any validations that are needed for the current stimulus type
         tf, errorMessage = selectedProtocol.internalValidation()
         if not tf:
-             print('\n***Update Failure. Could not update this stimulus because validations on property assignments were not passed. This came with the following error message:')
-             print('VALIDATION ERROR: ' + errorMessage)
+             print('\n***Update Failure. Could not update this stimulus because validations on property assignments were not passed. This came with the following error message(s):')
+             for error in errorMessage:
+                 print('VALIDATION ERROR: ' + error)
              
              #place the old protocol back into the experiment sketch
              self.experimentSketch[selectedIndex] = (

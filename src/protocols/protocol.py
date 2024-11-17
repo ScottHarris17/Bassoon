@@ -35,7 +35,7 @@ class protocol():
         
 
     
-    def internalValidation(self, tf = True, errorMessage = ''):
+    def internalValidation(self, tf = True, errorMessage = []):
         '''
         placeholder for internalValidation function, which usually exists in the subclass. If the subclass doesn't have an internal validation function, then this one is run instead, and it returns no errors at all.
         '''
@@ -49,7 +49,7 @@ class protocol():
         '''
         for key, color in colorInputDictionary.items():
             for rgb in color:
-                if rgb > -1 and rgb < 1:
+                if rgb >= -1 and rgb <= 1:
                     pass
                 else:
                     tf = False

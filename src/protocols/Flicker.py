@@ -26,7 +26,7 @@ class Flicker(protocol):
         self.customOffColor = [0.0, 0.0, 0.0] #Sets the off color of the flicker cycle, BUT only is used if the flicker type is set to "custom" 
         
         
-    def internalValidation(self, tf = True, errorMessage = ''):
+    def internalValidation(self, tf = True, errorMessage = []):
              '''
              Validates the properties. This is called when the user updates the protocol's properties. It is directly called by the validatePropertyValues() method in the protocol super class
          
@@ -39,8 +39,10 @@ class Flicker(protocol):
              possibleFlickerTypes = ['negative', 'custom', 'background']
              if self.flickerType not in possibleFlickerTypes:
                  tf = False
-                 errorMessage = 'Invalid Flicker Type. Choose between \'negative\', \'custom\', and \'background\''
-             
+                 errorMessage.append('Invalid Flicker Type. Choose between \'negative\', \'custom\', and \'background\'')
+             if self.flashIntensity[0] == 0.5:
+                 tf = False
+                 errorMessage.append('shouldn\'t be 0.5')
             #check color parameters
              colorInputDictionary = {
                  'backgroundColor': self.backgroundColor,
