@@ -45,7 +45,7 @@ class ScotomaMovingGrating(protocol):
         self._angleOffset = 0.0 # reassigned by the experiment in most cases
 
 
-    def internalValidation(self, tf = True, errorMessage = []):
+    def internalValidation(self):
         '''
         Validates the properties. This is called when the user updates the protocol's properties. It is directly called by the validatePropertyValues() method in the protocol super class
     
@@ -55,6 +55,8 @@ class ScotomaMovingGrating(protocol):
             errorMessage - string, message to be displayed in validations are not passed
     
         '''
+        tf = True
+        errorMessage = []
         if self.scotomaStartFraction > 1 or self.scotomaStartFraction < 0 or self.scotomaEndFraction > 1 or self.scotomaEndFraction < 0:
             tf = False
             errorMessage.append('The scotoma start and end fractions must be a value between 0 and 1. If set to 1, all pixels will be blanked. If set to 0, no pixels will be blanked. If set to 0.5, half of the pixels will be blanked.')
@@ -74,7 +76,10 @@ class ScotomaMovingGrating(protocol):
         if self.scotomaSize < 0.5:
             print('\nNOTE: Scotoma Size is small. This may slow down the frame rate. If this occurs, increase scotoma size to improve the frame rate')
         
-        print(errorMessage)
+        
+        tf, colorErrorMessages = self.validateColorInput(tf)
+        errorMessage += colorErrorMessages
+         
         return tf, errorMessage
 
 
