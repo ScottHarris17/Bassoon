@@ -42,7 +42,7 @@ class protocol():
         tf = True
         errorMessage = []
         #checks color values
-        tf, colorErrorMessages = self.validateColorInput(tf)
+        tf, colorErrorMessages = self.validateColorInput()
         errorMessage += colorErrorMessages
         
         return tf, errorMessage

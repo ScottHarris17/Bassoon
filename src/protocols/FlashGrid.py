@@ -48,7 +48,7 @@ class FlashGrid(protocol):
              print('Validations were passed, but stimTime must be 0 and was forced back to this value (it is a dummy variable for this stimulus).')
              self.stimTime = 0.0
         
-         tf, colorErrorMessages = self.validateColorInput(tf)
+         tf, colorErrorMessages = self.validateColorInput()
          errorMessage += colorErrorMessages
          return tf, errorMessage
      

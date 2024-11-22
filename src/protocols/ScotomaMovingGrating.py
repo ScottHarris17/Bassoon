@@ -77,7 +77,7 @@ class ScotomaMovingGrating(protocol):
             print('\nNOTE: Scotoma Size is small. This may slow down the frame rate. If this occurs, increase scotoma size to improve the frame rate')
         
         
-        tf, colorErrorMessages = self.validateColorInput(tf)
+        tf, colorErrorMessages = self.validateColorInput()
         errorMessage += colorErrorMessages
          
         return tf, errorMessage

@@ -44,7 +44,7 @@ class Flicker(protocol):
                  tf = False
                  errorMessage.append('Invalid Flicker Type. Choose between \'negative\', \'custom\', and \'background\'')
             
-             tf, colorErrorMessages = self.validateColorInput(tf)
+             tf, colorErrorMessages = self.validateColorInput()
              errorMessage += colorErrorMessages
              
              return tf, errorMessage
