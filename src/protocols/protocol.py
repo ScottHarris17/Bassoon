@@ -35,32 +35,66 @@ class protocol():
         
 
     
-    def internalValidation(self, tf = True, errorMessage = []):
+    def internalValidation(self):
         '''
-        placeholder for internalValidation function, which usually exists in the subclass. If the subclass doesn't have an internal validation function, then this one is run instead, and it returns no errors at all.
+        placeholder for internalValidation function, which usually exists in the subclass. If the subclass doesn't have an internal validation function, then this generic one is run instead
         '''
+        tf = True
+        errorMessage = []
+        #checks color values
+        tf, colorErrorMessages = self.validateColorInput(tf)
+        errorMessage += colorErrorMessages
+        
         return tf, errorMessage
     
     
     
-    def validateColorInput(self, colorInputDictionary, tf = True, errorMessage = ''):
+    def validateColorInput(self):
         '''
-        Checks that the colorInput is a list with float values between -1 and 1. Anything outside of those values should return an error
+       validation function for any color attribute. Checks all of the object's existing noncallable attributes, determines if they are a color property (mainly by looking for the key word color) and then checking that the list attributes are between -1.0 and 1.0 (the rgb color bounds for psychopy)
         '''
-        for key, color in colorInputDictionary.items():
-            for rgb in color:
+        tf = True
+        colorErrorMessage = []
+        #get all of the object's existing attributes
+        attributes = dir(self)
+        
+        #loop through the attributes to check if they are color properties (criteria are that is has the substring 'color' in the name and it is a list of floats)
+        for attribute in attributes:
+            isColorAttribute = False
+            if 'color' in attribute.lower():
+                val = getattr(self, attribute)
+                if callable(val):
+                    continue #skip over methods
+                
+                if type(val) == list:
+                    allFloats = True
+                    for v in val:
+                        if type(v) != float:
+                            allFloats = False
+                    if allFloats:
+                        isColorAttribute = True
+           
+            if not isColorAttribute:
+                continue
+            
+            #check that the list is length 3
+            if len(val) != 3:
+                tf = False
+                colorErrorMessage.append(f'{attribute} should be a list of floats of length 3')
+             
+            #check that the rgb values are within range (between -1 and 1)
+            for rgb in val:
                 if rgb >= -1 and rgb <= 1:
                     pass
                 else:
+                    #if any of the rgb values are wrong, append the error message
                     tf = False
-                    errorMessage = f'{key} should have values between -1 and 1'
+                    colorErrorMessage.append(f'{attribute} should have values between -1 and 1')
+                    break
                     
-        return tf, errorMessage
+        return tf, colorErrorMessage
         
-        #loop through the color input dictionary
-        #check that for every value the list items are between -1 and 1
-        #if any list item is outside this range, create an error message that includes the key value and a description of the error
-        #return tf = False and errorMessage = 'some string including the key value that returned false'
+       
         
     
     def estimateTime(self):
