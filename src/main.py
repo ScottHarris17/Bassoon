@@ -787,18 +787,23 @@ class Bassoon:
         
     def removeMonitor(self):
         monitorToRemove = self.removeSelection.get()
+        
+        #check that the OS is windows for path names
         if os.name == 'nt' or monitorToRemove == 'Select':
             pass
         else:
-            i = 0
-            endPath = f"AppData\Roaming\psychopy3\monitors\{monitorToRemove}.json"
-            while str(Path(__file__).parents[i+1]) != r"c:\users":
-                Path(__file__).parents[i]
-                i += 1
-                baseDir = Path(__file__).parents[i]
-            monPath = str(baseDir / endPath)
-            os.remove(monPath)
-            print(f'{monitorToRemove} has been removed!')
+            try:
+                i = 0
+                endPath = f"AppData\Roaming\psychopy3\monitors\{monitorToRemove}.json"
+                while str(Path(__file__).parents[i+1]) != r"c:\users":
+                    Path(__file__).parents[i]
+                    i += 1
+                    baseDir = Path(__file__).parents[i]
+                monPath = str(baseDir / endPath)
+                os.remove(monPath)
+                print(f'{monitorToRemove} has been removed!')
+            except:
+                print('Could not automatically remove the monitor because the file could not be located on your operating system. If you know where the file is you can manually remove it, or you can use the psychopy monitor center to do so.')
             
     # Gamma calibration of monitor
     def calibrateGammaMenu(self):
@@ -1198,6 +1203,7 @@ class Bassoon:
         
          #check any validations that are needed for the current stimulus type
         tf, errorMessage = selectedProtocol.internalValidation()
+
         if not tf:
              print('\n***Update Failure. Could not update this stimulus because validations on property assignments were not passed. This came with the following error message(s):')
              for error in errorMessage:
