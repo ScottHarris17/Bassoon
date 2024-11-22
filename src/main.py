@@ -17,6 +17,7 @@ scott.harris@ucsf.edu
 Copyright 2021 under MIT open source license.
 """
 import os
+from pathlib import Path
 from tkinter import *
 import tkinter.ttk as ttk
 import tkinter.filedialog as tkfd
@@ -49,6 +50,7 @@ from protocols.DriftingNoise import DriftingNoise
 from protocols.FlashGrid import FlashGrid
 from protocols.ImageJitter import ImageJitter
 from protocols.ScotomaMovingGrating import ScotomaMovingGrating
+from protocols.Flicker import Flicker
 
 class Bassoon:
     def __init__(self, master):
@@ -534,15 +536,15 @@ class Bassoon:
         stimulusFrame.configure(font=("Helvetica", 12))
         stimulusFrame.pack()
 
-        monitorNames = monitors.getAllMonitors()
+        self.monitorNames = monitors.getAllMonitors()
 
         # stimulus monitor name
         stimMonitorLabel = Label(stimulusFrame, text='Monitor', padx=10)
         stimMonitorLabel.grid(row=2, column=1)
         self.stimMonitorSelection = StringVar(root)
-        self.stimMonitorSelection.set(self.experiment.stimMonitor)
+        self.stimMonitorSelection.set(self.monitorNames[0])
         stimulusMonitorDropdown = OptionMenu(
-            stimulusFrame, self.stimMonitorSelection, *monitorNames)
+            stimulusFrame, self.stimMonitorSelection, *self.monitorNames)
         stimulusMonitorDropdown.grid(row=2, column=2)
 
         # stimulus full screen
@@ -570,6 +572,10 @@ class Bassoon:
         stimCalibrationLabel.grid(row=3, column=1)
         self.stimCalibrationBtn = Button(stimulusFrame, text='\u03B3 is {g}'.format(g=round(self.experiment.gamma,5)), padx=7, command= lambda: self.calibrateGammaMenu())
         self.stimCalibrationBtn.grid(row=3, column=2)
+        
+        #Add/Remove monitor button
+        self.editMonitorsButton = Button(stimulusFrame, text='Add/Remove Monitor', padx=5, command= lambda: self.editMonitors())
+        self.editMonitorsButton.grid(row=3, column=4)
 
         # information monitor selection
         informationFrame = LabelFrame(
@@ -597,7 +603,7 @@ class Bassoon:
         self.informationMonitorSelection.set(
             self.experiment.informationMonitor)
         informationMonitorDropdown = OptionMenu(
-            informationFrame, self.informationMonitorSelection, *monitorNames)
+            informationFrame, self.informationMonitorSelection, *self.monitorNames)
         informationMonitorDropdown.grid(row=2, column=2)
 
         # information full screen
@@ -729,7 +735,80 @@ class Bassoon:
                              command=lambda: monitorEditWindow.destroy())
         closeButton.grid(row=0, column=2)
 
-
+    def editMonitors(self):
+        ''' A function to add or remove monitors from the psychopy monitor center programmatically'''
+        editMonitorWindow = Toplevel(root)
+        editMonitorWindow.title('Edit Monitors')
+        editMonitorWindow.geometry('400x400')
+        
+        editMonitorFrame = Frame(editMonitorWindow, padx=10)
+        editMonitorFrame.pack(fill='both', expand=True)
+        
+        #add monitor
+        addMonitorLabelFrame = LabelFrame(editMonitorFrame, text='Add Monitor', pady=5)
+        addMonitorLabelFrame.configure(font=('Helvetica', 14))
+        addMonitorLabelFrame.pack(fill='both')
+        
+        addMonitorLabel = Label(addMonitorLabelFrame, text='Monitor name', padx=5)
+        addMonitorLabel.grid(row=0,column=0)
+        self.monitorName = StringVar(root)
+        addMonitorEntry = Entry(addMonitorLabelFrame, textvariable= self.monitorName)
+        addMonitorEntry.grid(row=0, column=1)
+        
+        monitorDistanceLabel = Label(addMonitorLabelFrame, text='Distance', padx=5)
+        monitorDistanceLabel.grid(row=1,column=0)
+        self.monitorDistance = DoubleVar(root)
+        monitorDistanceEntry = Entry(addMonitorLabelFrame, textvariable= self.monitorDistance)
+        monitorDistanceEntry.grid(row=1, column=1)
+        
+        #remove monitor
+        removeMonitorLabelFrame = LabelFrame(editMonitorFrame, text='Remove Monitor', pady=5)
+        removeMonitorLabelFrame.configure(font=('Helvetica', 14))
+        removeMonitorLabelFrame.pack(fill='both')
+        
+        removeMonitorLabel = Label(removeMonitorLabelFrame, text='Monitor name', padx=5)
+        removeMonitorLabel.grid(row=0, column=0)
+        self.removeSelection = StringVar(root)
+        self.removeSelection.set('Select')
+        removeDropdown = OptionMenu(removeMonitorLabelFrame, self.removeSelection, *self.monitorNames)
+        removeDropdown.grid(row=0, column=1)
+        
+        #save button
+        saveFrame = Frame(editMonitorFrame)
+        saveFrame.pack()
+        saveMonitorBtn = Button(saveFrame, text='Save', command= lambda: [self.saveMonitor(), self.removeMonitor()])
+        saveMonitorBtn.grid(row=0, column=0)
+    
+    def saveMonitor(self):
+        name = self.monitorName.get()
+        distance = self.monitorDistance.get()
+        if name == '':
+            pass
+        else:
+            monitor = monitors.Monitor(name, distance=distance)
+            monitor.save()
+            print(f'{name} saved! Close and reopen the options menu to see the updated list of monitors and to select the correct one for the experiment.')
+        
+    def removeMonitor(self):
+        monitorToRemove = self.removeSelection.get()
+        
+        #check that the OS is windows for path names
+        if os.name == 'nt' or monitorToRemove == 'Select':
+            pass
+        else:
+            try:
+                i = 0
+                endPath = f"AppData\Roaming\psychopy3\monitors\{monitorToRemove}.json"
+                while str(Path(__file__).parents[i+1]) != r"c:\users":
+                    Path(__file__).parents[i]
+                    i += 1
+                    baseDir = Path(__file__).parents[i]
+                monPath = str(baseDir / endPath)
+                os.remove(monPath)
+                print(f'{monitorToRemove} has been removed!')
+            except:
+                print('Could not automatically remove the monitor because the file could not be located on your operating system. If you know where the file is you can manually remove it, or you can use the psychopy monitor center to do so.')
+            
     # Gamma calibration of monitor
     def calibrateGammaMenu(self):
         '''Calibrate gamma value of stimulus monitor'''
@@ -1124,13 +1203,15 @@ class Bassoon:
                 setattr(selectedProtocol, propName, convertedValue)
             except:
                 print('***Update Failure for property with name ' + updateNames[i]
-                      + ' Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
+                      + '. Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
         
          #check any validations that are needed for the current stimulus type
-        tf, errorMessage = selectedProtocol.validatePropertyValues()
+        tf, errorMessage = selectedProtocol.internalValidation()
+
         if not tf:
-             print('\n***Update Failure. Could not update this stimulus because validations on property assignments were not passed. This came with the following error message:')
-             print('VALIDATION ERROR: ' + errorMessage)
+             print('\n***Update Failure. Could not update this stimulus because validations on property assignments were not passed. This came with the following error message(s):')
+             for error in errorMessage:
+                 print('VALIDATION ERROR: ' + error)
              
              #place the old protocol back into the experiment sketch
              self.experimentSketch[selectedIndex] = (

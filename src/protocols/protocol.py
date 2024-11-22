@@ -34,23 +34,69 @@ class protocol():
         self._timingReport = False #bool, inhereted from experiment parameters. Indicates whether the user wants to print a timing report for each stimulus (usually to determine if frames are being dropped)
         
 
-    def validatePropertyValues(self, tf = True, errorMessage = ''):
+    
+    def internalValidation(self):
         '''
-        Validates the property values for select protocols. It does this by looking for an internal validation function within the protocol subclass called "internalValidation()". If this function does not exist, the validations are automatically passed.
-
-        Returns:
-            tf - bool value, true if validations are passed, false if they are not
-            errorMessage - string, message to be displayed in validations are not passed
+        placeholder for internalValidation function, which usually exists in the subclass. If the subclass doesn't have an internal validation function, then this generic one is run instead
         '''
-        internalValidation = getattr(self, "internalValidation", None)
-        if not callable(internalValidation):
-            return tf, errorMessage
-        
-        tf, errorMessage = self.internalValidation()
+        tf = True
+        errorMessage = []
+        #checks color values
+        tf, colorErrorMessages = self.validateColorInput(tf)
+        errorMessage += colorErrorMessages
         
         return tf, errorMessage
-
-
+    
+    
+    
+    def validateColorInput(self):
+        '''
+       validation function for any color attribute. Checks all of the object's existing noncallable attributes, determines if they are a color property (mainly by looking for the key word color) and then checking that the list attributes are between -1.0 and 1.0 (the rgb color bounds for psychopy)
+        '''
+        tf = True
+        colorErrorMessage = []
+        #get all of the object's existing attributes
+        attributes = dir(self)
+        
+        #loop through the attributes to check if they are color properties (criteria are that is has the substring 'color' in the name and it is a list of floats)
+        for attribute in attributes:
+            isColorAttribute = False
+            if 'color' in attribute.lower():
+                val = getattr(self, attribute)
+                if callable(val):
+                    continue #skip over methods
+                
+                if type(val) == list:
+                    allFloats = True
+                    for v in val:
+                        if type(v) != float:
+                            allFloats = False
+                    if allFloats:
+                        isColorAttribute = True
+           
+            if not isColorAttribute:
+                continue
+            
+            #check that the list is length 3
+            if len(val) != 3:
+                tf = False
+                colorErrorMessage.append(f'{attribute} should be a list of floats of length 3')
+             
+            #check that the rgb values are within range (between -1 and 1)
+            for rgb in val:
+                if rgb >= -1 and rgb <= 1:
+                    pass
+                else:
+                    #if any of the rgb values are wrong, append the error message
+                    tf = False
+                    colorErrorMessage.append(f'{attribute} should have values between -1 and 1')
+                    break
+                    
+        return tf, colorErrorMessage
+        
+       
+        
+    
     def estimateTime(self):
         '''
         estimateTime place holder. Should be overriden in subclass
