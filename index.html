@@ -17,13 +17,6 @@
             text-align: justify;
         }
 
-        @media (max-width: 769px) {
-            body {
-                margin-left: 5%;
-                margin-right: 5%;
-            }
-        }
-
 
         .button-container {
             display: flex;
@@ -96,6 +89,28 @@
             list-style: outside none none !important;
         }
 
+        .largeCodeBox{
+            background-color:rgb(243, 231, 215); 
+            margin-left:20%; 
+            margin-right:20%"
+        }
+
+        @media (max-width: 769px) {
+            body {
+                margin-left: 5%;
+                margin-right: 5%;
+            }
+
+            .largeCodeBox{
+                margin-left:0;
+                margin-right:0;
+            }
+
+            #bassoonPlayerImg{
+                max-width: 100%;
+            }
+        }
+
     </style>
 
     <script>
@@ -136,7 +151,7 @@
 
 <body>
     <h1 style="text-align: center; color:rgb(4, 132, 0)">Bassoon</h1>
-    <img src="help/images/bassoonPlayer.png">
+    <img id="bassoonPlayerImg" src="help/images/bassoonPlayer.png" alt="Bassoon Logo">
     <p style="text-align:center"><b><em>Develop, organize, and deploy vision science experiments.</b></em></p>
     <p>Bassoon is no-code visual graphics software to easily create, manage, and execute custom visual stimuli for vision science experiments. Bassoon is python based, and is built on the popular <a href='https://www.psychopy.org' target="_blank">Psychopy</a> API.
     </p>
@@ -346,7 +361,7 @@
     </p>
 
     <p id = "programmaticAnchor">Experiments and protocols are created and manipulated through the Bassoon GUI. This is to make it as easy as possible to create, customize, and execute experiments. However, you can also access them programmatically, outside of the GUI: <br>
-        <pre style="background-color:rgb(243, 231, 215); margin-left:20%; margin-right:20%"><span class = "codeHighlight">from</span> psychopy <span class="codeHighlight">import</span> core, visual, data, event, monitors<br/><span class="codeHighlight">from</span> experiments.experiment <span class="codeHighlight">import</span> experiment<br/><span class="codeHighlight">from</span> protocols.protocol <span class="codeHighlight">import</span> protocol<br/><br/><span class="codeComment"># You must import each protocol that you want to use. Here I import just the flash stimulus as an example.</span><br/><span class = "codeHighlight">from</span> protocols.Flash <span class="codeHighlight">import</span> Flash<br/><br/><span class="codeComment"># Load an experiment</span><br>exp = experiment()<br/><br/><span class="codeComment"># Load the flash stimulus</span><br/>stim = Flash()<br/><br/><span class="codeComment"># Edit an attribute of the flash</span><br/>stim.stimTime=5 <span class="codeComment">#in seconds</span><br/><br/><span class="codeComment"># Add the stimulus to the experiment (put it in the "bag")</span><br/>exp.addProtocol(stim)<br/><br/><span class="codeComment"># Change an attribute of the experiment</span><br/>exp.useInformationMonitor=True<br/><br/><span class="codeComment"># Run the experiment</span><br/>exp.activate()
+        <pre class="largeCodeBox"><span class = "codeHighlight">from</span> psychopy <span class="codeHighlight">import</span> core, visual, data, event, monitors<br/><span class="codeHighlight">from</span> experiments.experiment <span class="codeHighlight">import</span> experiment<br/><span class="codeHighlight">from</span> protocols.protocol <span class="codeHighlight">import</span> protocol<br/><br/><span class="codeComment"># You must import each protocol that you want to use. Here I import just the flash stimulus as an example.</span><br/><span class = "codeHighlight">from</span> protocols.Flash <span class="codeHighlight">import</span> Flash<br/><br/><span class="codeComment"># Load an experiment</span><br>exp = experiment()<br/><br/><span class="codeComment"># Load the flash stimulus</span><br/>stim = Flash()<br/><br/><span class="codeComment"># Edit an attribute of the flash</span><br/>stim.stimTime=5 <span class="codeComment">#in seconds</span><br/><br/><span class="codeComment"># Add the stimulus to the experiment (put it in the "bag")</span><br/>exp.addProtocol(stim)<br/><br/><span class="codeComment"># Change an attribute of the experiment</span><br/>exp.useInformationMonitor=True<br/><br/><span class="codeComment"># Run the experiment</span><br/>exp.activate()
         </pre>
     </p>
 
