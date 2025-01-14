@@ -84,9 +84,11 @@ class SumOfSinesOscillation(protocol):
         '''
         Determine the phase shift to move the grating on each frame
         '''
-        self._oscillationFrequency = 1/self.oscillationPeriod
+        framesPerCycle = math.round(math.max(self.oscillationPeriod) * self._FR) #total length of one cycle
+        def velocityOnFrameN(frameNum, A , framesPerCycle, phaseShift):
+            return A*math.sin(2*frameNum*math.pi/framesPerCycle + math.radians(phaseShift))
         
-        framesPerCycle = int(self._FR * (1/self._oscillationFrequency))
+       
         
         totalDistance_pix = self.oscillationAmplitude * pixPerDeg #total pixels that the grating moves by for one half cycle
         
@@ -99,8 +101,7 @@ class SumOfSinesOscillation(protocol):
             self.oscillationPhaseShift = abs(math.degrees(math.asin(math.sin(math.radians(self.oscillationPhaseShift)))))
             print('oscillationPhaseShift parameter not within bounds, correcting to ', self.oscillationPhaseShift, 'degrees')
             
-        def velocityOnFrameN(frameNum, A = A, framesPerCycle = framesPerCycle, phaseShift = self.oscillationPhaseShift):
-            return A*math.sin(2*frameNum*math.pi/framesPerCycle + math.radians(phaseShift)) + A * SINE OF SOMETHING ELSE + A * SINE OF SOMETHING ELSE + A * SINE OF SOMETHING ELSE
+        
         
         velocity_pixPerFrame = [velocityOnFrameN(f) for f in range(framesPerCycle)]
         return velocity_pixPerFrame 
