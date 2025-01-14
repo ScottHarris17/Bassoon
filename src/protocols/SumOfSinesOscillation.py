@@ -87,7 +87,9 @@ class SumOfSinesOscillation(protocol):
         
         def velocityOnFrameN(frameNum, A , period, phaseShift):
             return A*math.sin(2*frameNum*math.pi/period + math.radians(phaseShift))
-        framesPerCycle = math.round(math.max(self.oscillationPeriods) * self._FR) #total length of one cycle
+       
+        
+        framesPerCycle = round(max(self.oscillationPeriods) * self._FR) #total length of one cycle
         totalDistance_pix = self.oscillationAmplitude * pixPerDeg #total pixels that the grating moves by for one half cycle
         #frame number vs velocity is described by a sin wave. Integral of Asin(2pi*frameNum/framesPerCycle) evaluated from 0 to framesPerCycle/2 should equal totalDistance_pix
         #A = pi*totalDistance_pix/(framesPerCycle)
@@ -95,20 +97,23 @@ class SumOfSinesOscillation(protocol):
         velocities_pixPerFrame = []
         for index, phaseShift in enumerate(self.oscillationPhaseShift):
             
-            period = math.round(self.oscillationPeriods[index] * self._FR) #total length of one cycle
+            period = round(self.oscillationPeriods[index] * self._FR) #total length of one cycle
             #normalize the velocity phase shift to be between 0 and 90 degrees if need be
             if phaseShift > 90 or phaseShift < 0:
                 phaseShift = abs(math.degrees(math.asin(math.sin(math.radians(phaseShift)))))
                 print('oscillationPhaseShift parameter not within bounds, correcting to ', phaseShift, 'degrees')
-                
-            
             
             velocity_pixPerFrame = [velocityOnFrameN(f, A, period, phaseShift) for f in range(framesPerCycle)]
             velocities_pixPerFrame.append(velocity_pixPerFrame)
+        
         finalVelocity = np.zeros((1,framesPerCycle))
+        
+        
         for item in velocities_pixPerFrame:
             finalVelocity += np.array(item)
-        return finalVelocity
+        
+        print(finalVelocity.shape)
+        return list(finalVelocity)
         
     
       
