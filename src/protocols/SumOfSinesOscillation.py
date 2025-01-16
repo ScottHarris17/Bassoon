@@ -45,7 +45,7 @@ class SumOfSinesOscillation(protocol):
         self._angleOffset = 0.0 #reassigned by experiment in most cases
         
     
-   
+
     def estimateTime(self):
         '''
         Estimate the total amount of time that this protocol will take to run
@@ -107,13 +107,12 @@ class SumOfSinesOscillation(protocol):
             velocities_pixPerFrame.append(velocity_pixPerFrame)
         
         finalVelocity = np.zeros((1,framesPerCycle))
-        
-        
         for item in velocities_pixPerFrame:
             finalVelocity += np.array(item)
         
+        
         print(finalVelocity.shape)
-        return list(finalVelocity)
+        return list(finalVelocity) 
         
     
       
