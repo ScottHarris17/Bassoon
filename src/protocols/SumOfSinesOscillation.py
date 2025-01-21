@@ -105,13 +105,15 @@ class SumOfSinesOscillation(protocol):
             
             velocity_pixPerFrame = [velocityOnFrameN(f, A, period, phaseShift) for f in range(framesPerCycle)]
             velocities_pixPerFrame.append(velocity_pixPerFrame)
-        
+            
+
         finalVelocity = np.zeros((1,framesPerCycle))
         for item in velocities_pixPerFrame:
             finalVelocity += np.array(item)
+
+        finalVelocity = [sum(velocity) for velocity in zip(*velocities_pixPerFrame)]
         
-        
-        print(finalVelocity.shape)
+
         return list(finalVelocity) 
         
     
