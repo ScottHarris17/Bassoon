@@ -47,8 +47,6 @@ class protocol():
         
         return tf, errorMessage
     
-    
-    
     def validateColorInput(self):
         '''
        validation function for any color attribute. Checks all of the object's existing noncallable attributes, determines if they are a color property (mainly by looking for the key word color) and then checking that the list attributes are between -1.0 and 1.0 (the rgb color bounds for psychopy)
