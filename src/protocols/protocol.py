@@ -9,7 +9,7 @@ import time
 import random, math
 import inspect
 import ast
-from functools import lru_cache, reduce
+from functools import lru_cache
 
 
 class protocol():
@@ -45,43 +45,8 @@ class protocol():
         tf, colorErrorMessages = self.validateColorInput()
         errorMessage += colorErrorMessages
         
-        tf, sinesErrorMessages = self.validateSumOfSines()
-        errorMessage += sinesErrorMessages
         return tf, errorMessage
     
-    def validateSumOfSines(self):
-        multiples = False
-        tf = True
-        sinesErrorMessages = []
-        attributes = dir(self)
-        for attribute in attributes:
-            if 'period' in attribute.lower():
-                period = getattr(self, attribute)
-                periodAttrName = attribute
-            elif 'phaseshift' in attribute.lower():
-                phaseShift = getattr(self, attribute)
-                phaseShiftAttrName = attribute
-        #check that the period and phase shift have the same number of items in their respective lists
-        if len(period) != len(phaseShift):
-            tf = False
-            sinesErrorMessages.append(f"{periodAttrName} and {phaseShiftAttrName} should be the same length")
-        
-        #checks that all sine functions will end at the same time during a cycle
-        for item in period:
-            if max(period) % item != 0: #if a period in the list oscillatingPeriods is not a factor of the largest period in that list
-                tf = False
-                sinesErrorMessages.append(f"{item} is not a factor of {max(period)}. All periods must be a factor of the largest value in {periodAttrName}")
-        #check that periods are not multiples of each other except for the largest period value
-        sortedPeriod = sorted(period)
-        for i in range(len(sortedPeriod[:-1])):
-            for index in range(len(sortedPeriod[:-1])):
-                if period[index] % period[i] == 0 and index != i:
-                    multiples = True
-                    tf = False
-                    sinesErrorMessages.append(f"{period[i]} and {period[index]} are multiples of each other. Periods less than the largest value in {periodAttrName} cannot be multiples of each other. ")
-        
-        return tf, sinesErrorMessages
-        
     def validateColorInput(self):
         '''
        validation function for any color attribute. Checks all of the object's existing noncallable attributes, determines if they are a color property (mainly by looking for the key word color) and then checking that the list attributes are between -1.0 and 1.0 (the rgb color bounds for psychopy)

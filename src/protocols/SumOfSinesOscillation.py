@@ -45,7 +45,50 @@ class SumOfSinesOscillation(protocol):
         self._angleOffset = 0.0 #reassigned by experiment in most cases
         
     
+    def internalValidation(self):
+        '''
+        Validates the properties. This is called when the user updates the protocol's properties. It is directly called by the validatePropertyValues() method in the protocol super class
+    
+        -------
+        Returns:
+            tf - bool value, true if validations are passed, false if they are not
+            errorMessage - string, message to be displayed in validations are not passed
+        '''
 
+        tf = True
+        errorMessage = []
+        
+        #checks color values
+        tf, colorErrorMessages = self.validateColorInput()
+        errorMessage += colorErrorMessages
+
+        #check that the period and phase shift have the same number of items in their respective lists
+        if len(self.oscillationPeriods) != len(self.oscillationPhaseShift):
+            tf = False
+            errorMessage.append("oscillationPeriods and oscillationPhaseShift should be the same length")
+        
+        #checks that all sine functions will end at the same time during a cycle
+        for item in self.oscillationPeriods:
+            if max(self.oscillationPeriods) % item != 0: #if a period in the list oscillatingPeriods is not a factor of the largest period in that list
+                tf = False
+                errorMessage.append(f"{item} is not a factor of {max(self.oscillationPeriods)}. All periods must be a factor of the largest value in oscillationPeriods")
+        
+        #check that periods are not multiples of each other except for the largest period value
+        sortedPeriod = sorted(self.oscillationPeriods)
+        for i in range(len(sortedPeriod[:-1])):
+            for index in range(len(sortedPeriod[:-1])):
+                if self.oscillationPeriods[index] % self.oscillationPeriods[i] == 0 and index != i:
+                    tf = False
+                    errorMessage.append(f"{self.oscillationPeriods[i]} and {self.oscillationPeriods[index]} are multiples of each other. Periods less than the largest value in oscillationPeriods cannot be multiples of each other. ")
+        
+        #check that the stim time ends at the same time that the period ends
+        if self.stimTime < float(max(self.oscillationPeriods)):
+            errorMessage.append("stimTime shouldn't be less than the overall period (largest period in oscillationPeriods).")
+        if self.stimTime % float(max(self.oscillationPeriods)) != 0:
+            errorMessage.append("The overall period (largest period in oscillationPeriods) doesn't go evenly into the stimTime")
+        
+        return tf, errorMessage
+    
     def estimateTime(self):
         '''
         Estimate the total amount of time that this protocol will take to run
@@ -106,11 +149,7 @@ class SumOfSinesOscillation(protocol):
             velocity_pixPerFrame = [velocityOnFrameN(f, A, period, phaseShift) for f in range(framesPerCycle)]
             velocities_pixPerFrame.append(velocity_pixPerFrame)
             
-
-
         finalVelocity = [sum(velocity) for velocity in zip(*velocities_pixPerFrame)]
-        
-
         return list(finalVelocity) 
         
     
