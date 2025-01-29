@@ -33,9 +33,9 @@ class SumOfSinesOscillation(protocol):
         self.spatialFrequency = 0.15 #cycles per degree - the spatial frequency of the grating.
         self.gratingOrientations = [90.0, 270.0]  #degrees - a list of directions that the grating will move in. Because the oscillating grating moves in two directions per epoch, these numbers define the starting direction.
         self.gratingTexture = 'sin' #The pattern of the grating. This can be 'sin', 'sqr', 'saw', 'tri', etc. Look at Psychopy gratingstim object for more information: https://www.psychopy.org/api/visual/gratingstim.html#psychopy.visual.GratingStim.tex 
-        self.oscillationPeriods = [15/2, 15/5, 15/13, 15] #seconds - CHANGE
+        self.oscillationPeriods = [15, 15/2, 15/5, 15/13] #seconds
         self.oscillationAmplitude = 20.0 #visual degrees - distance that the grating moves over the course of one half oscillation
-        self.oscillationPhaseShift = [random.randint(0, 180) for x in range(len(self.oscillationPeriods))] #degrees - CHANGE between 0 and 180 - 180 will start the oscillation in the middle of it's cycle (cosine function). 0 will start it all the way on one side (sine function)
+        self.oscillationPhaseShift = [random.randint(0, 180) for x in range(len(self.oscillationPeriods))] #degrees - between 0 and 180 - 180 will start the oscillation in the middle of it's cycle (cosine function). 0 will start it all the way on one side (sine function)
         self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors. For this stimulus, the background is typically only seen between epochs.
         self.stimulusReps = 3 #number of repetitions of the stimulus. Each epoch consists of the grating oscillating in one orientation, so the total number of epochs is the number of grating orientations times the number of stimulus reps
         self.preTime = 1.0 # seconds - time before the grating starts moving. During this time a static grating appears on the screen
