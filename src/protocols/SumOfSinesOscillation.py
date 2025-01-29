@@ -34,9 +34,9 @@ class SumOfSinesOscillation(protocol):
         self.spatialFrequency = 0.15 #cycles per degree - the spatial frequency of the grating.
         self.gratingOrientations = [90.0, 270.0]  #degrees - a list of directions that the grating will move in. Because the oscillating grating moves in two directions per epoch, these numbers define the starting direction.
         self.gratingTexture = 'sin' #The pattern of the grating. This can be 'sin', 'sqr', 'saw', 'tri', etc. Look at Psychopy gratingstim object for more information: https://www.psychopy.org/api/visual/gratingstim.html#psychopy.visual.GratingStim.tex 
-        self.oscillationPeriods = [2, 5, 10] #seconds - CHANGE
+        self.oscillationPeriods = [15, 15/2, 15/5, 15/13] #seconds
         self.oscillationAmplitude = 20.0 #visual degrees - distance that the grating moves over the course of one half oscillation
-        self.oscillationPhaseShift = [0, 90, 180] #degrees - CHANGE between 0 and 90 - 90 will start the oscillation in the middle of it's cycle (cosine function). 0 will start it all the way on one side (sine function)
+        self.oscillationPhaseShift = [random.randint(0, 180) for x in range(len(self.oscillationPeriods))] #degrees - between 0 and 180 - 180 will start the oscillation in the middle of it's cycle (cosine function). 0 will start it all the way on one side (sine function)
         self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors. For this stimulus, the background is typically only seen between epochs.
         self.stimulusReps = 3 #number of repetitions of the stimulus. Each epoch consists of the grating oscillating in one orientation, so the total number of epochs is the number of grating orientations times the number of stimulus reps
         self.preTime = 1.0 # seconds - time before the grating starts moving. During this time a static grating appears on the screen
@@ -76,13 +76,13 @@ class SumOfSinesOscillation(protocol):
             tf = False
             errorMessage.append("oscillationPeriods and oscillationPhaseShift should be the same length")
         
-        #checks that all sine functions will end at the same time during a cycle
-        for item in self.oscillationPeriods:
-            if max(self.oscillationPeriods) % item != 0: #if a period in the list oscillatingPeriods is not a factor of the largest period in that list
-                factor = False
-                tf = False
-                errorMessage.append(f"{item} is not a factor of {max(self.oscillationPeriods)}. All periods must be a factor of the largest value in oscillationPeriods")
-        
+        ####TEMPORARILY COMMENTED OUT TO ALLOW FOR EXPERIMENTS. NEED TO ADD A TOLERANCE HERE FOR IRRATIONAL NUMBERS
+        # #checks that all sine functions will end at the same time during a cycle
+        # for item in self.oscillationPeriods:
+        #     if max(self.oscillationPeriods) % item != 0: #if a period in the list oscillatingPeriods is not a factor of the largest period in that list
+        #         tf = False
+        #         errorMessage.append(f"{item} is not a factor of {max(self.oscillationPeriods)}. All periods must be a factor of the largest value in oscillationPeriods")
+
         #check that periods are not multiples of each other except for the largest period value
         sortedPeriod = sorted(self.oscillationPeriods)
         for i in range(len(sortedPeriod[:-1])):
@@ -163,8 +163,8 @@ class SumOfSinesOscillation(protocol):
         for index, phaseShift in enumerate(self.oscillationPhaseShift):
             
             period = round(self.oscillationPeriods[index] * self._FR) #total length of one cycle
-            #normalize the velocity phase shift to be between 0 and 90 degrees if need be
-            if phaseShift > 90 or phaseShift < 0:
+            #normalize the velocity phase shift to be between 0 and 180 degrees if need be
+            if phaseShift > 180 or phaseShift < 0:
                 phaseShift = abs(math.degrees(math.asin(math.sin(math.radians(phaseShift)))))
                 print('oscillationPhaseShift parameter not within bounds, correcting to ', phaseShift, 'degrees')
             
