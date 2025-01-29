@@ -22,6 +22,7 @@ from psychopy import core, visual, data, event, monitors
 import math, random
 import serial
 import numpy as np
+from functools import reduce
 
 class SumOfSinesOscillation(protocol):
     def __init__(self):
@@ -48,15 +49,23 @@ class SumOfSinesOscillation(protocol):
     def internalValidation(self):
         '''
         Validates the properties. This is called when the user updates the protocol's properties. It is directly called by the validatePropertyValues() method in the protocol super class
-    
+        
+        The following criteria must be met for validations to be passed:
+            1. oscillationPeriods and oscillationPhaseShift must be of the same length
+            2. All periods in oscillationPeriods must go into the greatest period evenly
+            3. All lesser periods cannot be multiples of each other
+            4. the greatest period in oscillationPeriods must go into the stimTime evenly & be less than or equal to the stimTime
         -------
         Returns:
             tf - bool value, true if validations are passed, false if they are not
             errorMessage - string, message to be displayed in validations are not passed
         '''
-
         tf = True
         errorMessage = []
+        
+        suggestedPeriods = []
+        multiple = False 
+        factor = True
         
         #checks color values
         tf, colorErrorMessages = self.validateColorInput()
@@ -73,20 +82,32 @@ class SumOfSinesOscillation(protocol):
         #     if max(self.oscillationPeriods) % item != 0: #if a period in the list oscillatingPeriods is not a factor of the largest period in that list
         #         tf = False
         #         errorMessage.append(f"{item} is not a factor of {max(self.oscillationPeriods)}. All periods must be a factor of the largest value in oscillationPeriods")
-        
+
         #check that periods are not multiples of each other except for the largest period value
         sortedPeriod = sorted(self.oscillationPeriods)
         for i in range(len(sortedPeriod[:-1])):
             for index in range(len(sortedPeriod[:-1])):
                 if self.oscillationPeriods[index] % self.oscillationPeriods[i] == 0 and index != i:
+                    multiple = True
                     tf = False
                     errorMessage.append(f"{self.oscillationPeriods[i]} and {self.oscillationPeriods[index]} are multiples of each other. Periods less than the largest value in oscillationPeriods cannot be multiples of each other. ")
         
         #check that the stim time ends at the same time that the period ends
         if self.stimTime < float(max(self.oscillationPeriods)):
+            tf = False
             errorMessage.append("stimTime shouldn't be less than the overall period (largest period in oscillationPeriods).")
         if self.stimTime % float(max(self.oscillationPeriods)) != 0:
+            tf = False
             errorMessage.append("The overall period (largest period in oscillationPeriods) doesn't go evenly into the stimTime")
+        
+        #suggest an alternate list of periods if the periods provided don't meet the criteria
+        if not multiple and not factor:
+                for item in sortedPeriod[:-1]:
+                    suggestedPeriods.append(item)
+                suggestedPeriods.append(reduce(math.lcm, sortedPeriod[:-1]))
+        
+        if suggestedPeriods:
+            print(f"\n***Here is a possible list of periods: {suggestedPeriods}. Remember to change stimTime so the largest period is a factor of stimTime (e.g. stimTime = {float(max(suggestedPeriods)*2)}).")
         
         return tf, errorMessage
     
