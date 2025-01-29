@@ -1206,7 +1206,7 @@ class Bassoon:
                 print('***Update Failure for property with name ' + updateNames[i]
                       + '. Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
         
-         #check any validations that are needed for the current stimulus type
+        #check any validations that are needed for the current stimulus type
         tf, errorMessage = selectedProtocol.internalValidation()
 
         if not tf:
