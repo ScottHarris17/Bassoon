@@ -151,7 +151,7 @@
 <body>
     <h1 style="text-align: center; color:rgb(4, 132, 0)">Bassoon</h1>
     <img id="bassoonPlayerImg" src="help/images/bassoonPlayer.png" alt="Bassoon Logo">
-    <p style="text-align:center"><b><em>Develop, organize, and deploy vision science experiments.</b></em></p>
+    <p style="text-align:center"><b><em>Develop, organize, and deploy vision science experiments.</em></b></p>
     <p>Bassoon is no-code visual graphics software to easily create, manage, and execute custom visual stimuli for vision science experiments. Bassoon is python based, and is built on the popular <a href='https://www.psychopy.org' target="_blank">Psychopy</a> API.
     </p>
 
@@ -237,6 +237,8 @@
                     <li><code>pip install tk==8</code></li>
                     <li><code>pip install pyserial==3.5</code></li>
                 </ul>
+            </li>
+            <li><em>Python Version:</em> <code>pip install psychopy</code> may not work with python version 3.12+. If you get an error message that includes something similar to <code>AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'?</code> when trying to install psychopy, try checking the python version. Type <code>conda python --version</code> into the terminal (make sure the Bassoon environment is activated). If you see 3.12, try downgrading python by typing <code>conda install python=3.11</code>. Then try reinstalling psychopy using <code>pip install psychopy</code>.</li>
             <li><em>Dukpy Error:</em> Some users have encountered a problem installing the Dukpy package when running <em>pip install psychopy</em>. Typically the error reads something like <code style="background-color: #000000; color:#fcfcfc"><span style="color: #b92b64;">ERROR: </span>Visual C++ 14.0 is required. Get it with "Microsoft Visual C++ Build Tools"</code>. The solution is to download and install <a href="https://visualstudio.microsoft.com/" target="_blank">Visual Studio</a> from Microsoft, making sure to select the C++ packages during the installation process. Sometimes a link to dowload the software is also reported with the error message, which works equally well. Once you've installed Visual Studio, try rerunning <code>pip install psychopy</code>.</li>
             <li><em>macOS Fatal Python Error:</em> Bassoon can be successfully installed on Apple Mac following the same steps described above. However, when trying to launch the GUI by running the main.py file, several users have encountered a fatal python error. This seems to be an inherent problem with how Macs use Tkinter, and a quick google search reveals it's a common problem across many applications. There is no known solution to this issue yet; thus, it may not be possible to run the Bassoon GUI on Mac. However, experiments <a href = "#programmaticAnchor">can still be created programmatically,</a> and all of Bassoon's core functionality still works.</li>
         </ul></p>
