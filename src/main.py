@@ -1157,7 +1157,7 @@ class Bassoon:
 
     def applyPropertyChanges(self, selectedIndex, selectedProtocol, updateDict):
         '''
-        Updates the selected protocol with new properties that are sotred in
+        Updates the selected protocol with new properties that are sorted in
         update dict
 
         inputs:
@@ -1171,7 +1171,7 @@ class Bassoon:
         updateNames = updateDict['propNamesEditable']
         userEntries = updateDict['entries']
         updateTypes = updateDict['propTypes']
-
+        fraction = False
         # Reassign each property that the user may have changed
         for i, val in enumerate(userEntries):
             try:
@@ -1191,21 +1191,32 @@ class Bassoon:
                 elif type(convertToType) == tuple:
                     # first and last are '[' and ']'
                     splitList = entryString[1:-1].split(',')
+                    #divide fractions if the user inputed fractions in a list
+                    for index, value in enumerate(splitList):
+                        if '/' in value:
+                            splitFract = value.split('/')
+                            splitList[index] = float(splitFract[0]) / float(splitFract[1])
+                            fraction = True
                     # second index in the tuple tells you what it's a list of (e.g. list of strings)
                     if convertToType[1] == str:
                         convertedValue = [el.strip()
                                           for el in splitList if el != '']
                     elif convertToType[1] == int:
-                        convertedValue = [int(el.strip())for el in splitList]
+                        convertedValue = [int(el.strip())
+                                          for el in splitList]
                     elif convertToType[1] == float:
-                        convertedValue = [float(el.strip())
+                        if not fraction: #if there are no fractions in entryString
+                            convertedValue = [float(el.strip())
+                                          for el in splitList]
+                        else: #if fractions in entryString
+                            convertedValue = [float(el)
                                           for el in splitList]
 
                 setattr(selectedProtocol, propName, convertedValue)
             except:
                 print('***Update Failure for property with name ' + updateNames[i]
                       + '. Multiple problems may cause this error. Recommend checking input syntax and type for property update value')
-        
+
         #check any validations that are needed for the current stimulus type
         tf, errorMessage = selectedProtocol.internalValidation()
 

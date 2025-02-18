@@ -23,6 +23,7 @@ import math, random
 import serial
 import numpy as np
 from functools import reduce
+from fractions import Fraction
 
 class SumOfSinesOscillation(protocol):
     def __init__(self):
@@ -34,7 +35,7 @@ class SumOfSinesOscillation(protocol):
         self.spatialFrequency = 0.15 #cycles per degree - the spatial frequency of the grating.
         self.gratingOrientations = [90.0, 270.0]  #degrees - a list of directions that the grating will move in. Because the oscillating grating moves in two directions per epoch, these numbers define the starting direction.
         self.gratingTexture = 'sin' #The pattern of the grating. This can be 'sin', 'sqr', 'saw', 'tri', etc. Look at Psychopy gratingstim object for more information: https://www.psychopy.org/api/visual/gratingstim.html#psychopy.visual.GratingStim.tex 
-        self.oscillationPeriods = [2, 5, 10] #seconds - CHANGE
+        self.oscillationPeriods = [2.0, 5.0, 10.0] #seconds - CHANGE
         self.oscillationAmplitude = 20.0 #visual degrees - distance that the grating moves over the course of one half oscillation
         self.oscillationPhaseShift = [0, 90, 180] #degrees - CHANGE between 0 and 90 - 90 will start the oscillation in the middle of it's cycle (cosine function). 0 will start it all the way on one side (sine function)
         self.backgroundColor = [0.0, 0.0, 0.0] #background color of the screen (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors. For this stimulus, the background is typically only seen between epochs.
@@ -66,10 +67,21 @@ class SumOfSinesOscillation(protocol):
         suggestedPeriods = []
         multiple = False 
         factor = True
+        fraction = False
+        isInteger = True
         
         #checks color values
         tf, colorErrorMessages = self.validateColorInput()
         errorMessage += colorErrorMessages
+        
+        #converts floats in oscillationPeriods to fractions
+        for period in self.oscillationPeriods:
+            if period % 1 != 0: #if not a whole number
+                fraction = True
+                break
+        for index, period in enumerate(self.oscillationPeriods):
+            if fraction:
+                self.oscillationPeriods[index] = Fraction(period).limit_denominator(10)
 
         #check that the period and phase shift have the same number of items in their respective lists
         if len(self.oscillationPeriods) != len(self.oscillationPhaseShift):
@@ -77,11 +89,11 @@ class SumOfSinesOscillation(protocol):
             errorMessage.append("oscillationPeriods and oscillationPhaseShift should be the same length")
         
         #checks that all sine functions will end at the same time during a cycle
-        for item in self.oscillationPeriods:
-            if max(self.oscillationPeriods) % item != 0: #if a period in the list oscillatingPeriods is not a factor of the largest period in that list
+        for period in self.oscillationPeriods:
+            if max(self.oscillationPeriods) % period != 0: #if a period in the list oscillatingPeriods is not a factor of the largest period in that list
                 factor = False
                 tf = False
-                errorMessage.append(f"{item} is not a factor of {max(self.oscillationPeriods)}. All periods must be a factor of the largest value in oscillationPeriods")
+                errorMessage.append(f"{float(period)} is not a factor of {max(self.oscillationPeriods)}. All periods must be a factor of the largest value in oscillationPeriods")
         
         #check that periods are not multiples of each other except for the largest period value
         sortedPeriod = sorted(self.oscillationPeriods)
@@ -90,7 +102,7 @@ class SumOfSinesOscillation(protocol):
                 if self.oscillationPeriods[index] % self.oscillationPeriods[i] == 0 and index != i:
                     multiple = True
                     tf = False
-                    errorMessage.append(f"{self.oscillationPeriods[i]} and {self.oscillationPeriods[index]} are multiples of each other. Periods less than the largest value in oscillationPeriods cannot be multiples of each other. ")
+                    errorMessage.append(f"{float(self.oscillationPeriods[i])} and {float(self.oscillationPeriods[index])} are multiples of each other. Periods less than the largest value in oscillationPeriods cannot be multiples of each other. ")
         
         #check that the stim time ends at the same time that the period ends
         if self.stimTime < float(max(self.oscillationPeriods)):
@@ -98,17 +110,28 @@ class SumOfSinesOscillation(protocol):
             errorMessage.append("stimTime shouldn't be less than the overall period (largest period in oscillationPeriods).")
         if self.stimTime % float(max(self.oscillationPeriods)) != 0:
             tf = False
-            errorMessage.append("The overall period (largest period in oscillationPeriods) doesn't go evenly into the stimTime")
+            errorMessage.append("The overall period (largest period in oscillationPeriods) doesn't go into the stimTime evenly.")
         
-        #suggest an alternate list of periods if the periods provided don't meet the criteria
-        if not multiple and not factor:
-                for item in sortedPeriod[:-1]:
-                    suggestedPeriods.append(item)
-                suggestedPeriods.append(reduce(math.lcm, sortedPeriod[:-1]))
         
+        #converts fractions back into floats. Otherwise, property will be a list of <class 'fractions.Fraction'> when it should be <class 'float'>
+        for i, p in enumerate(self.oscillationPeriods):
+            self.oscillationPeriods[i] = float(p)
+            sortedPeriod[i] = float(p)
+            
+        #suggest an alternate list of periods if the periods provided don't meet the criteria TEST FIX THIS
+        for period in self.oscillationPeriods:
+            intPeriod = int(period)
+            if period != intPeriod:
+                isInteger = False
+                break
+        if not multiple and not factor and isInteger:
+                for index, period in enumerate(sortedPeriod[:-1]):
+                    sortedPeriod[index] = int(period)
+                    suggestedPeriods.append(period)
+                suggestedPeriods.append(float(reduce(math.lcm, sortedPeriod[:-1])))
         if suggestedPeriods:
             print(f"\n***Here is a possible list of periods: {suggestedPeriods}. Remember to change stimTime so the largest period is a factor of stimTime (e.g. stimTime = {float(max(suggestedPeriods)*2)}).")
-        
+
         return tf, errorMessage
     
     def estimateTime(self):
