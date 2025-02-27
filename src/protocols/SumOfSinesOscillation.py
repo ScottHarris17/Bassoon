@@ -99,10 +99,10 @@ class SumOfSinesOscillation(protocol):
         sortedPeriod = sorted(self.oscillationPeriods)
         for i in range(len(sortedPeriod[:-1])):
             for index in range(len(sortedPeriod[:-1])):
-                if self.oscillationPeriods[index] % self.oscillationPeriods[i] == 0 and index != i:
+                if sortedPeriod[index] % sortedPeriod[i] == 0 and index != i:
                     multiple = True
                     tf = False
-                    errorMessage.append(f"{float(self.oscillationPeriods[i])} and {float(self.oscillationPeriods[index])} are multiples of each other. Periods less than the largest value in oscillationPeriods cannot be multiples of each other. ")
+                    errorMessage.append(f"{float(sortedPeriod[i])} and {float(sortedPeriod[index])} are multiples of each other. Periods less than the largest value in oscillationPeriods cannot be multiples of each other. ")
         
         #check that the stim time ends at the same time that the period ends
         if self.stimTime < float(max(self.oscillationPeriods)):
