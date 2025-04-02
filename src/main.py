@@ -52,6 +52,7 @@ from protocols.ImageJitter import ImageJitter
 from protocols.ScotomaMovingGrating import ScotomaMovingGrating
 from protocols.Flicker import Flicker
 from protocols.SumOfSinesOscillation import SumOfSinesOscillation
+from protocols.TumblingPairs import TumblingPairs
 
 class Bassoon:
     def __init__(self, master):

@@ -118,7 +118,7 @@ class SumOfSinesOscillation(protocol):
             self.oscillationPeriods[i] = float(p)
             sortedPeriod[i] = float(p)
             
-        #suggest an alternate list of periods if the periods provided don't meet the criteria TEST FIX THIS
+        #suggest an alternate list of periods if the periods provided don't meet the criteria
         for period in self.oscillationPeriods:
             intPeriod = int(period)
             if period != intPeriod:

@@ -256,7 +256,7 @@ class ScotomaMovingGrating(protocol):
         #create self._scotomaSequence and self._newScotomasPerFrame
         self.createScotomaGrowthSequence(numScotomasToAdd, numTotalScotomas, scotomaIndices)
             
-        #create flipped copies of self._scotomaSequence and self._newScotomasPerFrame if you will also be doing a reversel
+        #create flipped copies of self._scotomaSequence and self._newScotomasPerFrame if you will also be doing a reverse
         if self.scotomaReverse:
             scotomaSequenceReverse = np.flip(self._scotomaSequence)
             newScotomasPerFrameReverse = np.flip(self._newScotomasPerFrame)
