@@ -33,7 +33,7 @@ class TumblingPairs(protocol):
         self.scotomaOpacity = 1.0 #The opacity of the scotomas. 1.0 is fully opaque, 0.0 is fully transparent
         self.scotomaSize = 0.1 #degrees - side lengths of the scotomas, which are squares
         self.scotomaColor = [0.0, 0.0, 0.0] #color of the scotomas (in RGB). -1.0 equates to 0 and 1.0 equates to 255 for 8 bit colors.
-        self.scotomaRange = [10000, 50000] #scotoma count range from lower range to upper range
+        self.scotomaRange = [30000, 51000] #scotoma count range from lower range to upper range
         #input line parameters
         self.lineSize = [2, 80] #[width, length] of input line in pixels
         self.linePos = [280, -190] #coordinate position of the left end of the line. (0,0) is the center and each quadrant is a 400x300 rectangle
@@ -109,12 +109,12 @@ class TumblingPairs(protocol):
                 
             if protection == 1000:
                 print("Pairs may overlap. Adjust the size and/or density of the pairs.")
-            
                     
         #randomly select scotomas to make visible
-        scotomaDensity = random.randint(self.scotomaRange[0], self.scotomaRange[1])
-        scotomaIndices = random.sample([i for i in range(self.numTotalScotomas)], scotomaDensity)
+        self.scotomaDensity = random.randint(self.scotomaRange[0], self.scotomaRange[1])
+        scotomaIndices = random.sample([i for i in range(self.numTotalScotomas)], self.scotomaDensity)
         self.mask[scotomaIndices] = self.scotomaOpacity
+        self.scotomaCoverage.append(self.scotomaDensity/self.numTotalScotomas)
         
     def run(self, win, informationWin):
         '''
@@ -126,7 +126,7 @@ class TumblingPairs(protocol):
         self.getFR(win)
         
         stimMonitor = win.monitor
-        
+
         self.pixPerDegree = self.getPixPerDeg(stimMonitor)
         
         self.circleRadius_pix = self.circleRadius_degrees * self.pixPerDegree
@@ -137,6 +137,9 @@ class TumblingPairs(protocol):
             self.showInformationText(win, 'Stimulus Information: Tumbling Pairs \nPress any key to begin')
             event.waitKeys() #wait for key press  
         
+        #Data for the stimulus
+        self.deltaAngles = [] #the change between the userAngle and the arcAngle
+        self.scotomaCoverage = [] #fraction of the screen covered by scotomas. If the scotomas are significantly smaller than the pairs, then the fractional coverage of the window will be approximately equal to the average coverage for the pairs.
         
         instructions = 'Tumbling Pairs Test for Visual Acuity: \nPress left and right arrows keys to match the line with the angle of the pairs \n\nPress any key to begin'
         self.showInformationText(win, instructions)
@@ -154,7 +157,7 @@ class TumblingPairs(protocol):
         self.numTotalScotomas = len(xCoordinates) * len(yCoordinates)
         if self.scotomaRange[1] > self.numTotalScotomas:
             self.scotomaRange[1] = self.numTotalScotomas
-            print(f"\n***Maximum value in self.scotomaRange was greater than the total number of scotomas possible based on current scotoma parameters and window size. Bassoon automatically replaced the maximum value with largest number of scotomas possible ({self.numTotalScotomas}).")
+            print(f"\n***Maximum value in self.scotomaRange was greater than the total number of scotomas possible based on current scotoma parameters and window dimensions. Bassoon automatically replaced the maximum value with largest number of scotomas possible ({self.numTotalScotomas}).")
         sizes = [(self.scotomaSize_pix, self.scotomaSize_pix) for i in range(self.numTotalScotomas)]
         
         self._scotomaCoordinates = []
@@ -242,7 +245,8 @@ class TumblingPairs(protocol):
             win.flip()
 
             keyPressed = kb.waitKeys(keyList=['right', 'left', 'q', 'return'], waitRelease=False, clear=False)
-            key = [key.value for key in keyPressed]
+            if keyPressed:
+                key = [key.value for key in keyPressed]
             if key:
                 key = key[0]
             
@@ -284,7 +288,9 @@ class TumblingPairs(protocol):
                         deltaAngle = abs((userAngle + 180) - self.arcAngle_deg)
                     elif userAngle > self.arcAngle_deg:
                         deltaAngle = abs((self.arcAngle_deg + 180) - userAngle)
-                        
+                
+                self.deltaAngles.append(deltaAngle)
+                
                 #reassign parameters
                 epochNum += 1
                 self.mask = np.zeros((self.numTotalScotomas, 1)) #1 is fully transparent, -1 is fully opaque. Start with a fully transparent mask.
