@@ -155,16 +155,26 @@ class MovingGratingDirection(protocol):
                 win.flip()
                 if self.checkQuitOrPause():
                     return
-
+            
+            if self.writeTTL == 'Pulse':
+                self._portObj.baudrate = 1000000
+            
             #stim time - flash
             for f in range(self._stimTimeNumFrames):
                 grating.phase += self._numCyclesToShiftByFrame
                 grating.draw()
                 coverRectangle.draw()
                 win.flip()
+                if self.writeTTL == 'Pulse':
+                    self.sendTTL()  #write TTL for every frame flip for this stimulus if in pulse mode
+                    
                 if self.checkQuitOrPause():
                     return
 
+            #return baudrate to high value
+            if self.writeTTL == 'Pulse':
+                self._portObj.baudrate = 4000000
+                
             #tail time
             for f in range(self._tailTimeNumFrames):
                 grating.draw()
