@@ -543,7 +543,7 @@ class Bassoon:
         stimMonitorLabel = Label(stimulusFrame, text='Monitor', padx=10)
         stimMonitorLabel.grid(row=2, column=1)
         self.stimMonitorSelection = StringVar(root)
-        self.stimMonitorSelection.set(self.monitorNames[0])
+        self.stimMonitorSelection.set(self.experiment.stimMonitor)
         stimulusMonitorDropdown = OptionMenu(
             stimulusFrame, self.stimMonitorSelection, *self.monitorNames)
         stimulusMonitorDropdown.grid(row=2, column=2)
