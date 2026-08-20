@@ -53,6 +53,13 @@ class experiment():
         self.recompileExperiment = False  # option that is used by self.saveExperiment()
 
         self.timingReport = False
+
+        # EyeLink (optional). Off by default so existing experiments are unchanged.
+        self.useEyeLink = False
+        self.eyeLinkDummy = False # True = no Host PC; pylink dummy tracker
+        self.eyeLinkIP = '100.1.1.1' # Host PC address on the dedicated Ethernet link
+        self.eyeLinkEDF = 'BASS.EDF' # Host filename, 8 chars + .EDF
+        self._elTracker = None
         
         #Load previously saved experimental settings from configOptions.json
         if Path('configOptions.json').is_file():
@@ -89,6 +96,10 @@ class experiment():
                     self.ttlBookmarks = configOptions['experiment']['ttlBookmarks']
                     self.timingReport = configOptions['experiment']['timingReport']
                     self.recompileExperiment = configOptions['experiment']['recompileExperiment']
+                    self.useEyeLink = configOptions['experiment'].get('useEyeLink', False)
+                    self.eyeLinkDummy = configOptions['experiment'].get('eyeLinkDummy', False)
+                    self.eyeLinkIP = configOptions['experiment'].get('eyeLinkIP', '100.1.1.1')
+                    self.eyeLinkEDF = configOptions['experiment'].get('eyeLinkEDF', 'BASS.EDF')
                 except:
                     print('*** Could not load all configuration settings from src/configOptions.json. Manually apply settings in the Options menu.')
 
@@ -165,9 +176,146 @@ class experiment():
         
         #The port should now stay open for as long as the experiment persists. If a new experiment is loaded in, the port should be reset and reopened. If the experiment is saved, the port will be temporarily closed, deleted, and then reestablished and opened
         return
-        
-        
-        
+
+
+    def _sanitizeEdfName(self, name):
+        '''
+        EyeLink Host PCs require an 8.3-style EDF name (up to 8 alphanumeric characters + .EDF).
+        '''
+        stem = Path(str(name)).stem.upper()
+        stem = ''.join(ch for ch in stem if ch.isalnum())
+        if stem == '':
+            stem = 'BASS'
+        return stem[:8] + '.EDF'
+
+
+    def sendEyeLinkMessage(self, text):
+        '''
+        Send a timestamped message to the open EDF. No-op if EyeLink is not connected.
+        '''
+        if self._elTracker is None:
+            return
+        try:
+            self._elTracker.sendMessage(str(text)[:120])
+        except Exception:
+            print('***WARNING: EyeLink message failed:', text)
+
+
+    def startEyeLink(self):
+        '''
+        Connect to EyeLink, open an EDF, optionally calibrate, and start recording.
+        Failures print to the console and leave _elTracker as None so stimuli still run.
+        '''
+        self._elTracker = None
+        if not self.useEyeLink:
+            return
+
+        try:
+            import pylink
+        except ImportError:
+            print('*** EyeLink was enabled but pylink is not installed. Install sr-research-pylink and the EyeLink Developers Kit. Stimuli will run without the tracker.')
+            return
+
+        edfName = self._sanitizeEdfName(self.eyeLinkEDF)
+        self.eyeLinkEDF = edfName
+        linkAddress = None if self.eyeLinkDummy else self.eyeLinkIP
+
+        try:
+            print('--> Connecting to EyeLink at', 'dummy' if linkAddress is None else linkAddress)
+            self._elTracker = pylink.EyeLink(linkAddress)
+            self._elTracker.openDataFile(edfName)
+            self._elTracker.sendCommand("add_file_preamble_text 'RECORDED BY BASSOON'")
+
+            scn_w, scn_h = self.win.size
+            self._elTracker.sendCommand(
+                'screen_pixel_coords = 0 0 {w} {h}'.format(w=scn_w - 1, h=scn_h - 1)
+            )
+            self.sendEyeLinkMessage(
+                'DISPLAY_COORDS 0 0 {w} {h}'.format(w=scn_w - 1, h=scn_h - 1)
+            )
+
+            if not self.eyeLinkDummy:
+                try:
+                    try:
+                        from EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
+                    except ImportError:
+                        from psychopy_eyelink_coregraphics import EyeLinkCoreGraphicsPsychoPy
+                    genv = EyeLinkCoreGraphicsPsychoPy(self._elTracker, self.win)
+                    pylink.openGraphicsEx(genv)
+                    print('--> EyeLink camera setup / calibration. On the Host PC: C = calibrate, V = validate, Enter = exit.')
+                    self._elTracker.doTrackerSetup()
+                except Exception as calErr:
+                    print('*** EyeLink connected, but calibration graphics failed (' + str(calErr) + '). Recording will continue without doTrackerSetup().')
+
+            self._elTracker.setOfflineMode()
+            pylink.pumpDelay(100)
+            recErr = self._elTracker.startRecording(1, 1, 1, 1)
+            if recErr:
+                raise RuntimeError('startRecording returned ' + str(recErr))
+            pylink.pumpDelay(100)
+            self.sendEyeLinkMessage('BASSOON_EXPERIMENT_START')
+            print('--> EyeLink recording started. EDF on Host:', edfName)
+        except Exception as e:
+            print('*** Could not start EyeLink (' + str(e) + '). Stimuli will run without the tracker.')
+            try:
+                if self._elTracker is not None:
+                    self._elTracker.close()
+            except Exception:
+                pass
+            self._elTracker = None
+
+
+    def stopEyeLink(self):
+        '''
+        Stop recording, close the EDF, and download it to the Bassoon working directory.
+        Safe to call if EyeLink never started.
+        '''
+        if self._elTracker is None:
+            return
+
+        try:
+            import pylink
+        except ImportError:
+            pylink = None
+
+        try:
+            self.sendEyeLinkMessage('BASSOON_EXPERIMENT_END')
+            try:
+                self._elTracker.stopRecording()
+            except Exception:
+                pass
+            try:
+                self._elTracker.setOfflineMode()
+            except Exception:
+                pass
+            try:
+                self._elTracker.closeDataFile()
+            except Exception:
+                pass
+
+            if not self.eyeLinkDummy:
+                stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                localName = Path.cwd() / (Path(self.eyeLinkEDF).stem + '_' + stamp + '.edf')
+                try:
+                    print('--> Downloading EDF to', localName)
+                    self._elTracker.receiveDataFile(self.eyeLinkEDF, str(localName))
+                except Exception as e:
+                    print('*** EyeLink recording finished, but the EDF could not be downloaded (' + str(e) + '). Copy it from the Host PC if needed.')
+            try:
+                self._elTracker.close()
+            except Exception:
+                pass
+            if pylink is not None:
+                try:
+                    pylink.closeGraphics()
+                except Exception:
+                    pass
+            print('--> EyeLink disconnected')
+        finally:
+            self._elTracker = None
+
+
+
     def activate(self):
         '''
         Begin the experiment
@@ -208,6 +356,20 @@ class experiment():
 
         self.activated = True
         self.loggedStimuli = [] #always resets on a new run
+        self.startEyeLink()
+        try:
+            self._runProtocolLoop()
+        finally:
+            self.stopEyeLink()
+            self.win.close()
+            if self.useInformationMonitor:
+                self.informationWin.close()
+
+
+    def _runProtocolLoop(self):
+        '''
+        Play each protocol in order. Split out of activate() so EyeLink is always stopped in a finally block.
+        '''
         for i, p in enumerate(self.protocolList):
             name = p[0] #note: p is not a deep copy, so the pointer in memory is to the same location as the protocol in self.protocolList and app.experiment.protocolList
             suffix = p[1].suffix
@@ -245,9 +407,9 @@ class experiment():
                
                 if self.ttlBookmarks: #Run the bookmark before the start of each stimulus: this is 1 frame on, 2 frames off, 3 frames on, 4 frames Off, 5 frames On, 6 frames Off at the frame frate of self.win The port should end in the off position again. Range is not inclusive
                     self.win.flip() #brief pause at frame rate in case there was just another flip from the previous stimulus (e.g., on the last frame of the previous stimulus)
-                    for i in range(1, 7):
+                    for bookmarkStep in range(1, 7):
                         p.sendTTL(bookmark = True)
-                        for m in range(i): #flip a number of frames that is equal to the iteration number
+                        for m in range(bookmarkStep): #flip a number of frames that is equal to the iteration number
                             self.win.flip()
                     
                     #just ensure that the TTL pulse is actually off:
@@ -256,7 +418,15 @@ class experiment():
                     
 
             #run the protocol
+            if self._elTracker is not None:
+                safeName = displayName.replace(' ', '_')
+                self.sendEyeLinkMessage('TRIALID {n}_{name}'.format(n=i + 1, name=safeName))
+                self.sendEyeLinkMessage('!V TRIAL_VAR protocol {name}'.format(name=str(name).replace(' ', '_')))
+                self.sendEyeLinkMessage('!V TRIAL_VAR suffix {suf}'.format(suf=str(suffix).replace(' ', '_')))
+                self.sendEyeLinkMessage('SYNCTIME')
             p.run(self.win, (self.useInformationMonitor, self.informationWin)) #send informationMonitor information as a tuple: bool (whether to use), window object
+            if self._elTracker is not None:
+                self.sendEyeLinkMessage('TRIAL_RESULT 0')
             
             #Make sure TTL port is turned OFF if running in sustained mode (it's often left on if the user quits a stimulus early)
             if self.writeTTL == 'Sustained' and p._TTLON:
@@ -270,13 +440,5 @@ class experiment():
             #write down properties from previous stimulus
             protocolProperties = vars(p)
             protocolProperties.pop('_informationWin', None) #can't save ongoing psychopy win so remove it
+            protocolProperties.pop('_elTracker', None)
             self.loggedStimuli.append(protocolProperties)
-
-
-
-        #clean up after the activation loop
-        self.win.close()
-
-        if self.useInformationMonitor:
-            self.informationWin.close()
-            
