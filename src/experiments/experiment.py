@@ -55,10 +55,11 @@ class experiment():
         self.timingReport = False
 
         # EyeLink (optional). Off by default so existing experiments are unchanged.
-        self.useEyeLink = False
+        self.useEyeLink = False 
         self.eyeLinkDummy = False # True = no Host PC; pylink dummy tracker
         self.eyeLinkIP = '100.1.1.1' # Host PC address on the dedicated Ethernet link
         self.eyeLinkEDF = 'BASS.EDF' # Host filename, 8 chars + .EDF
+        self.eyeLinkEDFDir = '' # folder on the Bassoon PC for downloaded EDFs; empty means current working directory
         self._elTracker = None
         
         #Load previously saved experimental settings from configOptions.json
@@ -100,9 +101,24 @@ class experiment():
                     self.eyeLinkDummy = configOptions['experiment'].get('eyeLinkDummy', False)
                     self.eyeLinkIP = configOptions['experiment'].get('eyeLinkIP', '100.1.1.1')
                     self.eyeLinkEDF = configOptions['experiment'].get('eyeLinkEDF', 'BASS.EDF')
+                    self.eyeLinkEDFDir = configOptions['experiment'].get('eyeLinkEDFDir', '')
                 except:
                     print('*** Could not load all configuration settings from src/configOptions.json. Manually apply settings in the Options menu.')
 
+        self.ensureEyeLinkDefaults()
+
+    def ensureEyeLinkDefaults(self):
+        '''Back-fill EyeLink settings on older experiment objects or configs.'''
+        defaults = {
+            'useEyeLink': False,
+            'eyeLinkDummy': False,
+            'eyeLinkIP': '100.1.1.1',
+            'eyeLinkEDF': 'BASS.EDF',
+            'eyeLinkEDFDir': '',
+        }
+        for key, value in defaults.items():
+            if not hasattr(self, key):
+                setattr(self, key, value)
 
     def addProtocol(self, newProtocol):
         '''
@@ -189,6 +205,27 @@ class experiment():
         return stem[:8] + '.EDF'
 
 
+    def _resolveEyeLinkSaveDir(self):
+        '''
+        Folder on this computer where downloaded EDF files are written.
+        Uses Options → EDF Save Folder when it is a valid path; otherwise the current working directory.
+        '''
+        requested = str(self.eyeLinkEDFDir).strip()
+        if requested == '':
+            saveDir = Path.cwd()
+        else:
+            saveDir = Path(requested).expanduser()
+            try:
+                saveDir.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                print('*** Could not use EDF save folder', saveDir, '(' + str(e) + '). Using the current working directory instead.')
+                saveDir = Path.cwd()
+            if not saveDir.is_dir():
+                print('*** EDF save folder is not a directory. Using the current working directory instead.')
+                saveDir = Path.cwd()
+        return saveDir
+
+
     def sendEyeLinkMessage(self, text):
         '''
         Send a timestamped message to the open EDF. No-op if EyeLink is not connected.
@@ -252,7 +289,7 @@ class experiment():
             recErr = self._elTracker.startRecording(1, 1, 1, 1)
             if recErr:
                 raise RuntimeError('startRecording returned ' + str(recErr))
-            pylink.pumpDelay(100)
+            pylink.pumpDelay(100) 
             self.sendEyeLinkMessage('BASSOON_EXPERIMENT_START')
             print('--> EyeLink recording started. EDF on Host:', edfName)
         except Exception as e:
@@ -267,7 +304,7 @@ class experiment():
 
     def stopEyeLink(self):
         '''
-        Stop recording, close the EDF, and download it to the Bassoon working directory.
+        Stop recording, close the EDF, and download it to the folder chosen in Options (or the working directory if that folder is blank).
         Safe to call if EyeLink never started.
         '''
         if self._elTracker is None:
@@ -295,7 +332,8 @@ class experiment():
 
             if not self.eyeLinkDummy:
                 stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                localName = Path.cwd() / (Path(self.eyeLinkEDF).stem + '_' + stamp + '.edf')
+                saveDir = self._resolveEyeLinkSaveDir()
+                localName = saveDir / (Path(self.eyeLinkEDF).stem + '_' + stamp + '.edf')
                 try:
                     print('--> Downloading EDF to', localName)
                     self._elTracker.receiveDataFile(self.eyeLinkEDF, str(localName))

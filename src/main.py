@@ -524,6 +524,10 @@ class Bassoon:
         '''
         monitorEditWindow = Toplevel(root)
         monitorEditWindow.title('Edit Experiment')
+        monitorEditWindow.geometry('720x900')
+        monitorEditWindow.minsize(640, 700)
+
+        self.experiment.ensureEyeLinkDefaults()
 
         editFrame = Frame(monitorEditWindow, padx=20)
         editFrame.pack(fill="both", expand=True)
@@ -726,8 +730,8 @@ class Bassoon:
         timingReportChk.grid(row=5, column=3)
 
         # EyeLink 3 / pylink connection (optional)
-        eyeLinkFrame = LabelFrame(editFrame, text='EyeLink', bd=6, pady=10)
-        eyeLinkFrame.configure(font=("Helvetica", 12))
+        eyeLinkFrame = LabelFrame(editFrame, text='EyeLink', bd=6, pady=10) 
+        eyeLinkFrame.configure(font=("Helvetica", 12)) 
         eyeLinkFrame.pack()
 
         useEyeLinkLabel = Label(eyeLinkFrame, text='Use EyeLink', padx=10)
@@ -758,18 +762,29 @@ class Bassoon:
         eyeLinkEDFEntry = Entry(eyeLinkFrame, textvariable=self.eyeLinkEDFSelection, width=12)
         eyeLinkEDFEntry.grid(row=1, column=3)
 
-        # add apply and close buttons
-        buttonFrame = Frame(editFrame)
+        eyeLinkDirLabel = Label(eyeLinkFrame, text='EDF Save Folder', padx=10)
+        eyeLinkDirLabel.grid(row=2, column=0, sticky='w')
+        self.eyeLinkEDFDirSelection = StringVar(root)
+        self.eyeLinkEDFDirSelection.set(self.experiment.eyeLinkEDFDir)
+        eyeLinkDirEnt = Entry(eyeLinkFrame, textvariable=self.eyeLinkEDFDirSelection, width=40)
+        eyeLinkDirEnt.grid(row=2, column=2, columnspan=2, sticky='ew')
+        eyeLinkDirBtn = Button(
+            eyeLinkFrame, text='Browse', padx=7,
+            command=lambda ent=eyeLinkDirEnt: self.findEyeLinkSaveFolder(monitorEditWindow, ent))
+        eyeLinkDirBtn.grid(row=2, column=1, sticky='w', padx=(0, 10))
+        eyeLinkFrame.columnconfigure(2, weight=1)
+
+        buttonFrame = Frame(editFrame, pady=15)
         buttonFrame.pack()
         applyButton = Button(buttonFrame, text='Apply Changes',
                              command=self.applyExperimentChanges)
-        applyButton.grid(row=0, column=0, padx = 2)
+        applyButton.grid(row=0, column=0, padx=2)
         saveButton = Button(buttonFrame, text='Save & Apply Changes',
                              command=self.setConfigFile)
-        saveButton.grid(row=0, column=1, padx = 2)
+        saveButton.grid(row=0, column=1, padx=2)
         closeButton = Button(buttonFrame, text='Close Window',
-                             command=lambda: monitorEditWindow.destroy())
-        closeButton.grid(row=0, column=2)
+                             command=monitorEditWindow.destroy)
+        closeButton.grid(row=0, column=2, padx=2)
 
     def editMonitors(self):
         ''' A function to add or remove monitors from the psychopy monitor center programmatically'''
@@ -1006,8 +1021,22 @@ class Bassoon:
         entry.insert(0,self.experiment.warpFileName)
 
 
+    def findEyeLinkSaveFolder(self, window, entry):
+        '''Choose the folder on this computer where downloaded EyeLink EDF files will be saved.'''
+        chosen = tkfd.askdirectory(title='Select EDF save folder')
+        if chosen == '':
+            return
+        self.experiment.ensureEyeLinkDefaults()
+        self.experiment.eyeLinkEDFDir = chosen
+        window.attributes('-topmost', True)
+        entry.delete(0, END)
+        entry.insert(0, chosen)
+
+
     def applyExperimentChanges(self):
         ''' Execute experiment changes when the apply or apply and save button is pressed'''
+        self.experiment.ensureEyeLinkDefaults()
+
         # set stimulus window
         self.experiment.stimMonitor = self.stimMonitorSelection.get()
         self.experiment.fullscr = self.stimFullScreenSelection.get() == 1
@@ -1051,6 +1080,7 @@ class Bassoon:
         self.experiment.eyeLinkIP = ipValue if ipValue != '' else '100.1.1.1'
         edfValue = self.eyeLinkEDFSelection.get().strip()
         self.experiment.eyeLinkEDF = edfValue if edfValue != '' else 'BASS.EDF'
+        self.experiment.eyeLinkEDFDir = self.eyeLinkEDFDirSelection.get().strip()
 
         print('\n--> New experiment settings have been applied')
 
@@ -1082,11 +1112,12 @@ class Bassoon:
                 "useFBO": self.FBObjectSelection.get() == 1,
                 "warpFileName": self.experiment.warpFileName,
                 "timingReport": self.timingReportSelection.get()==1,
-                "recompileExperiment":self.recompileSelection.get()==1,
+                "recompileExperiment":self.recompileSelection.get()==1, 
                 "useEyeLink": self.useEyeLinkSelection.get() == 1,
                 "eyeLinkDummy": self.eyeLinkDummySelection.get() == 1,
                 "eyeLinkIP": self.eyeLinkIPSelection.get().strip(),
-                "eyeLinkEDF": self.eyeLinkEDFSelection.get().strip()
+                "eyeLinkEDF": self.eyeLinkEDFSelection.get().strip(),
+                "eyeLinkEDFDir": self.eyeLinkEDFDirSelection.get().strip()
             }
         }
 
